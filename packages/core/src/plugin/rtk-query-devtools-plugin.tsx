@@ -1,0 +1,208 @@
+import clsx from "clsx";
+import { useEffect, useMemo, useState } from "react";
+import { defaultRegistry, type DevtoolsRegistry } from "../registry";
+import { selectQueryEntries } from "../selectors";
+import type { DerivedQueryStatus, TagDescription } from "../types";
+import { EmptyState } from "./components/empty-state";
+import { MutationsTab } from "./components/mutations-tab";
+import { QueriesTab } from "./components/queries-tab";
+import { StatusSummary } from "./components/status-summary";
+import { TagsTab } from "./components/tags-tab";
+import { TimelineTab } from "./components/timeline-tab";
+import { useRtkQueryDevtoolsState } from "./hooks/use-rtkq-state";
+import { SpinKeyframes } from "./spin-keyframes";
+import "./styles.css";
+import { getClasses, resolveThemeMode } from "./theme";
+
+export interface RtkQueryDevtoolsPluginProps {
+  theme?: "light" | "dark";
+  /** Overrides the module-level registry — mainly for tests or multi-store apps. */
+  devtoolsRegistry?: DevtoolsRegistry;
+}
+
+type TabId = "queries" | "mutations" | "tags" | "timeline";
+
+const TABS: Array<{ id: TabId; label: string }> = [
+  { id: "queries", label: "Queries" },
+  { id: "mutations", label: "Mutations" },
+  { id: "tags", label: "Tags" },
+  { id: "timeline", label: "Timeline" },
+];
+
+export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevtoolsPluginProps) {
+  const registry = devtoolsRegistry ?? defaultRegistry;
+  // Subscribes to registry changes — re-renders on every throttled version
+  // bump, which is also what keeps every child tab below up to date.
+  const { state, reducerPaths } = useRtkQueryDevtoolsState(registry);
+  const classes = getClasses(resolveThemeMode(theme));
+
+  const [activeTab, setActiveTab] = useState<TabId>("queries");
+  const [activeApi, setActiveApi] = useState<string>("");
+  const [selectedQueryKey, setSelectedQueryKey] = useState<string | undefined>(undefined);
+  const [tagFocus, setTagFocus] = useState<TagDescription | undefined>(undefined);
+  const [activeStatuses, setActiveStatuses] = useState<Set<DerivedQueryStatus>>(new Set());
+
+  useEffect(() => {
+    const first = reducerPaths[0];
+    if (first && (!activeApi || !reducerPaths.includes(activeApi))) {
+      setActiveApi(first);
+    }
+  }, [reducerPaths, activeApi]);
+
+  // Lifted out of QueriesTab so the status counts can be rendered in the
+  // shared tab row above it, right next to Queries/Mutations/Tags/Timeline.
+  const queryEntries = useMemo(
+    () =>
+      activeApi
+        ? selectQueryEntries(state, activeApi, (name) => registry.getEndpointType(activeApi, name))
+        : [],
+    [state, activeApi, registry],
+  );
+  const statusCounts = useMemo(() => {
+    const counts: Record<DerivedQueryStatus, number> = {
+      fresh: 0,
+      fetching: 0,
+      error: 0,
+      inactive: 0,
+      uninitialized: 0,
+    };
+    for (const entry of queryEntries) counts[entry.derivedStatus]++;
+    return counts;
+  }, [queryEntries]);
+  const toggleStatus = (status: DerivedQueryStatus) => {
+    setActiveStatuses((prev) => {
+      const next = new Set(prev);
+      if (next.has(status)) next.delete(status);
+      else next.add(status);
+      return next;
+    });
+  };
+
+  const navigateToQuery = (queryCacheKey: string) => {
+    setActiveTab("queries");
+    setSelectedQueryKey(queryCacheKey);
+  };
+
+  const navigateToTag = (tag: TagDescription) => {
+    setActiveTab("tags");
+    setTagFocus(tag);
+  };
+
+  if (reducerPaths.length === 0) {
+    return (
+      <div
+        className={clsx(
+          "rtkq:flex rtkq:h-full rtkq:w-full rtkq:flex-col rtkq:font-sans",
+          classes.root,
+        )}
+      >
+        <SpinKeyframes />
+        <EmptyState
+          classes={classes}
+          title="No RTK Query APIs detected"
+          subtitle="Add the devtools middleware to your store: middleware => middleware().concat(api.middleware, rtkqDevtools.middleware)"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={clsx(
+        "rtkq:flex rtkq:h-full rtkq:w-full rtkq:flex-col rtkq:font-sans",
+        classes.root,
+      )}
+    >
+      <SpinKeyframes />
+
+      <div
+        className={clsx(
+          "rtkq:flex rtkq:shrink-0 rtkq:items-center rtkq:justify-between rtkq:gap-2 rtkq:border-b rtkq:pr-2",
+          classes.border,
+        )}
+      >
+        <div
+          role="tablist"
+          aria-label="RTK Query devtools sections"
+          className="rtkq:flex rtkq:shrink-0"
+        >
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={clsx(
+                "rtkq:-mb-px rtkq:cursor-pointer rtkq:border-b-2 rtkq:bg-transparent rtkq:px-3 rtkq:py-2 rtkq:text-xs rtkq:font-semibold",
+                activeTab === tab.id
+                  ? clsx(classes.accent, classes.accentBorder)
+                  : clsx("rtkq:border-transparent", classes.textMuted),
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "queries" && (
+          <StatusSummary
+            classes={classes}
+            counts={statusCounts}
+            activeStatuses={activeStatuses}
+            onToggle={toggleStatus}
+          />
+        )}
+      </div>
+
+      <div role="tabpanel" className="rtkq:min-h-0 rtkq:flex-1">
+        {activeTab === "queries" && (
+          <QueriesTab
+            classes={classes}
+            registry={registry}
+            entries={queryEntries}
+            reducerPaths={reducerPaths}
+            activeApi={activeApi}
+            onApiChange={setActiveApi}
+            onSelectTag={navigateToTag}
+            selectedKey={selectedQueryKey}
+            onSelectKey={setSelectedQueryKey}
+            activeStatuses={activeStatuses}
+          />
+        )}
+        {activeTab === "mutations" && (
+          <MutationsTab
+            classes={classes}
+            registry={registry}
+            state={state}
+            reducerPaths={reducerPaths}
+            activeApi={activeApi}
+            onApiChange={setActiveApi}
+          />
+        )}
+        {activeTab === "tags" && (
+          <TagsTab
+            key={tagFocus ? `${tagFocus.type}:${tagFocus.id ?? ""}` : "tags"}
+            classes={classes}
+            registry={registry}
+            state={state}
+            reducerPaths={reducerPaths}
+            activeApi={activeApi}
+            onApiChange={setActiveApi}
+            onNavigateToQuery={navigateToQuery}
+            initialSearch={tagFocus?.type}
+          />
+        )}
+        {activeTab === "timeline" && (
+          <TimelineTab
+            classes={classes}
+            registry={registry}
+            reducerPaths={reducerPaths}
+            activeApi={activeApi}
+            onApiChange={setActiveApi}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

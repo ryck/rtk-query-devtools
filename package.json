@@ -1,0 +1,36 @@
+{
+  "name": "rtk-query-devtools-monorepo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm --filter ./packages/core run build",
+    "dev": "pnpm --filter ./packages/core run dev",
+    "dev:demo": "pnpm --filter demo run dev",
+    "dev:web": "pnpm --filter web run dev",
+    "typecheck": "pnpm build && tsc -p packages/core --noEmit && tsc -p apps/demo --noEmit && pnpm --filter web run typecheck",
+    "clean": "pnpm -r run clean",
+    "test": "vitest --project=unit",
+    "test:ci": "vitest run --project=unit",
+    "test:e2e": "playwright test",
+    "lint": "oxlint . && oxfmt --check .",
+    "lint:fix": "oxlint . --fix && oxfmt .",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "jsdom": "^28.1.0",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@11.21.0"
+}

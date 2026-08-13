@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+minimumReleaseAgeExclude:
+  - "@tanstack/devtools-ui@0.7.0"
+  - "@tanstack/devtools@0.14.0"
+  - "@tanstack/react-devtools@0.10.10"

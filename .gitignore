@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+*.log
+coverage
+.turbo
+test-results
+playwright-report
+blob-report
+.env
+.env.local
+.output
+.tanstack
+routeTree.gen.ts

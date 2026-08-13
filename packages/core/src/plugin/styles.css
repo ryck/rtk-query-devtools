@@ -1,0 +1,13 @@
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(rtkq);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(rtkq);
+
+/*
+ * Preflight is intentionally not imported — this stylesheet is compiled
+ * once and shipped to consumers who render the panel into their own page,
+ * so a global CSS reset would leak into their app. Every utility is scoped
+ * under the `rtkq:` prefix (see the panel root's `rtkq:` classes) to avoid
+ * colliding with the host app's own Tailwind setup, if it has one.
+ */
+
+@source "../**/*.{ts,tsx}";

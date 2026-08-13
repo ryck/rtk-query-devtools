@@ -1,0 +1,223 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { selectMutationEntries, selectQueryEntries, selectTagGroups } from "./selectors";
+import { createTestApi, createTestStore, jsonResponse, type Post } from "./test-utils/test-api";
+
+beforeEach(() => {
+  vi.stubGlobal("fetch", vi.fn());
+});
+
+describe("selectQueryEntries", () => {
+  it("derives 'fresh' for a fulfilled query with an active subscriber", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout"] });
+    try {
+      const api = createTestApi();
+      const store = createTestStore(api);
+      vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+
+      const result = store.dispatch(api.endpoints.getPost.initiate(1));
+      await result;
+      // Subscription state syncs into the store on a throttled 500ms timer.
+      await vi.advanceTimersByTimeAsync(600);
+
+      const entries = selectQueryEntries(store.getState(), api.reducerPath);
+      expect(entries).toHaveLength(1);
+      expect(entries[0]).toMatchObject({
+        endpointName: "getPost",
+        type: "query",
+        status: "fulfilled",
+        derivedStatus: "fresh",
+        data: { id: 1, title: "Hello" },
+        subscriberCount: 1,
+      });
+      expect(entries[0]?.providedTags).toEqual([{ type: "Post", id: 1 }]);
+
+      result.unsubscribe();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("derives 'inactive' once the last subscriber unsubscribes", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout"] });
+    try {
+      const api = createTestApi();
+      const store = createTestStore(api);
+      vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+
+      const result = store.dispatch(api.endpoints.getPost.initiate(1));
+      await result;
+      result.unsubscribe();
+
+      // Subscription state syncs into the store on a throttled 500ms timer.
+      await vi.advanceTimersByTimeAsync(600);
+
+      const entries = selectQueryEntries(store.getState(), api.reducerPath);
+      expect(entries[0]).toMatchObject({ derivedStatus: "inactive", subscriberCount: 0 });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("derives 'error' for a rejected query", async () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    vi.mocked(fetch).mockResolvedValue(new Response("nope", { status: 500 }));
+
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    await result;
+
+    const entries = selectQueryEntries(store.getState(), api.reducerPath);
+    expect(entries[0]).toMatchObject({ status: "rejected", derivedStatus: "error" });
+    expect(entries[0]?.error).toBeDefined();
+
+    result.unsubscribe();
+  });
+
+  it("derives 'fetching' while a query is in flight", () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    let resolveFetch!: (r: Response) => void;
+    vi.mocked(fetch).mockReturnValue(new Promise((resolve) => (resolveFetch = resolve as never)));
+
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+
+    const entries = selectQueryEntries(store.getState(), api.reducerPath);
+    expect(entries[0]).toMatchObject({ status: "pending", derivedStatus: "fetching" });
+
+    resolveFetch(jsonResponse({ id: 1, title: "Hello" }));
+    result.unsubscribe();
+  });
+
+  // RTK Query's infinite-query thunk plumbing is out of scope here — these
+  // exercise our own classification heuristic directly against the two
+  // substate shapes RTK Query actually produces (see selectors.ts).
+  it("classifies an infinite query by its {pages, pageParams} data shape", () => {
+    const state = {
+      api: {
+        queries: {
+          "listPosts(undefined)": {
+            status: "fulfilled",
+            endpointName: "listPosts",
+            data: { pages: [[{ id: 1, title: "Hello" }]], pageParams: [1] },
+            requestId: "req-1",
+            startedTimeStamp: 0,
+            fulfilledTimeStamp: 1,
+          },
+        },
+        mutations: {},
+        provided: { tags: {}, keys: {} },
+        subscriptions: {},
+      },
+    };
+
+    const entries = selectQueryEntries(state, "api");
+    expect(entries[0]?.type).toBe("infinitequery");
+  });
+
+  it("classifies an infinite query by its direction field when data is absent", () => {
+    const state = {
+      api: {
+        queries: {
+          "listPosts(undefined)": {
+            status: "pending",
+            endpointName: "listPosts",
+            direction: "forward",
+            requestId: "req-1",
+            startedTimeStamp: 0,
+          },
+        },
+        mutations: {},
+        provided: { tags: {}, keys: {} },
+        subscriptions: {},
+      },
+    };
+
+    const entries = selectQueryEntries(state, "api");
+    expect(entries[0]?.type).toBe("infinitequery");
+  });
+
+  it("prefers a registry-learned endpoint type when the data shape is ambiguous", async () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    await result;
+
+    const entries = selectQueryEntries(store.getState(), api.reducerPath, () => "infinitequery");
+    expect(entries[0]?.type).toBe("infinitequery");
+
+    result.unsubscribe();
+  });
+
+  it("returns a stable array reference when the underlying slice hasn't changed", () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    const state = store.getState();
+
+    const first = selectQueryEntries(state, api.reducerPath);
+    const second = selectQueryEntries(state, api.reducerPath);
+    expect(first).toBe(second);
+  });
+
+  it("returns an empty array for a reducer path that isn't RTK Query state", () => {
+    expect(selectQueryEntries({ notAnApi: { value: 1 } }, "notAnApi")).toEqual([]);
+  });
+});
+
+describe("selectMutationEntries", () => {
+  it("derives fulfilled mutation entries keyed by requestId", async () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 2, title: "New post" } satisfies Post));
+
+    await store.dispatch(api.endpoints.addPost.initiate({ title: "New post" }));
+
+    const entries = selectMutationEntries(store.getState(), api.reducerPath);
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      endpointName: "addPost",
+      status: "fulfilled",
+      data: { id: 2, title: "New post" },
+    });
+    expect(entries[0]?.cacheKey).toBe(entries[0]?.requestId);
+  });
+
+  it("uses the fixedCacheKey as the cache key when one is provided", async () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 2, title: "New post" } satisfies Post));
+
+    await store.dispatch(
+      api.endpoints.addPost.initiate({ title: "New post" }, { fixedCacheKey: "add-post" }),
+    );
+
+    const entries = selectMutationEntries(store.getState(), api.reducerPath);
+    expect(entries.some((e) => e.cacheKey === "add-post")).toBe(true);
+  });
+});
+
+describe("selectTagGroups", () => {
+  it("groups provided tags by type and id", async () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    vi.mocked(fetch).mockResolvedValue(
+      jsonResponse([
+        { id: 1, title: "A" },
+        { id: 2, title: "B" },
+      ] satisfies Post[]),
+    );
+
+    const result = store.dispatch(api.endpoints.listPosts.initiate());
+    await result;
+
+    const groups = selectTagGroups(store.getState(), api.reducerPath);
+    const postGroup = groups.find((g) => g.tagType === "Post");
+    expect(postGroup).toBeDefined();
+
+    const ids = postGroup?.entries.map((e) => e.id).toSorted();
+    expect(ids).toEqual(["1", "2", "LIST"]);
+
+    result.unsubscribe();
+  });
+});
