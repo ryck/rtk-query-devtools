@@ -1,7 +1,7 @@
 {
   "name": "rtk-query-devtools",
   "version": "0.1.0",
-  "description": "A TanStack DevTools plugin for inspecting RTK Query cache entries, mutations, tags, and requests in real time",
+    "description": "A TanStack DevTools plugin for inspecting RTK Query cache entries, mutations, tags, and requests in real time",
   "keywords": [
     "caching",
     "data-fetching",
@@ -13,14 +13,14 @@
     "tanstack",
     "tanstack-devtools"
   ],
-  "homepage": "https://github.com/rickgc/rtk-query-devtools",
+  "homepage": "https://github.com/ryck/rtk-query-devtools",
   "bugs": {
-    "url": "https://github.com/rickgc/rtk-query-devtools/issues"
+    "url": "https://github.com/ryck/rtk-query-devtools/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rickgc/rtk-query-devtools.git",
+    "url": "git+https://github.com/ryck/rtk-query-devtools.git",
     "directory": "packages/core"
   },
   "files": [
