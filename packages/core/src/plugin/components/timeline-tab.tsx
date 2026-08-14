@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, Pause, Play, SkipForward, Trash2, XCircle } from
 import { type ComponentType, type CSSProperties, useRef, useState } from "react";
 import type { DevtoolsRegistry } from "../../registry";
 import type { EndpointType, TimelineEvent, TimelineOutcome } from "../../types";
+import { formatDuration } from "../format";
 import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
@@ -166,9 +167,7 @@ export function TimelineTab({
                 {
                   label: "Duration",
                   value:
-                    selected.durationMs !== undefined
-                      ? `${Math.round(selected.durationMs)}ms`
-                      : "—",
+                    selected.durationMs !== undefined ? formatDuration(selected.durationMs) : "—",
                 },
                 { label: "forceRefetch", value: String(!!selected.forceRefetch) },
                 { label: "subscribe", value: String(selected.subscribe !== false) },
@@ -208,7 +207,7 @@ function TimelineRow({
       subtitle={KIND_LABEL[event.kind]}
       metaRight={
         <span className={clsx("rtkq:text-[10px] rtkq:shrink-0", classes.textMuted)}>
-          {event.durationMs !== undefined ? `${Math.round(event.durationMs)}ms` : "…"}
+          {event.durationMs !== undefined ? formatDuration(event.durationMs) : "…"}
         </span>
       }
     />

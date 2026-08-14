@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { invalidateTags, refetch, removeQueryEntry, resetApiState } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import type { DerivedQueryStatus, QueryEntry, TagDescription } from "../../types";
-import { formatQueryCacheKey } from "../format";
+import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
@@ -209,6 +209,11 @@ function QueryRow({
           <span className={clsx("rtkq:text-[10px]", classes.textMuted)}>
             {entry.subscriberCount} subs
           </span>
+          {entry.fulfilledTimeStamp !== undefined && (
+            <span className={clsx("rtkq:text-[10px] rtkq:tabular-nums", classes.textDimmed)}>
+              {formatRelativeTime(entry.fulfilledTimeStamp)}
+            </span>
+          )}
         </div>
       }
     />
@@ -247,8 +252,15 @@ function QueryDetail({
         {
           label: "Fulfilled",
           value: entry.fulfilledTimeStamp
-            ? new Date(entry.fulfilledTimeStamp).toLocaleTimeString()
+            ? `${new Date(entry.fulfilledTimeStamp).toLocaleTimeString()} (${formatRelativeTime(entry.fulfilledTimeStamp)})`
             : "—",
+        },
+        {
+          label: "Duration",
+          value:
+            entry.startedTimeStamp !== undefined && entry.fulfilledTimeStamp !== undefined
+              ? formatDuration(entry.fulfilledTimeStamp - entry.startedTimeStamp)
+              : "—",
         },
       ]}
       tags={entry.providedTags}
@@ -257,6 +269,10 @@ function QueryDetail({
         { label: "Arguments", value: entry.originalArgs },
         { label: "Data", value: entry.data },
         ...(entry.error !== undefined ? [{ label: "Error", value: entry.error }] : []),
+        // The whole derived entry, mirroring TanStack's "Query Explorer" — the
+        // meta rows above are a curated view, and this is the escape hatch for
+        // anything they leave out (raw `status`, `requestId`, tag shapes).
+        { label: "Query entry", value: entry },
       ]}
       actions={
         <>

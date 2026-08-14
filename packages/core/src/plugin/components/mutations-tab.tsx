@@ -7,6 +7,7 @@ import { removeMutationEntry } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import { selectMutationEntries } from "../../selectors";
 import type { DerivedQueryStatus, MutationEntry } from "../../types";
+import { formatDuration, formatRelativeTime } from "../format";
 import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
@@ -100,6 +101,21 @@ export function MutationsTab({
 
   const selected = sorted.find((e) => e.cacheKey === selectedKey);
 
+  // RTK's mutation substate doesn't retain the args, so they're recovered from
+  // the timeline. Keyed on the *event's* existence rather than on its
+  // `originalArgs` being defined — a no-arg mutation legitimately has
+  // `undefined` args, and should still show an Arguments section.
+  //
+  // Deliberately not memoized, matching timeline-tab: the registry mutates
+  // timeline events in place on settle, so a memo keyed on entry identity
+  // could hold a stale miss. Scanning at most `maxTimelineEntries` (500) for
+  // the single selected row isn't worth guarding.
+  const mutationEvent = selected
+    ? registry
+        .getTimeline()
+        .find((e) => e.kind === "mutation" && e.requestId === selected.requestId)
+    : undefined;
+
   const parentRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     count: sorted.length,
@@ -183,15 +199,28 @@ export function MutationsTab({
                 {
                   label: "Fulfilled",
                   value: selected.fulfilledTimeStamp
-                    ? new Date(selected.fulfilledTimeStamp).toLocaleTimeString()
+                    ? `${new Date(selected.fulfilledTimeStamp).toLocaleTimeString()} (${formatRelativeTime(selected.fulfilledTimeStamp)})`
                     : "—",
+                },
+                {
+                  label: "Duration",
+                  value:
+                    selected.startedTimeStamp !== undefined &&
+                    selected.fulfilledTimeStamp !== undefined
+                      ? formatDuration(selected.fulfilledTimeStamp - selected.startedTimeStamp)
+                      : "—",
                 },
               ]}
               jsonSections={[
+                // Absent once the event has aged out of the ring buffer.
+                ...(mutationEvent
+                  ? [{ label: "Arguments", value: mutationEvent.originalArgs }]
+                  : []),
                 { label: "Data", value: selected.data },
                 ...(selected.error !== undefined
                   ? [{ label: "Error", value: selected.error }]
                   : []),
+                { label: "Mutation entry", value: selected },
               ]}
               actions={
                 <ToolbarButton
