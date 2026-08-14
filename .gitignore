@@ -12,3 +12,4 @@ blob-report
 .output
 .tanstack
 routeTree.gen.ts
+.pnpm-store
