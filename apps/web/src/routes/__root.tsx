@@ -1,4 +1,5 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import type { ReactNode } from "react";
 import { NotFound } from "@/components/not-found";
 import { SiteFooter } from "@/components/site-footer";
@@ -61,6 +62,12 @@ function RootDocument({ children }: { children: ReactNode }) {
           <div className="flex-1">{children}</div>
           <SiteFooter />
         </div>
+        {/*
+          Injects the analytics script on the client. It no-ops off Vercel, so
+          local dev and the prerender pass stay inert — nothing is recorded
+          while the pages are being generated at build time.
+        */}
+        <Analytics />
         <Scripts />
       </body>
     </html>
