@@ -38,7 +38,7 @@ export function SiteHeader() {
             Examples
           </Link>
           <a
-            href="https://github.com/rickgc/rtk-query-devtools"
+            href="https://github.com/ryck/rtk-query-devtools"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1.5 transition-colors hover:text-paper"

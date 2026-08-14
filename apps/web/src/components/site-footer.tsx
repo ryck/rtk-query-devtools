@@ -5,7 +5,7 @@ export function SiteFooter() {
         <span>MIT Licensed · built on TanStack DevTools</span>
         <div className="flex gap-4">
           <a
-            href="https://github.com/rickgc/rtk-query-devtools"
+            href="https://github.com/ryck/rtk-query-devtools"
             target="_blank"
             rel="noreferrer"
             className="hover:text-paper"
