@@ -25,6 +25,24 @@ test("the Timeline tab records query and mutation lifecycle events", async ({ pa
   ).toBeVisible();
 });
 
+test("the Timings summary aggregates request durations per endpoint", async ({ page }) => {
+  await gotoApp(page);
+  await openDevtoolsShell(page);
+  await switchTab(page, "Timeline");
+
+  const toggle = page.getByRole("button", { name: /Timings/ });
+  // The headline numbers are readable without expanding.
+  await expect(toggle).toContainText("requests");
+  await expect(toggle).toContainText("median");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+
+  await expect(page.getByText("slowest", { exact: true })).toBeVisible();
+  await expect(page.getByText("endpoint", { exact: true })).toBeVisible();
+});
+
 test("Pause stops new entries from being captured", async ({ page }) => {
   await gotoApp(page);
   await openDevtoolsShell(page);

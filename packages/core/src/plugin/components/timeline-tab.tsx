@@ -7,11 +7,13 @@ import type { EndpointType, TimelineEvent } from "../../types";
 import { formatDuration } from "../format";
 import { sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
 import { matchesSearch } from "../search";
+import { computeTimelineStats } from "../stats";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
 import { OutcomeBadge } from "./outcome-badge";
+import { TimelineStatsPanel } from "./timeline-stats";
 import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
 
@@ -51,6 +53,10 @@ export function TimelineTab({
   // fresh copy, so there's nothing worth memoizing here; every render already
   // means the timeline may have changed.
   const allEvents = registry.getTimeline().filter((e) => e.reducerPath === activeApi);
+  // Deliberately computed over *all* events for the api rather than the
+  // filtered list — the summary describes the api, and would otherwise shift
+  // under you as you type in the search box.
+  const stats = computeTimelineStats(allEvents);
   const filtered = allEvents.filter((e) => matchesSearch(search, e.endpointName));
   const sorted = sortOrder === -1 ? filtered.toReversed() : filtered;
   const selected = sorted.find((e) => e.id === selectedId);
@@ -98,6 +104,8 @@ export function TimelineTab({
           </>
         }
       />
+
+      <TimelineStatsPanel classes={classes} stats={stats} />
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">
         <div ref={parentRef} className="rtkq:flex-1 rtkq:min-w-0 rtkq:overflow-y-auto">
