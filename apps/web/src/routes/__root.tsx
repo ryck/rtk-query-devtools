@@ -38,10 +38,17 @@ export const Route = createRootRoute({
       { name: "twitter:description", content: DESCRIPTION },
       { name: "twitter:image", content: `${SITE_URL}og-image.png` },
       { name: "twitter:image:alt", content: OG_IMAGE_ALT },
+      // Tints browser chrome on mobile to match the page background.
+      { name: "theme-color", content: "#0c0f16" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      // SVG first for browsers that take it; the PNG is the fallback for the
+      // ones that don't, and for contexts that only ever fetch a raster icon.
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/site.webmanifest" },
       // No canonical here on purpose. Unlike `meta`, `links` are not deduped
       // by the head manager, so a root-level canonical would emit a second,
       // conflicting one on every child route. Each route sets its own.

@@ -12,7 +12,8 @@
     "build": "pnpm --filter rtk-query-devtools run build && vite build",
     "og-image": "node scripts/og-image.mjs",
     "preview": "vite preview",
-    "typecheck": "tsr generate && tsc --noEmit"
+    "typecheck": "tsr generate && tsc --noEmit",
+    "logos": "node scripts/logos.mjs"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",

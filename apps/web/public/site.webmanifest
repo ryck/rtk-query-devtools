@@ -1,0 +1,14 @@
+{
+  "name": "RTK Query Devtools",
+  "short_name": "rtkq-devtools",
+  "description": "A TanStack DevTools plugin for inspecting RTK Query cache entries, mutations, tags, and requests in real time.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0f16",
+  "theme_color": "#0c0f16",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

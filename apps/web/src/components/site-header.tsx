@@ -29,7 +29,11 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2.5 font-mono text-sm text-paper">
           <LogoMark />
-          rtk-query-devtools
+          {/* Same split as the logo lockup and the og:image — the amber picks
+              up the mark's accent tile. */}
+          <span>
+            rtk-query-<span className="text-amber">devtools</span>
+          </span>
         </Link>
         <nav className="flex items-center gap-6 font-mono text-sm text-mist">
           <Link to="/features" className={textLink} activeProps={{ className: textLinkActive }}>

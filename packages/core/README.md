@@ -1,4 +1,5 @@
-# rtk-query-devtools
+<!-- Absolute URL: npm rewrites relative image paths, and `files` only ships dist. -->
+<img src="https://rtk-query-devtools.ryck.dev/logo-lockup.png" alt="rtk-query-devtools" width="380">
 
 A [TanStack DevTools](https://tanstack.com/devtools) plugin for RTK Query — inspect cache
 entries, mutations, tags, and requests in real time.

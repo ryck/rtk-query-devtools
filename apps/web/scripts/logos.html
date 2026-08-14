@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: "GeistMono";
+        src: url("FONT_MONO") format("woff2");
+        font-weight: 100 900;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: transparent;
+      }
+
+      /* The mark, sized by --s so one definition serves every icon size. */
+      .mark {
+        width: var(--s);
+        height: var(--s);
+        background: #0c0f16;
+        border-radius: calc(var(--s) * 0.219);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: calc(var(--s) * 0.125);
+        padding: calc(var(--s) * 0.156);
+      }
+      .mark i {
+        border-radius: calc(var(--s) * 0.047);
+        display: block;
+      }
+      .paper {
+        background: #f3efe4;
+      }
+      .line {
+        background: #2a303c;
+      }
+      .amber {
+        background: #f2a93b;
+      }
+
+      #lockup {
+        display: inline-flex;
+        align-items: center;
+        gap: 28px;
+        background: #0c0f16;
+        padding: 56px 72px;
+      }
+      #lockup .word {
+        font-family: GeistMono, monospace;
+        font-size: 64px;
+        color: #f3efe4;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+      #lockup .word b {
+        color: #f2a93b;
+        font-weight: inherit;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Rendered one at a time; the script sets --s and screenshots each. -->
+    <div id="icon" class="mark" style="--s: 512px">
+      <i class="paper"></i><i class="line"></i><i class="line"></i><i class="amber"></i>
+    </div>
+
+    <div id="lockup">
+      <div class="mark" style="--s: 96px">
+        <i class="paper"></i><i class="line"></i><i class="line"></i><i class="amber"></i>
+      </div>
+      <span class="word">rtk-query-<b>devtools</b></span>
+    </div>
+  </body>
+</html>
