@@ -9,6 +9,7 @@ import { QueriesTab } from "./components/queries-tab";
 import { StatusSummary } from "./components/status-summary";
 import { TagsTab } from "./components/tags-tab";
 import { TimelineTab } from "./components/timeline-tab";
+import { enumCodec, setCodec, usePersistentState } from "./hooks/use-persistent-state";
 import { useRtkQueryDevtoolsState } from "./hooks/use-rtkq-state";
 import { SpinKeyframes } from "./spin-keyframes";
 import "./styles.css";
@@ -20,13 +21,23 @@ export interface RtkQueryDevtoolsPluginProps {
   devtoolsRegistry?: DevtoolsRegistry;
 }
 
-type TabId = "queries" | "mutations" | "tags" | "timeline";
+const TAB_IDS = ["queries", "mutations", "tags", "timeline"] as const;
+type TabId = (typeof TAB_IDS)[number];
 
 const TABS: Array<{ id: TabId; label: string }> = [
   { id: "queries", label: "Queries" },
   { id: "mutations", label: "Mutations" },
   { id: "tags", label: "Tags" },
   { id: "timeline", label: "Timeline" },
+];
+
+/** Guards restored status filters against names a previous build may have used. */
+const STATUS_FILTER_VALUES: ReadonlyArray<DerivedQueryStatus> = [
+  "fresh",
+  "fetching",
+  "error",
+  "inactive",
+  "uninitialized",
 ];
 
 export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevtoolsPluginProps) {
@@ -36,18 +47,31 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
   const { state, reducerPaths } = useRtkQueryDevtoolsState(registry);
   const classes = getClasses(resolveThemeMode(theme));
 
-  const [activeTab, setActiveTab] = useState<TabId>("queries");
-  const [activeApi, setActiveApi] = useState<string>("");
+  const [activeTab, setActiveTab] = usePersistentState<TabId>(
+    "activeTab",
+    "queries",
+    enumCodec(TAB_IDS),
+  );
+  // Persisted, but the effect below still validates it against the APIs this
+  // store actually has — a remembered path may be gone on the next reload.
+  const [activeApi, setActiveApi] = usePersistentState<string>("activeApi", "");
   const [selectedQueryKey, setSelectedQueryKey] = useState<string | undefined>(undefined);
   const [tagFocus, setTagFocus] = useState<TagDescription | undefined>(undefined);
-  const [activeStatuses, setActiveStatuses] = useState<Set<DerivedQueryStatus>>(new Set());
+  const [activeStatuses, setActiveStatuses] = usePersistentState<Set<DerivedQueryStatus>>(
+    "queries.statusFilter",
+    new Set(),
+    setCodec(STATUS_FILTER_VALUES),
+  );
 
   useEffect(() => {
     const first = reducerPaths[0];
     if (first && (!activeApi || !reducerPaths.includes(activeApi))) {
       setActiveApi(first);
     }
-  }, [reducerPaths, activeApi]);
+    // `setActiveApi` is React's own `useState` setter and so is stable, but
+    // that's invisible to the lint rule through a custom hook — listing it is
+    // free and keeps the rule honest.
+  }, [reducerPaths, activeApi, setActiveApi]);
 
   // Lifted out of QueriesTab so the status counts can be rendered in the
   // shared tab row above it, right next to Queries/Mutations/Tags/Timeline.

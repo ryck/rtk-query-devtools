@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Search } from "lucide-react";
+import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 
@@ -7,6 +7,9 @@ export interface SelectOption {
   value: string;
   label: string;
 }
+
+/** `1` ascending, `-1` descending — multiplied into a tab's comparator. */
+export type SortOrder = 1 | -1;
 
 export interface ToolbarProps {
   classes: RtkQueryDevtoolsClasses;
@@ -16,6 +19,8 @@ export interface ToolbarProps {
   sortOptions?: SelectOption[];
   sortValue?: string;
   onSortChange?: (value: string) => void;
+  sortOrder?: SortOrder;
+  onSortOrderChange?: (order: SortOrder) => void;
   apiOptions?: SelectOption[];
   activeApi?: string;
   onApiChange?: (value: string) => void;
@@ -30,6 +35,8 @@ export function Toolbar({
   sortOptions,
   sortValue,
   onSortChange,
+  sortOrder = 1,
+  onSortOrderChange,
   apiOptions,
   activeApi,
   onApiChange,
@@ -100,6 +107,24 @@ export function Toolbar({
             </option>
           ))}
         </select>
+      )}
+
+      {onSortOrderChange && (
+        <button
+          type="button"
+          onClick={() => onSortOrderChange(sortOrder === 1 ? -1 : 1)}
+          aria-pressed={sortOrder === -1}
+          aria-label={sortOrder === 1 ? "Sort order ascending" : "Sort order descending"}
+          title={sortOrder === 1 ? "Sorting ascending" : "Sorting descending"}
+          className={clsx(
+            "rtkq:inline-flex rtkq:cursor-pointer rtkq:items-center rtkq:gap-1 rtkq:rounded-md rtkq:border rtkq:bg-transparent rtkq:px-2 rtkq:py-1 rtkq:text-xs",
+            classes.borderInput,
+            classes.textPrimary,
+          )}
+        >
+          {sortOrder === 1 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+          {sortOrder === 1 ? "Asc" : "Desc"}
+        </button>
       )}
 
       {actions && <div className="rtkq:ml-auto rtkq:flex rtkq:gap-1.5">{actions}</div>}

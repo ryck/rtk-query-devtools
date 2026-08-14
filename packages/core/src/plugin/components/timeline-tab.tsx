@@ -5,12 +5,14 @@ import { type ComponentType, type CSSProperties, useRef, useState } from "react"
 import type { DevtoolsRegistry } from "../../registry";
 import type { EndpointType, TimelineEvent, TimelineOutcome } from "../../types";
 import { formatDuration } from "../format";
+import { sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
+import { matchesSearch } from "../search";
 import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
-import type { SelectOption } from "./toolbar";
+import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
 
 const KIND_LABEL: Record<EndpointType, string> = {
@@ -44,19 +46,23 @@ export function TimelineTab({
   activeApi,
   onApiChange,
 }: TimelineTabProps) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = usePersistentState("timeline.search", "");
+  // The timeline is recorded oldest-first, so descending is newest-first — the
+  // sensible default for a live event log.
+  const [sortOrder, setSortOrder] = usePersistentState<SortOrder>(
+    "timeline.sortOrder",
+    -1,
+    sortOrderCodec,
+  );
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   // The registry's `version` bump is what re-renders this component (via the
   // panel root's useSyncExternalStore) — `getTimeline()` always returns a
   // fresh copy, so there's nothing worth memoizing here; every render already
   // means the timeline may have changed.
-  const q = search.trim().toLowerCase();
   const allEvents = registry.getTimeline().filter((e) => e.reducerPath === activeApi);
-  const filtered = q
-    ? allEvents.filter((e) => e.endpointName.toLowerCase().includes(q))
-    : allEvents;
-  const sorted = filtered.toReversed();
+  const filtered = allEvents.filter((e) => matchesSearch(search, e.endpointName));
+  const sorted = sortOrder === -1 ? filtered.toReversed() : filtered;
   const selected = sorted.find((e) => e.id === selectedId);
   const paused = registry.isTimelinePaused();
 
@@ -80,6 +86,8 @@ export function TimelineTab({
         apiOptions={apiOptions}
         activeApi={activeApi}
         onApiChange={onApiChange}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
         actions={
           <>
             <ToolbarButton

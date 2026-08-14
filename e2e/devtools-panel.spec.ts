@@ -56,6 +56,44 @@ test("status filter chips narrow the query list", async ({ page }) => {
   await expect(page.getByText("No queries yet")).toBeVisible();
 });
 
+test("the active tab, search, and sort order survive a reload", async ({ page }) => {
+  await gotoApp(page);
+  await openDevtoolsShell(page);
+  await switchTab(page, "Queries");
+
+  await page.getByPlaceholder("Search endpoint or args…").fill("listPosts");
+  // Default is descending; flip it so we're asserting a non-default value and
+  // can't pass by accident.
+  await page.getByRole("button", { name: "Sort order descending" }).click();
+  await expect(page.getByRole("button", { name: "Sort order ascending" })).toBeVisible();
+
+  await switchTab(page, "Timeline");
+
+  await page.reload();
+  await page.getByText("rtk-query-devtools demo").waitFor();
+  await openDevtoolsShell(page);
+
+  await expect(page.getByRole("tab", { name: "Timeline" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+
+  await switchTab(page, "Queries");
+  await expect(page.getByPlaceholder("Search endpoint or args…")).toHaveValue("listPosts");
+  await expect(page.getByRole("button", { name: "Sort order ascending" })).toBeVisible();
+});
+
+test("fuzzy search matches an acronym, which a substring filter would miss", async ({ page }) => {
+  await gotoApp(page);
+  await openDevtoolsShell(page);
+  await switchTab(page, "Queries");
+  await expect(entryRow(page, "listPosts")).toBeVisible();
+
+  await page.getByPlaceholder("Search endpoint or args…").fill("lp");
+
+  await expect(entryRow(page, "listPosts")).toBeVisible();
+});
+
 test("light and dark themes both render the panel without errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (err) => errors.push(String(err)));

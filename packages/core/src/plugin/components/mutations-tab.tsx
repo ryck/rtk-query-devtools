@@ -8,12 +8,14 @@ import type { DevtoolsRegistry } from "../../registry";
 import { selectMutationEntries } from "../../selectors";
 import type { DerivedQueryStatus, MutationEntry } from "../../types";
 import { formatDuration, formatRelativeTime } from "../format";
+import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
+import { matchesSearch } from "../search";
 import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
-import type { SelectOption } from "./toolbar";
+import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
 
 /**
@@ -63,6 +65,26 @@ function MutationStatusBadge({
   );
 }
 
+const SORT_KEYS = ["updated", "endpoint", "status"] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+
+/** Mirrors the query list's ordering: pending first, then error, then settled. */
+const MUTATION_STATUS_SEVERITY: Record<MutationEntry["status"], number> = {
+  pending: 0,
+  rejected: 1,
+  fulfilled: 2,
+  uninitialized: 3,
+};
+
+/** Ascending, like `compareQueries` — see the note there on Asc/Desc. */
+function compareMutations(a: MutationEntry, b: MutationEntry, sort: SortKey): number {
+  if (sort === "endpoint") return a.endpointName.localeCompare(b.endpointName);
+  if (sort === "status") {
+    return MUTATION_STATUS_SEVERITY[a.status] - MUTATION_STATUS_SEVERITY[b.status];
+  }
+  return (a.startedTimeStamp ?? 0) - (b.startedTimeStamp ?? 0);
+}
+
 export interface MutationsTabProps {
   classes: RtkQueryDevtoolsClasses;
   registry: DevtoolsRegistry;
@@ -80,7 +102,17 @@ export function MutationsTab({
   activeApi,
   onApiChange,
 }: MutationsTabProps) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = usePersistentState("mutations.search", "");
+  const [sort, setSort] = usePersistentState<SortKey>(
+    "mutations.sort",
+    "updated",
+    enumCodec(SORT_KEYS),
+  );
+  const [sortOrder, setSortOrder] = usePersistentState<SortOrder>(
+    "mutations.sortOrder",
+    -1,
+    sortOrderCodec,
+  );
   const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
 
   const allEntries = useMemo(
@@ -88,15 +120,14 @@ export function MutationsTab({
     [state, activeApi],
   );
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return allEntries;
-    return allEntries.filter((e) => e.endpointName.toLowerCase().includes(q));
-  }, [allEntries, search]);
+  const filtered = useMemo(
+    () => allEntries.filter((e) => matchesSearch(search, e.endpointName, e.requestId)),
+    [allEntries, search],
+  );
 
   const sorted = useMemo(
-    () => filtered.toSorted((a, b) => (b.startedTimeStamp ?? 0) - (a.startedTimeStamp ?? 0)),
-    [filtered],
+    () => filtered.toSorted((a, b) => compareMutations(a, b, sort) * sortOrder),
+    [filtered, sort, sortOrder],
   );
 
   const selected = sorted.find((e) => e.cacheKey === selectedKey);
@@ -136,6 +167,17 @@ export function MutationsTab({
         apiOptions={apiOptions}
         activeApi={activeApi}
         onApiChange={onApiChange}
+        sortOptions={
+          [
+            { value: "updated", label: "Sort: updated" },
+            { value: "endpoint", label: "Sort: endpoint" },
+            { value: "status", label: "Sort: status" },
+          ] satisfies SelectOption[]
+        }
+        sortValue={sort}
+        onSortChange={(v) => setSort(v as SortKey)}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
       />
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">

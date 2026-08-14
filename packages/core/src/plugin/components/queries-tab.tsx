@@ -1,17 +1,19 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { invalidateTags, refetch, removeQueryEntry, resetApiState } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import type { DerivedQueryStatus, QueryEntry, TagDescription } from "../../types";
 import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
+import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
+import { matchesSearch } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
 import { PollingPill, StatusBadge } from "./status-badge";
 import { Toolbar, ToolbarButton } from "./toolbar";
-import type { SelectOption } from "./toolbar";
+import type { SelectOption, SortOrder } from "./toolbar";
 
 const STATUS_SEVERITY: Record<DerivedQueryStatus, number> = {
   error: 0,
@@ -21,7 +23,21 @@ const STATUS_SEVERITY: Record<DerivedQueryStatus, number> = {
   uninitialized: 4,
 };
 
-type SortKey = "updated" | "endpoint" | "status";
+const SORT_KEYS = ["updated", "endpoint", "status"] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+
+/**
+ * Comparators are written **ascending** so the Asc/Desc toggle means what it
+ * says. The default order is descending, which for the default `updated` key
+ * is most-recently-updated first.
+ */
+function compareQueries(a: QueryEntry, b: QueryEntry, sort: SortKey): number {
+  if (sort === "endpoint") return a.queryCacheKey.localeCompare(b.queryCacheKey);
+  if (sort === "status") return STATUS_SEVERITY[a.derivedStatus] - STATUS_SEVERITY[b.derivedStatus];
+  const aTime = a.fulfilledTimeStamp ?? a.startedTimeStamp ?? 0;
+  const bTime = b.fulfilledTimeStamp ?? b.startedTimeStamp ?? 0;
+  return aTime - bTime;
+}
 
 export interface QueriesTabProps {
   classes: RtkQueryDevtoolsClasses;
@@ -48,16 +64,22 @@ export function QueriesTab({
   onSelectKey,
   activeStatuses,
 }: QueriesTabProps) {
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<SortKey>("updated");
+  const [search, setSearch] = usePersistentState("queries.search", "");
+  const [sort, setSort] = usePersistentState<SortKey>(
+    "queries.sort",
+    "updated",
+    enumCodec(SORT_KEYS),
+  );
+  const [sortOrder, setSortOrder] = usePersistentState<SortOrder>(
+    "queries.sortOrder",
+    -1,
+    sortOrderCodec,
+  );
 
-  const searched = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return entries;
-    return entries.filter(
-      (e) => e.endpointName.toLowerCase().includes(q) || e.queryCacheKey.toLowerCase().includes(q),
-    );
-  }, [entries, search]);
+  const searched = useMemo(
+    () => entries.filter((e) => matchesSearch(search, e.endpointName, e.queryCacheKey)),
+    [entries, search],
+  );
 
   const filtered = useMemo(() => {
     if (activeStatuses.size === 0) return searched;
@@ -65,19 +87,8 @@ export function QueriesTab({
   }, [searched, activeStatuses]);
 
   const sorted = useMemo(
-    () =>
-      filtered.toSorted((a, b) => {
-        if (sort === "endpoint") {
-          return a.queryCacheKey.localeCompare(b.queryCacheKey);
-        }
-        if (sort === "status") {
-          return STATUS_SEVERITY[a.derivedStatus] - STATUS_SEVERITY[b.derivedStatus];
-        }
-        const aTime = a.fulfilledTimeStamp ?? a.startedTimeStamp ?? 0;
-        const bTime = b.fulfilledTimeStamp ?? b.startedTimeStamp ?? 0;
-        return bTime - aTime;
-      }),
-    [filtered, sort],
+    () => filtered.toSorted((a, b) => compareQueries(a, b, sort) * sortOrder),
+    [filtered, sort, sortOrder],
   );
 
   const selected = sorted.find((e) => e.queryCacheKey === selectedKey);
@@ -111,6 +122,8 @@ export function QueriesTab({
         }
         sortValue={sort}
         onSortChange={(v) => setSort(v as SortKey)}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
         actions={
           <ToolbarButton
             classes={classes}

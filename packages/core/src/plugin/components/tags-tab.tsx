@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { invalidateTags } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import { selectTagGroups } from "../../selectors";
+import { matchesSearch } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import type { SelectOption } from "./toolbar";
@@ -33,6 +34,9 @@ export function TagsTab({
   onNavigateToQuery,
   initialSearch,
 }: TagsTabProps) {
+  // Deliberately *not* persisted, unlike the other tabs: this box is seeded by
+  // cross-tab navigation (a tag chip in the query detail remounts this tab with
+  // `initialSearch`), and a restored value would silently override that.
   const [search, setSearch] = useState(initialSearch ?? "");
   const [expanded, setExpanded] = useState<Set<string>>(
     initialSearch ? new Set([initialSearch]) : new Set(),
@@ -44,14 +48,13 @@ export function TagsTab({
   );
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return groups;
+    if (!search.trim()) return groups;
     return groups
       .map((g) => ({
         ...g,
-        entries: g.entries.filter((e) => `${g.tagType}:${e.id}`.toLowerCase().includes(q)),
+        entries: g.entries.filter((e) => matchesSearch(search, `${g.tagType}:${e.id}`)),
       }))
-      .filter((g) => g.entries.length > 0 || g.tagType.toLowerCase().includes(q));
+      .filter((g) => g.entries.length > 0 || matchesSearch(search, g.tagType));
   }, [groups, search]);
 
   const apiOptions: SelectOption[] = reducerPaths.map((p) => ({ value: p, label: p }));
