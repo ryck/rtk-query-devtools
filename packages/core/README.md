@@ -3,6 +3,9 @@
 A [TanStack DevTools](https://tanstack.com/devtools) plugin for RTK Query — inspect cache
 entries, mutations, tags, and requests in real time.
 
+**[rtk-query-devtools.ryck.dev](https://rtk-query-devtools.ryck.dev/)** — live demo, with the
+panel running against a real RTK Query cache alongside TanStack Query's for comparison.
+
 RTK Query's only debugging surface today is the Redux DevTools action log, where cache
 activity is buried alongside every other reducer. This gives it a dedicated panel: status at
 a glance, a tag/invalidation explorer, a request timeline, and cache actions you can trigger

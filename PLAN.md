@@ -463,7 +463,7 @@ Also verify `pnpm publint` (or `npx publint`) passes on `packages/core` before t
   requires: { packageName: '@reduxjs/toolkit', minVersion: '2.0.0' },
   pluginImport: { importName: 'createRtkQueryDevtoolsPlugin', type: 'function' },
   pluginId: 'rtk-query-devtools',
-  docsUrl: '<docs site>',
+  docsUrl: 'https://rtk-query-devtools.ryck.dev/',
   author: '<author>',
   repoUrl: 'https://github.com/<owner>/rtk-query-devtools',
   framework: 'react',

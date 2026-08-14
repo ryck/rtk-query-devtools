@@ -13,7 +13,7 @@
     "tanstack",
     "tanstack-devtools"
   ],
-  "homepage": "https://github.com/ryck/rtk-query-devtools",
+  "homepage": "https://rtk-query-devtools.ryck.dev/",
   "bugs": {
     "url": "https://github.com/ryck/rtk-query-devtools/issues"
   },

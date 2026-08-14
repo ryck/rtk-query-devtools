@@ -10,6 +10,7 @@
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
     "build": "pnpm --filter rtk-query-devtools run build && vite build",
+    "og-image": "node scripts/og-image.mjs",
     "preview": "vite preview",
     "typecheck": "tsr generate && tsc --noEmit"
   },

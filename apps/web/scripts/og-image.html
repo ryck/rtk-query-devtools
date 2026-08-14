@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: "Inter";
+        src: url("FONT_INTER") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "GeistMono";
+        src: url("FONT_MONO") format("woff2");
+        font-weight: 100 900;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        background: #0c0f16;
+        font-family: Inter, system-ui, sans-serif;
+        color: #f3efe4;
+        overflow: hidden;
+        position: relative;
+      }
+      /* A single warm bloom behind the board, so the composition has a focal
+         point without adding decoration that competes with the text. */
+      .glow {
+        position: absolute;
+        right: -140px;
+        bottom: -220px;
+        width: 760px;
+        height: 620px;
+        background: radial-gradient(circle, rgba(242, 169, 59, 0.14), transparent 62%);
+      }
+      .page {
+        position: relative;
+        padding: 54px 64px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .wordmark {
+        font-family: GeistMono, monospace;
+        font-size: 23px;
+        color: #8a93a6;
+        letter-spacing: 0.01em;
+      }
+      h1 {
+        margin-top: 30px;
+        font-size: 55px;
+        line-height: 1.1;
+        font-weight: 600;
+        letter-spacing: -0.021em;
+      }
+      /* Broken explicitly rather than left to wrap — the two sentences are the
+         natural split, and guessing a max-width is what let it run to three
+         lines and collide with the board. */
+      h1 span {
+        display: block;
+      }
+      h1 .dim {
+        color: #aab2c2;
+      }
+      .url {
+        margin-top: 24px;
+        font-family: GeistMono, monospace;
+        font-size: 21px;
+        color: #f2a93b;
+      }
+      .board {
+        /* Bottom-anchored so the slack sits under the headline as breathing
+           room, rather than as a dead band beneath the card. */
+        margin-top: auto;
+        border: 1px solid #2a303c;
+        border-radius: 16px;
+        background: #171b24;
+        overflow: hidden;
+      }
+      .board-head {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 20px;
+        border-bottom: 1px solid #2a303c;
+        font-family: GeistMono, monospace;
+        font-size: 14px;
+        letter-spacing: 0.18em;
+        color: #8a93a6;
+      }
+      .live {
+        color: #34d399;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #34d399;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 14px 20px;
+        font-family: GeistMono, monospace;
+        font-size: 21px;
+      }
+      .row + .row {
+        border-top: 1px solid #2a303c;
+      }
+      .endpoint {
+        flex: 1;
+      }
+      .badge {
+        font-size: 14px;
+        letter-spacing: 0.08em;
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      .fresh {
+        background: rgba(52, 211, 153, 0.14);
+        color: #34d399;
+      }
+      .error {
+        background: rgba(251, 113, 102, 0.14);
+        color: #fb7166;
+      }
+      .subs {
+        color: #8a93a6;
+        font-size: 17px;
+        width: 62px;
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow"></div>
+    <div class="page">
+      <div class="brand">
+        <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="7" fill="#0c0f16" />
+          <rect x="5" y="5" width="9" height="9" rx="1.5" fill="#f3efe4" />
+          <rect x="18" y="5" width="9" height="9" rx="1.5" fill="#2a303c" />
+          <rect x="5" y="18" width="9" height="9" rx="1.5" fill="#2a303c" />
+          <rect x="18" y="18" width="9" height="9" rx="1.5" fill="#f2a93b" />
+        </svg>
+        <span class="wordmark">rtk-query-devtools</span>
+      </div>
+
+      <h1>
+        <span>RTK Query has a cache.</span>
+        <span class="dim">Now you can actually see it.</span>
+      </h1>
+
+      <div class="board">
+        <div class="board-head">
+          <span>LIVE STATUS</span>
+          <span class="live"><span class="dot"></span>LIVE</span>
+        </div>
+        <div class="row">
+          <span class="endpoint">getPost<span style="color: #8a93a6">(1)</span></span>
+          <span class="badge fresh">FRESH</span>
+          <span class="subs">1 sub</span>
+        </div>
+        <div class="row">
+          <span class="endpoint">listPosts<span style="color: #8a93a6">()</span></span>
+          <span class="badge fresh">FRESH</span>
+          <span class="subs">2 subs</span>
+        </div>
+        <div class="row">
+          <span class="endpoint">listPostsFlaky<span style="color: #8a93a6">()</span></span>
+          <span class="badge error">ERROR</span>
+          <span class="subs">1 sub</span>
+        </div>
+      </div>
+
+      <div class="url">rtk-query-devtools.ryck.dev</div>
+    </div>
+  </body>
+</html>
