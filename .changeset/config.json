@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependents": "patch",
-  "ignore": ["demo"]
+  "ignore": ["demo", "web", "@rtk-query-devtools/demo-api"]
 }
