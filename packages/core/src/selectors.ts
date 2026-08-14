@@ -4,9 +4,16 @@ import type {
   MutationEntry,
   QueryEntry,
   QueryStatus,
+  TagDescription,
   TagGroup,
   TagGroupEntry,
 } from "./types";
+
+/**
+ * RTK's sentinel id for a tag provided without one (`providesTags: ['Post']`),
+ * used as a key in the `provided` tag map.
+ */
+export const NO_TAG_ID = "__internal_without_id";
 
 interface RawQuerySubState {
   status: QueryStatus;
@@ -34,15 +41,76 @@ interface RawSubscriptionOptions {
   pollingInterval?: number;
 }
 
+/** `tagType -> id -> cache keys`. */
+type RawProvidedTags = Record<string, Record<string, string[]>>;
+/** `cache key -> tags it provides`. Only exists natively on RTK >= 2.6.2. */
+type RawProvidedKeys = Record<string, TagDescription[]>;
+
+/**
+ * RTK **2.6.2** split the invalidation index in two. Before that, `provided`
+ * *was* the tag map, with no reverse lookup at all:
+ *
+ * - `<= 2.6.1`: `{ [tagType]: { [id]: QueryCacheKey[] } }`
+ * - `>= 2.6.2`: `{ tags: { [tagType]: … }, keys: { [cacheKey]: … } }`
+ *
+ * Our peer range is `>=2.0.0`, so both shapes have to work — reading
+ * `provided.tags` on the old shape yields `undefined` and throws.
+ */
+type RawProvided = RawProvidedTags | { tags: RawProvidedTags; keys: RawProvidedKeys };
+
+interface NormalizedProvided {
+  tags: RawProvidedTags;
+  keys: RawProvidedKeys;
+}
+
 interface RawRtkQuerySlice {
   queries: Record<string, RawQuerySubState | undefined>;
   mutations: Record<string, RawMutationSubState | undefined>;
-  provided: {
-    tags: Record<string, Record<string, string[]>>;
-    keys: Record<string, Array<{ type: string; id?: string | number }>>;
-  };
+  provided: RawProvided;
   subscriptions: Record<string, Record<string, RawSubscriptionOptions> | undefined>;
   config?: { online?: boolean; focused?: boolean };
+}
+
+function isSplitProvided(
+  provided: RawProvided,
+): provided is { tags: RawProvidedTags; keys: RawProvidedKeys } {
+  return "tags" in provided && "keys" in provided;
+}
+
+/**
+ * Keyed on the raw `provided` object so the returned value — and therefore
+ * `.tags` / `.keys` — keeps a stable identity for as long as RTK's own object
+ * does. That is load-bearing, not an optimization: `selectQueryEntries` and
+ * `selectTagGroups` memoize on exactly those references, so handing back a
+ * fresh object per call would silently disable both caches.
+ */
+const normalizedProvidedCache = new WeakMap<object, NormalizedProvided>();
+
+function normalizeProvided(provided: RawProvided): NormalizedProvided {
+  // RTK >= 2.6.2 already has the shape we want; pass it straight through so
+  // identity is RTK's own.
+  if (isSplitProvided(provided)) return provided;
+
+  const cached = normalizedProvidedCache.get(provided);
+  if (cached) return cached;
+
+  // Old shape has no reverse index, so build one. O(tags x ids), but only once
+  // per `provided` change and only on RTK < 2.6.2.
+  const keys: RawProvidedKeys = {};
+  for (const [type, byId] of Object.entries(provided)) {
+    for (const [id, cacheKeys] of Object.entries(byId)) {
+      for (const cacheKey of cacheKeys) {
+        // Match what >= 2.6.2 stores: a tag provided without an id has no `id`
+        // field, rather than carrying RTK's internal sentinel.
+        const tag: TagDescription = id === NO_TAG_ID ? { type } : { type, id };
+        (keys[cacheKey] ??= []).push(tag);
+      }
+    }
+  }
+
+  const normalized: NormalizedProvided = { tags: provided, keys };
+  normalizedProvidedCache.set(provided, normalized);
+  return normalized;
 }
 
 /**
@@ -129,12 +197,14 @@ export function selectQueryEntries(
   const slice = getRtkQuerySlice(state, reducerPath);
   if (!slice) return [];
 
+  const provided = normalizeProvided(slice.provided);
+
   const cached = queryEntriesCache.get(reducerPath);
   if (
     cached &&
     cached.queriesRef === slice.queries &&
     cached.subscriptionsRef === slice.subscriptions &&
-    cached.providedKeysRef === slice.provided.keys
+    cached.providedKeysRef === provided.keys
   ) {
     return cached.result;
   }
@@ -150,7 +220,7 @@ export function selectQueryEntries(
     const isPolling = subscriberEntries.some(
       (s) => typeof s?.pollingInterval === "number" && s.pollingInterval > 0,
     );
-    const providedTags = slice.provided.keys[queryCacheKey] ?? [];
+    const providedTags = provided.keys[queryCacheKey] ?? [];
     const learnedType = getEndpointType?.(endpointName);
     const type: "query" | "infinitequery" =
       sub.direction !== undefined ||
@@ -181,7 +251,7 @@ export function selectQueryEntries(
   queryEntriesCache.set(reducerPath, {
     queriesRef: slice.queries,
     subscriptionsRef: slice.subscriptions,
-    providedKeysRef: slice.provided.keys,
+    providedKeysRef: provided.keys,
     result,
   });
   return result;
@@ -230,11 +300,13 @@ export function selectTagGroups(state: unknown, reducerPath: string): TagGroup[]
   const slice = getRtkQuerySlice(state, reducerPath);
   if (!slice) return [];
 
+  const provided = normalizeProvided(slice.provided);
+
   const cached = tagGroupsCache.get(reducerPath);
-  if (cached && cached.tagsRef === slice.provided.tags) return cached.result;
+  if (cached && cached.tagsRef === provided.tags) return cached.result;
 
   const result: TagGroup[] = [];
-  for (const [tagType, byId] of Object.entries(slice.provided.tags)) {
+  for (const [tagType, byId] of Object.entries(provided.tags)) {
     const entries: TagGroupEntry[] = Object.entries(byId).map(([id, queryCacheKeys]) => ({
       id,
       queryCacheKeys: [...queryCacheKeys],
@@ -242,6 +314,6 @@ export function selectTagGroups(state: unknown, reducerPath: string): TagGroup[]
     result.push({ tagType, entries });
   }
 
-  tagGroupsCache.set(reducerPath, { tagsRef: slice.provided.tags, result });
+  tagGroupsCache.set(reducerPath, { tagsRef: provided.tags, result });
   return result;
 }

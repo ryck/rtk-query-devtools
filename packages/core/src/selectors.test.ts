@@ -221,3 +221,97 @@ describe("selectTagGroups", () => {
     result.unsubscribe();
   });
 });
+
+/**
+ * RTK 2.6.2 split `provided` from a flat tag map into `{ tags, keys }`. Our
+ * peer range is `>=2.0.0`, so both shapes must work — reading `provided.tags`
+ * on the old shape yields `undefined` and throws.
+ *
+ * These use hand-built state rather than a real store (unlike the rest of this
+ * file, deliberately): reproducing the old shape for real would mean
+ * installing a second, aliased copy of RTK, which isn't worth the weight for a
+ * pure data-shape adapter.
+ */
+/** The pre-2.6.2 layout: `provided` *is* the tag map, with no reverse index. */
+function legacyState(reducerPath: string) {
+  return {
+    [reducerPath]: {
+      queries: {
+        "getPost(1)": {
+          status: "fulfilled",
+          endpointName: "getPost",
+          data: { id: 1, title: "Hello" },
+        },
+        "listPosts(undefined)": {
+          status: "fulfilled",
+          endpointName: "listPosts",
+          data: [],
+        },
+      },
+      mutations: {},
+      provided: {
+        Post: {
+          "1": ["getPost(1)"],
+          LIST: ["listPosts(undefined)"],
+          __internal_without_id: ["listPosts(undefined)"],
+        },
+      },
+      subscriptions: {},
+    },
+  };
+}
+
+describe("provided shape compatibility (RTK < 2.6.2)", () => {
+  it("resolves tag groups from the flat legacy shape instead of throwing", () => {
+    const groups = selectTagGroups(legacyState("legacyTags"), "legacyTags");
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0]?.tagType).toBe("Post");
+    expect(groups[0]?.entries.map((e) => e.id).toSorted()).toEqual([
+      "1",
+      "LIST",
+      "__internal_without_id",
+    ]);
+  });
+
+  it("derives the missing cache-key reverse index for per-entry provided tags", () => {
+    const entries = selectQueryEntries(legacyState("legacyKeys"), "legacyKeys");
+
+    const getPost = entries.find((e) => e.queryCacheKey === "getPost(1)");
+    expect(getPost?.providedTags).toEqual([{ type: "Post", id: "1" }]);
+
+    // The sentinel id is dropped rather than surfaced, matching what >= 2.6.2
+    // stores natively for a tag provided without an id.
+    const listPosts = entries.find((e) => e.queryCacheKey === "listPosts(undefined)");
+    expect(listPosts?.providedTags).toEqual([{ type: "Post", id: "LIST" }, { type: "Post" }]);
+  });
+
+  it("keeps memoization working on the legacy shape", () => {
+    // The normalized object is cached against RTK's own `provided` object, so
+    // repeated calls must still hit the entry/tag caches rather than rebuild.
+    const state = legacyState("legacyMemo");
+
+    expect(selectQueryEntries(state, "legacyMemo")).toBe(selectQueryEntries(state, "legacyMemo"));
+    expect(selectTagGroups(state, "legacyMemo")).toBe(selectTagGroups(state, "legacyMemo"));
+  });
+
+  it("leaves the modern shape untouched", () => {
+    const state = {
+      modern: {
+        queries: {
+          "getPost(1)": { status: "fulfilled", endpointName: "getPost", data: { id: 1 } },
+        },
+        mutations: {},
+        provided: {
+          tags: { Post: { "1": ["getPost(1)"] } },
+          keys: { "getPost(1)": [{ type: "Post", id: 1 }] },
+        },
+        subscriptions: {},
+      },
+    };
+
+    expect(selectQueryEntries(state, "modern")[0]?.providedTags).toEqual([{ type: "Post", id: 1 }]);
+    expect(selectTagGroups(state, "modern")[0]?.tagType).toBe("Post");
+    expect(selectQueryEntries(state, "modern")).toBe(selectQueryEntries(state, "modern"));
+  });
+});

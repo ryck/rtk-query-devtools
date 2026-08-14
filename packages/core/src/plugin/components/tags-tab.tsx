@@ -3,14 +3,12 @@ import { ChevronDown, ChevronRight, Tag as TagIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { invalidateTags } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
-import { selectTagGroups } from "../../selectors";
+import { NO_TAG_ID, selectTagGroups } from "../../selectors";
 import { matchesSearch } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import type { SelectOption } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
-
-const NO_ID_KEY = "__internal_without_id";
 
 export interface TagsTabProps {
   classes: RtkQueryDevtoolsClasses;
@@ -142,7 +140,7 @@ export function TagsTab({
                             classes.textSecondary,
                           )}
                         >
-                          id: {entry.id === NO_ID_KEY ? "none" : entry.id}
+                          id: {entry.id === NO_TAG_ID ? "none" : entry.id}
                         </span>
                         <ToolbarButton
                           classes={classes}
@@ -150,7 +148,7 @@ export function TagsTab({
                             invalidateTags(registry, activeApi, [
                               {
                                 type: group.tagType,
-                                id: entry.id === NO_ID_KEY ? undefined : entry.id,
+                                id: entry.id === NO_TAG_ID ? undefined : entry.id,
                               },
                             ])
                           }
