@@ -56,6 +56,13 @@ export interface TimelineEvent {
   id: string;
   reducerPath: string;
   requestId: string;
+  /**
+   * The cache entry this request targeted. Always set for queries and infinite
+   * queries; `undefined` for mutations, which RTK keys by `requestId` rather
+   * than by a cache key. Lets an entry's full request history be recovered,
+   * since each refetch of the same entry gets a fresh `requestId`.
+   */
+  queryCacheKey: string | undefined;
   kind: "query" | "mutation" | "infinitequery";
   endpointName: string;
   originalArgs: unknown;

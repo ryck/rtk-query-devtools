@@ -11,13 +11,14 @@ import {
   setOnline,
 } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
-import type { DerivedQueryStatus, QueryEntry, TagDescription } from "../../types";
+import type { DerivedQueryStatus, QueryEntry, TagDescription, TimelineEvent } from "../../types";
 import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
 import { matchesSearch } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
+import { EntryEvents } from "./entry-events";
 import { EntryRow } from "./entry-row";
 import { PollingPill, StatusBadge } from "./status-badge";
 import { Toolbar, ToolbarButton } from "./toolbar";
@@ -103,6 +104,17 @@ export function QueriesTab({
   );
 
   const selected = sorted.find((e) => e.queryCacheKey === selectedKey);
+
+  // Every request that targeted this cache entry, newest first. Deliberately
+  // unmemoized, matching timeline-tab: the registry mutates events in place on
+  // settle, so an identity-keyed memo could hold a stale result. Scanning at
+  // most `maxTimelineEntries` (500) for the one selected row is cheap.
+  const eventsForSelected = selected
+    ? registry
+        .getTimeline()
+        .filter((e) => e.queryCacheKey === selected.queryCacheKey)
+        .toReversed()
+    : [];
 
   const parentRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
@@ -230,6 +242,7 @@ export function QueriesTab({
               classes={classes}
               registry={registry}
               entry={selected}
+              events={eventsForSelected}
               onSelectTag={onSelectTag}
               onRemoved={() => onSelectKey(undefined)}
             />
@@ -280,12 +293,14 @@ function QueryDetail({
   classes,
   registry,
   entry,
+  events,
   onSelectTag,
   onRemoved,
 }: {
   classes: RtkQueryDevtoolsClasses;
   registry: DevtoolsRegistry;
   entry: QueryEntry;
+  events: TimelineEvent[];
   onSelectTag: (tag: TagDescription) => void;
   onRemoved: () => void;
 }) {
@@ -321,6 +336,7 @@ function QueryDetail({
       ]}
       tags={entry.providedTags}
       onTagClick={onSelectTag}
+      extra={<EntryEvents events={events} classes={classes} />}
       jsonSections={[
         { label: "Arguments", value: entry.originalArgs },
         { label: "Data", value: entry.data },

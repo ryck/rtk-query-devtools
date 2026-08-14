@@ -25,6 +25,21 @@ test("Refetch triggers a new request for the selected entry", async ({ page }) =
   await expect.poll(() => timelineEntryCount(page, "listPosts")).toBeGreaterThan(before);
 });
 
+test("the detail pane lists every request made for the selected entry", async ({ page }) => {
+  await gotoApp(page);
+  await openDevtoolsShell(page);
+  await switchTab(page, "Queries");
+
+  await entryRow(page, "listPosts").click();
+  // The initial load is one request.
+  await expect(page.getByText(/^Requests \(1\)$/)).toBeVisible();
+
+  // Each refetch is a new requestId under the same cache key, so the history
+  // grows — the cache entry itself only ever holds the latest timings.
+  await page.getByRole("button", { name: "Refetch" }).click();
+  await expect(page.getByText(/^Requests \(2\)$/)).toBeVisible();
+});
+
 test("Invalidate tags refetches queries subscribed to that tag", async ({ page }) => {
   await gotoApp(page);
   await openDevtoolsShell(page);

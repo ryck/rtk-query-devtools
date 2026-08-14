@@ -195,12 +195,15 @@ export class DevtoolsRegistry {
     const startedTimeStamp = (arg.startedTimeStamp as number | undefined) ?? Date.now();
     const forceRefetch = arg.forceRefetch as boolean | undefined;
     const subscribe = arg.subscribe as boolean | undefined;
+    // Absent on mutation thunks, which RTK keys by requestId instead.
+    const queryCacheKey = arg.queryCacheKey as string | undefined;
 
     if (phase === "pending") {
       const event: TimelineEvent = {
         id: requestId,
         reducerPath,
         requestId,
+        queryCacheKey,
         kind,
         endpointName,
         originalArgs: arg.originalArgs,
@@ -238,6 +241,7 @@ export class DevtoolsRegistry {
       id: requestId,
       reducerPath,
       requestId,
+      queryCacheKey,
       kind,
       endpointName,
       originalArgs: arg.originalArgs,

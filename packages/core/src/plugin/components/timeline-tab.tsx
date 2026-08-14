@@ -1,17 +1,17 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
-import { CheckCircle2, Loader2, Pause, Play, SkipForward, Trash2, XCircle } from "lucide-react";
-import { type ComponentType, type CSSProperties, useRef, useState } from "react";
+import { Pause, Play, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 import type { DevtoolsRegistry } from "../../registry";
-import type { EndpointType, TimelineEvent, TimelineOutcome } from "../../types";
+import type { EndpointType, TimelineEvent } from "../../types";
 import { formatDuration } from "../format";
 import { sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
 import { matchesSearch } from "../search";
-import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
+import { OutcomeBadge } from "./outcome-badge";
 import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
 
@@ -19,16 +19,6 @@ const KIND_LABEL: Record<EndpointType, string> = {
   query: "query",
   mutation: "mutation",
   infinitequery: "infinite query",
-};
-
-const OUTCOME_META: Record<
-  TimelineOutcome,
-  { label: string; icon: ComponentType<{ size?: number; style?: CSSProperties }>; spin?: boolean }
-> = {
-  pending: { label: "pending", icon: Loader2, spin: true },
-  fulfilled: { label: "fulfilled", icon: CheckCircle2 },
-  rejected: { label: "rejected", icon: XCircle },
-  skipped: { label: "skipped", icon: SkipForward },
 };
 
 export interface TimelineTabProps {
@@ -219,38 +209,5 @@ function TimelineRow({
         </span>
       }
     />
-  );
-}
-
-function OutcomeBadge({
-  outcome,
-  classes,
-}: {
-  outcome: TimelineOutcome;
-  classes: RtkQueryDevtoolsClasses;
-}) {
-  const meta = OUTCOME_META[outcome];
-  const Icon = meta.icon;
-  const palette =
-    outcome === "pending"
-      ? classes.status.fetching
-      : outcome === "fulfilled"
-        ? classes.status.fresh
-        : outcome === "rejected"
-          ? classes.status.error
-          : classes.status.inactive;
-  return (
-    <span
-      className={clsx(
-        "rtkq:inline-flex rtkq:items-center rtkq:gap-1 rtkq:px-1.5 rtkq:py-0.5 rtkq:rounded-full rtkq:text-[10px] rtkq:font-semibold rtkq:uppercase rtkq:tracking-wide rtkq:whitespace-nowrap",
-        palette.badge,
-      )}
-    >
-      <Icon
-        size={11}
-        style={meta.spin ? { animation: `${SPIN_ANIMATION_NAME} 0.9s linear infinite` } : undefined}
-      />
-      {meta.label}
-    </span>
   );
 }

@@ -46,6 +46,39 @@ describe("createDevtoolsMiddleware", () => {
     result.unsubscribe();
   });
 
+  it("tags query events with their cache key so an entry's request history can be recovered", async () => {
+    const registry = new DevtoolsRegistry();
+    const api = createTestApi();
+    registry.configure({ apis: [api] });
+    const store = createTestStore(api, [createDevtoolsMiddleware(registry)]);
+
+    vi.mocked(fetch).mockImplementation(async () =>
+      jsonResponse({ id: 1, title: "Hello" } satisfies Post),
+    );
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    await result;
+    // A refetch of the same entry is a *new* requestId under the same cache
+    // key — which is exactly what makes a per-entry history worth showing.
+    await store.dispatch(api.endpoints.getPost.initiate(1, { forceRefetch: true }));
+
+    const events = registry.getTimeline().filter((e) => e.queryCacheKey === "getPost(1)");
+    expect(events).toHaveLength(2);
+    expect(new Set(events.map((e) => e.requestId)).size).toBe(2);
+
+    result.unsubscribe();
+  });
+
+  it("leaves queryCacheKey undefined for mutations, which RTK keys by requestId", async () => {
+    const registry = new DevtoolsRegistry();
+    const api = createTestApi();
+    const store = createTestStore(api, [createDevtoolsMiddleware(registry)]);
+
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 2, title: "New post" } satisfies Post));
+    await store.dispatch(api.endpoints.addPost.initiate({ title: "New post" }));
+
+    expect(registry.getTimeline()[0]?.queryCacheKey).toBeUndefined();
+  });
+
   it("records a rejected mutation with its error", async () => {
     const registry = new DevtoolsRegistry();
     const api = createTestApi();

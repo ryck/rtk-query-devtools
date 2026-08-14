@@ -22,6 +22,8 @@ export interface EntryDetailProps {
   tags?: TagDescription[];
   onTagClick?: (tag: TagDescription) => void;
   jsonSections: DetailJsonSection[];
+  /** Rendered between the tags and the JSON sections — e.g. request history. */
+  extra?: ReactNode;
   actions?: ReactNode;
 }
 
@@ -33,6 +35,7 @@ export function EntryDetail({
   tags,
   onTagClick,
   jsonSections,
+  extra,
   actions,
 }: EntryDetailProps) {
   return (
@@ -80,6 +83,8 @@ export function EntryDetail({
           </div>
         </div>
       )}
+
+      {extra}
 
       {jsonSections.map((section) => (
         <div key={section.label} className="rtkq:mb-3">
