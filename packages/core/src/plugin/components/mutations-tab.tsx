@@ -9,7 +9,7 @@ import { selectMutationEntries } from "../../selectors";
 import type { DerivedQueryStatus, MutationEntry } from "../../types";
 import { formatDuration, formatRelativeTime } from "../format";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
-import { matchesSearch } from "../search";
+import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
 import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
@@ -113,6 +113,11 @@ export function MutationsTab({
     -1,
     sortOrderCodec,
   );
+  const [searchMode, setSearchMode] = usePersistentState<SearchMode>(
+    "mutations.searchMode",
+    "fuzzy",
+    enumCodec(SEARCH_MODES),
+  );
   const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
 
   const allEntries = useMemo(
@@ -120,9 +125,11 @@ export function MutationsTab({
     [state, activeApi],
   );
 
+  // Memoized so a regex is compiled once per query change, not once per row.
+  const matcher = useMemo(() => createSearchMatcher(search, searchMode), [search, searchMode]);
   const filtered = useMemo(
-    () => allEntries.filter((e) => matchesSearch(search, e.endpointName, e.requestId)),
-    [allEntries, search],
+    () => allEntries.filter((e) => matcher.matches(e.endpointName, e.requestId)),
+    [allEntries, matcher],
   );
 
   const sorted = useMemo(
@@ -178,6 +185,9 @@ export function MutationsTab({
         onSortChange={(v) => setSort(v as SortKey)}
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
+        searchMode={searchMode}
+        onSearchModeChange={setSearchMode}
+        searchInvalid={matcher.invalid}
       />
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">

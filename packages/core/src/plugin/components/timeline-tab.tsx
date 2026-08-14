@@ -5,8 +5,8 @@ import { useRef, useState } from "react";
 import type { DevtoolsRegistry } from "../../registry";
 import type { EndpointType, TimelineEvent } from "../../types";
 import { formatDuration } from "../format";
-import { sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
-import { matchesSearch } from "../search";
+import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
+import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
 import { computeTimelineStats } from "../stats";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
@@ -46,6 +46,11 @@ export function TimelineTab({
     -1,
     sortOrderCodec,
   );
+  const [searchMode, setSearchMode] = usePersistentState<SearchMode>(
+    "timeline.searchMode",
+    "fuzzy",
+    enumCodec(SEARCH_MODES),
+  );
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   // The registry's `version` bump is what re-renders this component (via the
@@ -57,7 +62,8 @@ export function TimelineTab({
   // filtered list — the summary describes the api, and would otherwise shift
   // under you as you type in the search box.
   const stats = computeTimelineStats(allEvents);
-  const filtered = allEvents.filter((e) => matchesSearch(search, e.endpointName));
+  const matcher = createSearchMatcher(search, searchMode);
+  const filtered = allEvents.filter((e) => matcher.matches(e.endpointName));
   const sorted = sortOrder === -1 ? filtered.toReversed() : filtered;
   const selected = sorted.find((e) => e.id === selectedId);
   const paused = registry.isTimelinePaused();
@@ -84,6 +90,9 @@ export function TimelineTab({
         onApiChange={onApiChange}
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
+        searchMode={searchMode}
+        onSearchModeChange={setSearchMode}
+        searchInvalid={matcher.invalid}
         actions={
           <>
             <ToolbarButton

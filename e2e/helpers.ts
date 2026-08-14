@@ -25,8 +25,19 @@ export async function openDevtoolsShell(page: Page) {
   await expect(wordmark).toBeVisible();
 }
 
-export async function switchTab(page: Page, tab: "Queries" | "Mutations" | "Tags" | "Timeline") {
-  await page.getByRole("tab", { name: tab }).click();
+export type TabName = "Queries" | "Mutations" | "Tags" | "Timeline";
+
+/**
+ * Prefix-matched because each tab's accessible name carries a live count
+ * ("Queries 4"), so an exact-name lookup would break as soon as anything is
+ * cached.
+ */
+export function tab(page: Page, name: TabName) {
+  return page.getByRole("tab", { name: new RegExp(`^${name}`) });
+}
+
+export async function switchTab(page: Page, name: TabName) {
+  await tab(page, name).click();
 }
 
 /** The row for a given endpoint name in the Queries/Mutations/Timeline list. */

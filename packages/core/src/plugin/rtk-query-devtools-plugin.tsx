@@ -1,7 +1,13 @@
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { defaultRegistry, type DevtoolsRegistry } from "../registry";
-import { selectApiHealth, selectEnvironment, selectQueryEntries } from "../selectors";
+import {
+  selectApiHealth,
+  selectEnvironment,
+  selectMutationEntries,
+  selectQueryEntries,
+  selectTagGroups,
+} from "../selectors";
 import type { DerivedQueryStatus, TagDescription } from "../types";
 import { EmptyState } from "./components/empty-state";
 import { MutationsTab } from "./components/mutations-tab";
@@ -42,6 +48,9 @@ const STATUS_FILTER_VALUES: ReadonlyArray<DerivedQueryStatus> = [
 
 export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevtoolsPluginProps) {
   const registry = devtoolsRegistry ?? defaultRegistry;
+  // Namespaced per instance so the tab/panel ids stay unique if a host ever
+  // mounts two panels (e.g. one per store).
+  const idPrefix = useId();
   // Subscribes to registry changes — re-renders on every throttled version
   // bump, which is also what keeps every child tab below up to date.
   const { state, reducerPaths } = useRtkQueryDevtoolsState(registry);
@@ -92,6 +101,16 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
     () => (activeApi ? selectApiHealth(state, activeApi) : undefined),
     [state, activeApi],
   );
+
+  // Live counts beside each tab label. The timeline is read unmemoized on
+  // purpose — see the note in timeline-tab; every render already implies it
+  // may have changed.
+  const tabCounts: Record<TabId, number> = {
+    queries: queryEntries.length,
+    mutations: activeApi ? selectMutationEntries(state, activeApi).length : 0,
+    tags: activeApi ? selectTagGroups(state, activeApi).length : 0,
+    timeline: registry.getTimeline().filter((e) => e.reducerPath === activeApi).length,
+  };
   const statusCounts = useMemo(() => {
     const counts: Record<DerivedQueryStatus, number> = {
       fresh: 0,
@@ -160,23 +179,33 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
           aria-label="RTK Query devtools sections"
           className="rtkq:flex rtkq:shrink-0"
         >
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={clsx(
-                "rtkq:-mb-px rtkq:cursor-pointer rtkq:border-b-2 rtkq:bg-transparent rtkq:px-3 rtkq:py-2 rtkq:text-xs rtkq:font-semibold",
-                activeTab === tab.id
-                  ? clsx(classes.accent, classes.accentBorder)
-                  : clsx("rtkq:border-transparent", classes.textMuted),
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const count = tabCounts[tab.id];
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                id={`${idPrefix}-tab-${tab.id}`}
+                aria-selected={activeTab === tab.id}
+                aria-controls={`${idPrefix}-tabpanel`}
+                onClick={() => setActiveTab(tab.id)}
+                className={clsx(
+                  "rtkq:-mb-px rtkq:cursor-pointer rtkq:border-b-2 rtkq:bg-transparent rtkq:px-3 rtkq:py-2 rtkq:text-xs rtkq:font-semibold",
+                  activeTab === tab.id
+                    ? clsx(classes.accent, classes.accentBorder)
+                    : clsx("rtkq:border-transparent", classes.textMuted),
+                )}
+              >
+                {tab.label}
+                {count > 0 && (
+                  <span className={clsx("rtkq:ml-1 rtkq:font-normal", classes.textDimmed)}>
+                    {count > 999 ? "999+" : count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {activeTab === "queries" && (
@@ -189,7 +218,12 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
         )}
       </div>
 
-      <div role="tabpanel" className="rtkq:min-h-0 rtkq:flex-1">
+      <div
+        role="tabpanel"
+        id={`${idPrefix}-tabpanel`}
+        aria-labelledby={`${idPrefix}-tab-${activeTab}`}
+        className="rtkq:min-h-0 rtkq:flex-1"
+      >
         {activeTab === "queries" && (
           <QueriesTab
             classes={classes}

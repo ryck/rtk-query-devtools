@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
+import type { SearchMode } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 
 export interface SelectOption {
@@ -21,6 +22,10 @@ export interface ToolbarProps {
   onSortChange?: (value: string) => void;
   sortOrder?: SortOrder;
   onSortOrderChange?: (order: SortOrder) => void;
+  searchMode?: SearchMode;
+  onSearchModeChange?: (mode: SearchMode) => void;
+  /** Marks the regex toggle as errored when the pattern doesn't compile. */
+  searchInvalid?: boolean;
   apiOptions?: SelectOption[];
   activeApi?: string;
   onApiChange?: (value: string) => void;
@@ -37,6 +42,9 @@ export function Toolbar({
   onSortChange,
   sortOrder = 1,
   onSortOrderChange,
+  searchMode = "fuzzy",
+  onSearchModeChange,
+  searchInvalid,
   apiOptions,
   activeApi,
   onApiChange,
@@ -63,12 +71,42 @@ export function Toolbar({
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder ?? "Search…"}
           className={clsx(
-            "rtkq:w-full rtkq:box-border rtkq:py-1 rtkq:pl-6 rtkq:pr-2 rtkq:rounded-md rtkq:border rtkq:text-xs rtkq:outline-none",
+            "rtkq:w-full rtkq:box-border rtkq:py-1 rtkq:pl-6 rtkq:rounded-md rtkq:border rtkq:text-xs rtkq:outline-none",
+            onSearchModeChange ? "rtkq:pr-8" : "rtkq:pr-2",
             classes.surface,
-            classes.borderInput,
+            searchInvalid ? classes.dangerBorder : classes.borderInput,
             classes.textPrimary,
           )}
         />
+        {onSearchModeChange && (
+          <button
+            type="button"
+            onClick={() => onSearchModeChange(searchMode === "regex" ? "fuzzy" : "regex")}
+            aria-pressed={searchMode === "regex"}
+            aria-label={
+              searchInvalid
+                ? "Invalid regular expression provided"
+                : "Use regular expression search"
+            }
+            title={
+              searchInvalid
+                ? "Invalid regular expression — showing everything"
+                : searchMode === "regex"
+                  ? "Searching by regular expression"
+                  : "Search by regular expression"
+            }
+            className={clsx(
+              "rtkq:absolute rtkq:right-1.5 rtkq:top-1/2 rtkq:-translate-y-1/2 rtkq:cursor-pointer rtkq:rounded rtkq:border-0 rtkq:bg-transparent rtkq:px-1 rtkq:font-mono rtkq:text-[10px] rtkq:font-semibold",
+              searchInvalid
+                ? classes.danger
+                : searchMode === "regex"
+                  ? classes.accent
+                  : classes.textDimmed,
+            )}
+          >
+            .*
+          </button>
+        )}
       </div>
 
       {apiOptions && apiOptions.length > 1 && onApiChange && (

@@ -15,7 +15,7 @@ import type { ApiHealth } from "../../selectors";
 import type { DerivedQueryStatus, QueryEntry, TagDescription, TimelineEvent } from "../../types";
 import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
-import { matchesSearch } from "../search";
+import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { ApiHealthStrip } from "./api-health";
 import { EmptyState } from "./empty-state";
@@ -91,10 +91,17 @@ export function QueriesTab({
     -1,
     sortOrderCodec,
   );
+  const [searchMode, setSearchMode] = usePersistentState<SearchMode>(
+    "queries.searchMode",
+    "fuzzy",
+    enumCodec(SEARCH_MODES),
+  );
 
+  // Memoized so a regex is compiled once per query change, not once per row.
+  const matcher = useMemo(() => createSearchMatcher(search, searchMode), [search, searchMode]);
   const searched = useMemo(
-    () => entries.filter((e) => matchesSearch(search, e.endpointName, e.queryCacheKey)),
-    [entries, search],
+    () => entries.filter((e) => matcher.matches(e.endpointName, e.queryCacheKey)),
+    [entries, matcher],
   );
 
   const filtered = useMemo(() => {
@@ -151,6 +158,9 @@ export function QueriesTab({
         onSortChange={(v) => setSort(v as SortKey)}
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
+        searchMode={searchMode}
+        onSearchModeChange={setSearchMode}
+        searchInvalid={matcher.invalid}
         actions={
           <>
             <ToolbarButton

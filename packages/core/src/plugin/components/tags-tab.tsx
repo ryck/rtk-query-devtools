@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { invalidateTags } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import { NO_TAG_ID, selectTagGroups } from "../../selectors";
-import { matchesSearch } from "../search";
+import { enumCodec, usePersistentState } from "../hooks/use-persistent-state";
+import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import type { SelectOption } from "./toolbar";
@@ -36,6 +37,11 @@ export function TagsTab({
   // cross-tab navigation (a tag chip in the query detail remounts this tab with
   // `initialSearch`), and a restored value would silently override that.
   const [search, setSearch] = useState(initialSearch ?? "");
+  const [searchMode, setSearchMode] = usePersistentState<SearchMode>(
+    "tags.searchMode",
+    "fuzzy",
+    enumCodec(SEARCH_MODES),
+  );
   const [expanded, setExpanded] = useState<Set<string>>(
     initialSearch ? new Set([initialSearch]) : new Set(),
   );
@@ -45,15 +51,17 @@ export function TagsTab({
     [state, activeApi],
   );
 
+  // Memoized so a regex is compiled once per query change, not once per row.
+  const matcher = useMemo(() => createSearchMatcher(search, searchMode), [search, searchMode]);
   const filtered = useMemo(() => {
     if (!search.trim()) return groups;
     return groups
       .map((g) => ({
         ...g,
-        entries: g.entries.filter((e) => matchesSearch(search, `${g.tagType}:${e.id}`)),
+        entries: g.entries.filter((e) => matcher.matches(`${g.tagType}:${e.id}`)),
       }))
-      .filter((g) => g.entries.length > 0 || matchesSearch(search, g.tagType));
-  }, [groups, search]);
+      .filter((g) => g.entries.length > 0 || matcher.matches(g.tagType));
+  }, [groups, search, matcher]);
 
   const apiOptions: SelectOption[] = reducerPaths.map((p) => ({ value: p, label: p }));
 
@@ -75,6 +83,9 @@ export function TagsTab({
         apiOptions={apiOptions}
         activeApi={activeApi}
         onApiChange={onApiChange}
+        searchMode={searchMode}
+        onSearchModeChange={setSearchMode}
+        searchInvalid={matcher.invalid}
       />
       <div className="rtkq:flex-1 rtkq:overflow-y-auto">
         {filtered.length === 0 ? (
