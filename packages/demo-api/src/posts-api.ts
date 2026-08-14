@@ -32,6 +32,12 @@ async function toResult<T>(promise: Promise<T>) {
 export const postsApi = createApi({
   reducerPath: "postsApi",
   baseQuery: fakeBaseQuery<PostsApiError>(),
+  // Opted in so the devtools' offline/focus toggles visibly refetch. Note the
+  // demo never calls `setupListeners`, so nothing dispatches the underlying
+  // `__rtkq/online` / `__rtkq/focused` actions except the devtools panel —
+  // real browser focus changes stay inert.
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: ["Post"],
   endpoints: (builder) => ({
     listPosts: builder.query<Post[], void>({

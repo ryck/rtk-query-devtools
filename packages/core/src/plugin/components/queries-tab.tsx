@@ -1,7 +1,15 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
+import { Eye, EyeOff, Wifi, WifiOff } from "lucide-react";
 import { useMemo, useRef } from "react";
-import { invalidateTags, refetch, removeQueryEntry, resetApiState } from "../../actions";
+import {
+  invalidateTags,
+  refetch,
+  removeQueryEntry,
+  resetApiState,
+  setFocused,
+  setOnline,
+} from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import type { DerivedQueryStatus, QueryEntry, TagDescription } from "../../types";
 import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
@@ -50,6 +58,8 @@ export interface QueriesTabProps {
   selectedKey: string | undefined;
   onSelectKey: (key: string | undefined) => void;
   activeStatuses: Set<DerivedQueryStatus>;
+  /** Global RTK Query online/focus state, read from the active api's config. */
+  environment: { online: boolean; focused: boolean };
 }
 
 export function QueriesTab({
@@ -63,6 +73,7 @@ export function QueriesTab({
   selectedKey,
   onSelectKey,
   activeStatuses,
+  environment,
 }: QueriesTabProps) {
   const [search, setSearch] = usePersistentState("queries.search", "");
   const [sort, setSort] = usePersistentState<SortKey>(
@@ -125,17 +136,49 @@ export function QueriesTab({
         sortOrder={sortOrder}
         onSortOrderChange={setSortOrder}
         actions={
-          <ToolbarButton
-            classes={classes}
-            variant="danger"
-            onClick={() => {
-              if (window.confirm("Reset API state? This clears every cached query and mutation.")) {
-                resetApiState(registry, activeApi);
+          <>
+            <ToolbarButton
+              classes={classes}
+              icon={environment.online ? Wifi : WifiOff}
+              variant={environment.online ? "default" : "warning"}
+              pressed={!environment.online}
+              title={
+                environment.online
+                  ? "Simulate going offline"
+                  : "Go back online — queries with refetchOnReconnect will refetch"
               }
-            }}
-          >
-            Reset API state
-          </ToolbarButton>
+              onClick={() => setOnline(registry, !environment.online)}
+            >
+              {environment.online ? "Online" : "Offline"}
+            </ToolbarButton>
+            <ToolbarButton
+              classes={classes}
+              icon={environment.focused ? Eye : EyeOff}
+              variant={environment.focused ? "default" : "warning"}
+              pressed={!environment.focused}
+              title={
+                environment.focused
+                  ? "Simulate the tab losing focus"
+                  : "Refocus — queries with refetchOnFocus will refetch"
+              }
+              onClick={() => setFocused(registry, !environment.focused)}
+            >
+              {environment.focused ? "Focused" : "Unfocused"}
+            </ToolbarButton>
+            <ToolbarButton
+              classes={classes}
+              variant="danger"
+              onClick={() => {
+                if (
+                  window.confirm("Reset API state? This clears every cached query and mutation.")
+                ) {
+                  resetApiState(registry, activeApi);
+                }
+              }}
+            >
+              Reset API state
+            </ToolbarButton>
+          </>
         }
       />
 

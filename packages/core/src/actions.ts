@@ -44,6 +44,26 @@ export function invalidateTags(
   registry.dispatch({ type: `${reducerPath}/invalidateTags`, payload: tags });
 }
 
+/**
+ * Online/offline and focus are **global** RTK Query state rather than per-api:
+ * these four action types carry no `reducerPath`, and every registered api's
+ * config slice reduces them. That's why, unlike everything else in this file,
+ * they take no `reducerPath` argument.
+ *
+ * They are not inert flags — RTK Query's middleware matches `__rtkq/online`
+ * and `__rtkq/focused` to drive `refetchOnReconnect` and `refetchOnFocus`
+ * refetches, so toggling these exercises the same code path a real
+ * reconnect or tab-focus would.
+ */
+export function setOnline(registry: DevtoolsRegistry, online: boolean): void {
+  registry.dispatch({ type: online ? "__rtkq/online" : "__rtkq/offline" });
+}
+
+/** See {@link setOnline} — also global, and drives `refetchOnFocus`. */
+export function setFocused(registry: DevtoolsRegistry, focused: boolean): void {
+  registry.dispatch({ type: focused ? "__rtkq/focused" : "__rtkq/unfocused" });
+}
+
 /** Requires an `api` registered via `createRtkQueryDevtools({ apis: [...] })`. */
 export function refetch(
   registry: DevtoolsRegistry,

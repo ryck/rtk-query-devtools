@@ -11,6 +11,10 @@ export type { User };
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: fakeBaseQuery<unknown>(),
+  // See the note in posts-api — enabled so the devtools environment toggles
+  // have something observable to do.
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: ["User"],
   endpoints: (builder) => ({
     listUsers: builder.query<User[], void>({

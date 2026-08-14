@@ -5,10 +5,12 @@ import {
   removeMutationEntry,
   removeQueryEntry,
   resetApiState,
+  setFocused,
+  setOnline,
 } from "./actions";
 import { createDevtoolsMiddleware } from "./middleware";
 import { DevtoolsRegistry } from "./registry";
-import { selectMutationEntries, selectQueryEntries } from "./selectors";
+import { selectEnvironment, selectMutationEntries, selectQueryEntries } from "./selectors";
 import { createTestApi, createTestStore, jsonResponse, type Post } from "./test-utils/test-api";
 
 function createActionRecorder() {
@@ -140,6 +142,81 @@ describe("invalidateTags", () => {
     expect(recorder.actions.map((a) => a.type)).toContain(`${api.reducerPath}/invalidateTags`);
     await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
 
+    result.unsubscribe();
+  });
+});
+
+describe("setOnline / setFocused", () => {
+  it("dispatches the exact global action types and updates every api's config", () => {
+    const registry = new DevtoolsRegistry();
+    const api = createTestApi();
+    const recorder = createActionRecorder();
+    const store = createTestStore(api, [createDevtoolsMiddleware(registry), recorder.middleware]);
+
+    expect(selectEnvironment(store.getState(), api.reducerPath)).toEqual({
+      online: true,
+      focused: true,
+    });
+
+    recorder.actions.length = 0;
+    setOnline(registry, false);
+    setFocused(registry, false);
+
+    // These carry no reducerPath — they are global RTK Query actions. Filtered
+    // because the api also emits a lazy `config/middlewareRegistered` here.
+    expect(recorder.actions.map((a) => a.type).filter((t) => t.startsWith("__rtkq/"))).toEqual([
+      "__rtkq/offline",
+      "__rtkq/unfocused",
+    ]);
+    expect(selectEnvironment(store.getState(), api.reducerPath)).toEqual({
+      online: false,
+      focused: false,
+    });
+
+    setOnline(registry, true);
+    setFocused(registry, true);
+    expect(selectEnvironment(store.getState(), api.reducerPath)).toEqual({
+      online: true,
+      focused: true,
+    });
+  });
+
+  it("going back online refetches queries that opted into refetchOnReconnect", async () => {
+    const registry = new DevtoolsRegistry();
+    const api = createTestApi("testApi", { refetchOnReconnect: true });
+    const store = createTestStore(api, [createDevtoolsMiddleware(registry)]);
+
+    vi.mocked(fetch).mockImplementation(async () =>
+      jsonResponse({ id: 1, title: "Hello" } satisfies Post),
+    );
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    await result;
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    setOnline(registry, false);
+    setOnline(registry, true);
+
+    // Proves the toggle drives real behaviour rather than just flipping a flag.
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    result.unsubscribe();
+  });
+
+  it("refocusing refetches queries that opted into refetchOnFocus", async () => {
+    const registry = new DevtoolsRegistry();
+    const api = createTestApi("testApi", { refetchOnFocus: true });
+    const store = createTestStore(api, [createDevtoolsMiddleware(registry)]);
+
+    vi.mocked(fetch).mockImplementation(async () =>
+      jsonResponse({ id: 1, title: "Hello" } satisfies Post),
+    );
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    await result;
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    setFocused(registry, false);
+    setFocused(registry, true);
+
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
     result.unsubscribe();
   });
 });

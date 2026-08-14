@@ -42,6 +42,21 @@ interface RawRtkQuerySlice {
     keys: Record<string, Array<{ type: string; id?: string | number }>>;
   };
   subscriptions: Record<string, Record<string, RawSubscriptionOptions> | undefined>;
+  config?: { online?: boolean; focused?: boolean };
+}
+
+/**
+ * `online` and `focused` are global RTK Query state that every api's config
+ * slice mirrors, so reading from any one api gives the same answer. Both
+ * default to `true` — the normal, un-simulated environment — when the slice
+ * hasn't been read yet.
+ */
+export function selectEnvironment(
+  state: unknown,
+  reducerPath: string,
+): { online: boolean; focused: boolean } {
+  const config = getRtkQuerySlice(state, reducerPath)?.config;
+  return { online: config?.online ?? true, focused: config?.focused ?? true };
 }
 
 export function getRtkQuerySlice(

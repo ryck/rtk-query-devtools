@@ -14,10 +14,19 @@ export interface Post {
  * package depends on (see actions.ts) are the main version-coupling risk,
  * and only a real store catches a rename.
  */
-export function createTestApi(reducerPath = "testApi") {
+export function createTestApi(
+  reducerPath = "testApi",
+  /**
+   * Off by default so the shared api can't refetch out from under tests that
+   * don't care; the environment-simulation tests opt in.
+   */
+  options: { refetchOnFocus?: boolean; refetchOnReconnect?: boolean } = {},
+) {
   return createApi({
     reducerPath,
     baseQuery: fetchBaseQuery({ baseUrl: "https://example.test/" }),
+    refetchOnFocus: options.refetchOnFocus ?? false,
+    refetchOnReconnect: options.refetchOnReconnect ?? false,
     tagTypes: ["Post"],
     endpoints: (builder) => ({
       getPost: builder.query<Post, number>({

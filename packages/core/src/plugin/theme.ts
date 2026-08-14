@@ -27,6 +27,9 @@ export interface RtkQueryDevtoolsClasses {
   accentBorder: string;
   danger: string;
   dangerBorder: string;
+  /** For controls that put the panel into a simulated, not-real state. */
+  warning: string;
+  warningBorder: string;
   status: Record<DerivedQueryStatus, StatusClasses>;
   polling: string;
   json: { key: string; string: string; number: string; boolean: string; muted: string };
@@ -47,6 +50,8 @@ const lightClasses: RtkQueryDevtoolsClasses = {
   accentBorder: "rtkq:border-indigo-300",
   danger: "rtkq:text-red-600",
   dangerBorder: "rtkq:border-red-300",
+  warning: "rtkq:text-amber-700",
+  warningBorder: "rtkq:border-amber-400",
   status: {
     fetching: {
       badge: "rtkq:bg-blue-50 rtkq:text-blue-700",
@@ -99,6 +104,8 @@ const darkClasses: RtkQueryDevtoolsClasses = {
   accentBorder: "rtkq:border-indigo-700",
   danger: "rtkq:text-red-400",
   dangerBorder: "rtkq:border-red-800",
+  warning: "rtkq:text-amber-300",
+  warningBorder: "rtkq:border-amber-700",
   status: {
     fetching: {
       badge: "rtkq:bg-blue-500/10 rtkq:text-blue-300",

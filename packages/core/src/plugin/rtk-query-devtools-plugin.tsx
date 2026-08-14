@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 import { defaultRegistry, type DevtoolsRegistry } from "../registry";
-import { selectQueryEntries } from "../selectors";
+import { selectEnvironment, selectQueryEntries } from "../selectors";
 import type { DerivedQueryStatus, TagDescription } from "../types";
 import { EmptyState } from "./components/empty-state";
 import { MutationsTab } from "./components/mutations-tab";
@@ -81,6 +81,12 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
         ? selectQueryEntries(state, activeApi, (name) => registry.getEndpointType(activeApi, name))
         : [],
     [state, activeApi, registry],
+  );
+  // Global RTK Query state, but read through the active api's config slice —
+  // every api mirrors the same value.
+  const environment = useMemo(
+    () => (activeApi ? selectEnvironment(state, activeApi) : { online: true, focused: true }),
+    [state, activeApi],
   );
   const statusCounts = useMemo(() => {
     const counts: Record<DerivedQueryStatus, number> = {
@@ -192,6 +198,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
             selectedKey={selectedQueryKey}
             onSelectKey={setSelectedQueryKey}
             activeStatuses={activeStatuses}
+            environment={environment}
           />
         )}
         {activeTab === "mutations" && (

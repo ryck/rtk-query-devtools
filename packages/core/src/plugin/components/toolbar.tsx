@@ -139,23 +139,37 @@ export function ToolbarButton({
   icon: Icon,
   variant = "default",
   disabled,
+  pressed,
   title,
 }: {
   classes: RtkQueryDevtoolsClasses;
   onClick: () => void;
   children: ReactNode;
   icon?: ComponentType<{ size?: number }>;
-  variant?: "default" | "danger";
+  variant?: "default" | "danger" | "warning";
   disabled?: boolean;
+  /** Renders the button as a toggle, exposing `aria-pressed`. */
+  pressed?: boolean;
   title?: string;
 }) {
-  const colorClasses = variant === "danger" ? classes.danger : classes.accent;
-  const borderClasses = variant === "danger" ? classes.dangerBorder : classes.accentBorder;
+  const colorClasses =
+    variant === "danger"
+      ? classes.danger
+      : variant === "warning"
+        ? classes.warning
+        : classes.accent;
+  const borderClasses =
+    variant === "danger"
+      ? classes.dangerBorder
+      : variant === "warning"
+        ? classes.warningBorder
+        : classes.accentBorder;
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-pressed={pressed}
       title={title}
       className={clsx(
         "rtkq:inline-flex rtkq:items-center rtkq:gap-1 rtkq:px-2 rtkq:py-1 rtkq:rounded-md rtkq:border rtkq:bg-transparent rtkq:text-[10px] rtkq:font-semibold rtkq:whitespace-nowrap",
