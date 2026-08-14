@@ -68,7 +68,17 @@ interface RawRtkQuerySlice {
   mutations: Record<string, RawMutationSubState | undefined>;
   provided: RawProvided;
   subscriptions: Record<string, Record<string, RawSubscriptionOptions> | undefined>;
-  config?: { online?: boolean; focused?: boolean };
+  config?: {
+    reducerPath?: string;
+    online?: boolean;
+    focused?: boolean;
+    middlewareRegistered?: boolean | "conflict";
+    keepUnusedDataFor?: number;
+    invalidationBehavior?: "delayed" | "immediately";
+    refetchOnFocus?: boolean;
+    refetchOnReconnect?: boolean;
+    refetchOnMountOrArgChange?: boolean | number;
+  };
 }
 
 function isSplitProvided(
@@ -125,6 +135,55 @@ export function selectEnvironment(
 ): { online: boolean; focused: boolean } {
   const config = getRtkQuerySlice(state, reducerPath)?.config;
   return { online: config?.online ?? true, focused: config?.focused ?? true };
+}
+
+export interface ApiHealth {
+  reducerPath: string;
+  /**
+   * `"conflict"` means RTK saw the same api's middleware registered more than
+   * once (or against two stores). Caching silently misbehaves when this
+   * happens, and nothing else reports it — which is why the panel surfaces it
+   * rather than burying it with the rest of the config.
+   */
+  middlewareRegistered: boolean | "conflict";
+  keepUnusedDataFor: number | undefined;
+  invalidationBehavior: string | undefined;
+  refetchOnFocus: boolean | undefined;
+  refetchOnReconnect: boolean | undefined;
+  refetchOnMountOrArgChange: boolean | number | undefined;
+  cachedQueries: number;
+  cachedMutations: number;
+  /** Total live subscribers across every cache entry — lags by up to 500ms. */
+  subscriberCount: number;
+}
+
+/**
+ * The api's own configuration plus a size tally. RTK populates all of this and
+ * no tool surfaces it; `keepUnusedDataFor` and the `refetchOn*` flags in
+ * particular explain cache behaviour that otherwise looks arbitrary.
+ */
+export function selectApiHealth(state: unknown, reducerPath: string): ApiHealth | undefined {
+  const slice = getRtkQuerySlice(state, reducerPath);
+  if (!slice) return undefined;
+
+  let subscriberCount = 0;
+  for (const subscribers of Object.values(slice.subscriptions)) {
+    if (subscribers) subscriberCount += Object.keys(subscribers).length;
+  }
+
+  const config = slice.config;
+  return {
+    reducerPath: config?.reducerPath ?? reducerPath,
+    middlewareRegistered: config?.middlewareRegistered ?? false,
+    keepUnusedDataFor: config?.keepUnusedDataFor,
+    invalidationBehavior: config?.invalidationBehavior,
+    refetchOnFocus: config?.refetchOnFocus,
+    refetchOnReconnect: config?.refetchOnReconnect,
+    refetchOnMountOrArgChange: config?.refetchOnMountOrArgChange,
+    cachedQueries: Object.keys(slice.queries).length,
+    cachedMutations: Object.keys(slice.mutations).length,
+    subscriberCount,
+  };
 }
 
 export function getRtkQuerySlice(

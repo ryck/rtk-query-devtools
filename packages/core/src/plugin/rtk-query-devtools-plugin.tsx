@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 import { defaultRegistry, type DevtoolsRegistry } from "../registry";
-import { selectEnvironment, selectQueryEntries } from "../selectors";
+import { selectApiHealth, selectEnvironment, selectQueryEntries } from "../selectors";
 import type { DerivedQueryStatus, TagDescription } from "../types";
 import { EmptyState } from "./components/empty-state";
 import { MutationsTab } from "./components/mutations-tab";
@@ -86,6 +86,10 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
   // every api mirrors the same value.
   const environment = useMemo(
     () => (activeApi ? selectEnvironment(state, activeApi) : { online: true, focused: true }),
+    [state, activeApi],
+  );
+  const apiHealth = useMemo(
+    () => (activeApi ? selectApiHealth(state, activeApi) : undefined),
     [state, activeApi],
   );
   const statusCounts = useMemo(() => {
@@ -199,6 +203,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
             onSelectKey={setSelectedQueryKey}
             activeStatuses={activeStatuses}
             environment={environment}
+            apiHealth={apiHealth}
           />
         )}
         {activeTab === "mutations" && (

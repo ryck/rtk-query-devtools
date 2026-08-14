@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { selectMutationEntries, selectQueryEntries, selectTagGroups } from "./selectors";
+import {
+  selectApiHealth,
+  selectMutationEntries,
+  selectQueryEntries,
+  selectTagGroups,
+} from "./selectors";
 import { createTestApi, createTestStore, jsonResponse, type Post } from "./test-utils/test-api";
 
 beforeEach(() => {
@@ -232,6 +237,51 @@ describe("selectTagGroups", () => {
  * installing a second, aliased copy of RTK, which isn't worth the weight for a
  * pure data-shape adapter.
  */
+describe("selectApiHealth", () => {
+  it("surfaces the config RTK populates but never exposes", async () => {
+    const api = createTestApi();
+    const store = createTestStore(api);
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+
+    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    await result;
+
+    const health = selectApiHealth(store.getState(), api.reducerPath);
+    expect(health).toMatchObject({
+      reducerPath: api.reducerPath,
+      middlewareRegistered: true,
+      // RTK's documented defaults — proof we're reading the real slice.
+      keepUnusedDataFor: 60,
+      invalidationBehavior: "delayed",
+      refetchOnFocus: false,
+      refetchOnReconnect: false,
+      cachedQueries: 1,
+      cachedMutations: 0,
+    });
+
+    result.unsubscribe();
+  });
+
+  it("reports a middleware conflict when two apis share a reducerPath", () => {
+    // The classic misconfiguration this warning exists for: two `createApi`
+    // calls landing on the same reducerPath (duplicated module, bad HMR).
+    // Each middleware carries its own uid, so the second registration no
+    // longer matches and RTK flags the clash.
+    const first = createTestApi("sharedPath");
+    const second = createTestApi("sharedPath");
+    const store = createTestStore(first, [second.middleware]);
+
+    // Registration is lazy — it happens on the first dispatched action.
+    store.dispatch({ type: "noop" });
+
+    expect(selectApiHealth(store.getState(), "sharedPath")?.middlewareRegistered).toBe("conflict");
+  });
+
+  it("returns undefined for a reducer path that isn't RTK Query state", () => {
+    expect(selectApiHealth({ notAnApi: { value: 1 } }, "notAnApi")).toBeUndefined();
+  });
+});
+
 /** The pre-2.6.2 layout: `provided` *is* the tag map, with no reverse index. */
 function legacyState(reducerPath: string) {
   return {

@@ -94,6 +94,27 @@ test("fuzzy search matches an acronym, which a substring filter would miss", asy
   await expect(entryRow(page, "listPosts")).toBeVisible();
 });
 
+test("the API config strip summarises the api and expands on demand", async ({ page }) => {
+  await gotoApp(page);
+  await openDevtoolsShell(page);
+  await switchTab(page, "Queries");
+
+  const toggle = page.getByRole("button", { name: /API config/ });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  // The summary is visible without expanding.
+  await expect(toggle).toContainText("subs");
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+
+  // Config RTK populates but never surfaces.
+  await expect(page.getByText("keepUnusedDataFor", { exact: true })).toBeVisible();
+  await expect(page.getByText("invalidationBehavior", { exact: true })).toBeVisible();
+
+  // A correctly-configured app must not show the conflict warning.
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
 test("light and dark themes both render the panel without errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (err) => errors.push(String(err)));

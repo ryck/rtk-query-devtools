@@ -11,11 +11,13 @@ import {
   setOnline,
 } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
+import type { ApiHealth } from "../../selectors";
 import type { DerivedQueryStatus, QueryEntry, TagDescription, TimelineEvent } from "../../types";
 import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
 import { matchesSearch } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
+import { ApiHealthStrip } from "./api-health";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryEvents } from "./entry-events";
@@ -61,6 +63,7 @@ export interface QueriesTabProps {
   activeStatuses: Set<DerivedQueryStatus>;
   /** Global RTK Query online/focus state, read from the active api's config. */
   environment: { online: boolean; focused: boolean };
+  apiHealth: ApiHealth | undefined;
 }
 
 export function QueriesTab({
@@ -75,6 +78,7 @@ export function QueriesTab({
   onSelectKey,
   activeStatuses,
   environment,
+  apiHealth,
 }: QueriesTabProps) {
   const [search, setSearch] = usePersistentState("queries.search", "");
   const [sort, setSort] = usePersistentState<SortKey>(
@@ -193,6 +197,8 @@ export function QueriesTab({
           </>
         }
       />
+
+      {apiHealth && <ApiHealthStrip classes={classes} health={apiHealth} />}
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">
         <div ref={parentRef} className="rtkq:flex-1 rtkq:min-w-0 rtkq:overflow-y-auto">
