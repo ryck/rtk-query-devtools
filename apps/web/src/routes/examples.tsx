@@ -18,7 +18,27 @@ import { TqUsersExample } from "@/components/examples/tq-users-example";
 import { UsersExample } from "@/components/examples/users-example";
 import { createTanStackQueryDevtoolsPlugin } from "@/lib/create-tanstack-query-devtools-plugin";
 
-export const Route = createFileRoute("/examples")({ component: Examples });
+const TITLE = "Live examples — RTK Query Devtools";
+const DESCRIPTION =
+  "The devtools panel running for real, with RTK Query and TanStack Query side by side against the same in-memory API.";
+const URL = "https://rtk-query-devtools.ryck.dev/examples";
+
+export const Route = createFileRoute("/examples")({
+  component: Examples,
+  // See the note in features.tsx — each page needs its own canonical.
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+      { property: "og:url", content: URL },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
+    ],
+    links: [{ rel: "canonical", href: URL }],
+  }),
+});
 
 function Examples() {
   return (

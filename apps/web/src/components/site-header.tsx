@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { clsx } from "clsx";
+import { textLink, textLinkActive } from "@/lib/link";
 
 function LogoMark() {
   return (
@@ -30,21 +32,22 @@ export function SiteHeader() {
           rtk-query-devtools
         </Link>
         <nav className="flex items-center gap-6 font-mono text-sm text-mist">
-          <Link
-            to="/examples"
-            className="transition-colors hover:text-paper"
-            activeProps={{ className: "text-paper" }}
-          >
+          <Link to="/features" className={textLink} activeProps={{ className: textLinkActive }}>
+            Features
+          </Link>
+          <Link to="/examples" className={textLink} activeProps={{ className: textLinkActive }}>
             Examples
           </Link>
           <a
             href="https://github.com/ryck/rtk-query-devtools"
             target="_blank"
             rel="noreferrer"
+            // The icon sits outside the underline, so the decoration tracks the
+            // label rather than striking through the mark.
             className="flex items-center gap-1.5 transition-colors hover:text-paper"
           >
             <GithubMark />
-            <span className="hidden sm:inline">GitHub</span>
+            <span className={clsx(textLink, "hidden sm:inline")}>GitHub</span>
           </a>
         </nav>
       </div>

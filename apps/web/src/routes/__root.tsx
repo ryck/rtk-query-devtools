@@ -41,7 +41,9 @@ export const Route = createRootRoute({
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "canonical", href: SITE_URL },
+      // No canonical here on purpose. Unlike `meta`, `links` are not deduped
+      // by the head manager, so a root-level canonical would emit a second,
+      // conflicting one on every child route. Each route sets its own.
     ],
   }),
   shellComponent: RootDocument,

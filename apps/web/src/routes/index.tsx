@@ -3,8 +3,16 @@ import { ArrowRight, ListTree, Radio, Tags } from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 import { DormantBoard, FlipBoard } from "@/components/flip-board";
 import { StoreProvider } from "@/components/store-provider";
+import { textLink } from "@/lib/link";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  component: Home,
+  // Title and description are inherited from the root; only the canonical has
+  // to be per-route (see the note in __root.tsx).
+  head: () => ({
+    links: [{ rel: "canonical", href: "https://rtk-query-devtools.ryck.dev/" }],
+  }),
+});
 
 const FEATURES = [
   {
@@ -45,11 +53,9 @@ function Home() {
             pnpm add rtk-query-devtools
             <CopyButton text="pnpm add rtk-query-devtools" />
           </div>
-          <Link
-            to="/examples"
-            className="flex items-center gap-1.5 font-mono text-sm text-paper transition-colors hover:text-amber"
-          >
-            See it running
+          <Link to="/examples" className="flex items-center gap-1.5 font-mono text-sm text-paper">
+            {/* Underline on the label only, so the arrow isn't struck through. */}
+            <span className={textLink}>See it running</span>
             <ArrowRight size={15} aria-hidden="true" />
           </Link>
         </div>
