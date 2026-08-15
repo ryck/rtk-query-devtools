@@ -20,15 +20,16 @@ const isDevelopment = process.env.NODE_ENV !== "production";
  * ```tsx
  * import { TanStackDevtools } from '@tanstack/react-devtools'
  * import { createRtkQueryDevtoolsPlugin } from 'rtk-query-devtools'
- * import 'rtk-query-devtools/style.css'
  *
  * <TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />
  * ```
  *
+ * No stylesheet import: the panel injects its own (see panel-styles.tsx).
+ *
  * Outside development this returns a bare no-op plugin object without
  * referencing the panel component at all: the early return below lets a
  * bundler that inlines `process.env.NODE_ENV` dead-code-eliminate the panel,
- * `createReactPlugin`, and everything they import.
+ * its embedded stylesheet, `createReactPlugin`, and everything they import.
  *
  * Typed against `@tanstack/react-devtools`'s own `TanStackDevtoolsReactPlugin`
  * (not the lower-level `TanStackDevtoolsPlugin` from `@tanstack/devtools`).

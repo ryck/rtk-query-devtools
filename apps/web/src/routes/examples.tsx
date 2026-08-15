@@ -16,6 +16,7 @@ import { TqPostsExample } from "@/components/examples/tq-posts-example";
 import { TqSlowExample } from "@/components/examples/tq-slow-example";
 import { TqUsersExample } from "@/components/examples/tq-users-example";
 import { UsersExample } from "@/components/examples/users-example";
+import { Card, CardContent } from "@/components/ui/card";
 import { createTanStackQueryDevtoolsPlugin } from "@/lib/create-tanstack-query-devtools-plugin";
 
 const TITLE = "Live examples | RTK Query Devtools";
@@ -102,8 +103,10 @@ function SectionLabel({ children }: { children: string }) {
 
 function ExamplesFallback() {
   return (
-    <div className="mt-10 flex items-center justify-center rounded-2xl border border-panel-line bg-panel px-6 py-24 font-mono text-sm text-mist">
-      Loading examples…
-    </div>
+    <Card className="mt-10">
+      <CardContent className="flex items-center justify-center py-18 font-mono text-sm text-mist">
+        Loading examples…
+      </CardContent>
+    </Card>
   );
 }

@@ -1,8 +1,16 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist-mono";
-@import "rtk-query-devtools/style.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * The brand palette, and the only place a literal colour is written. Everything
+ * else in this file, including every shadcn semantic token below, resolves back
+ * to one of these.
+ */
 @theme {
   --color-ink: #0c0f16;
   --color-panel: #171b24;
@@ -17,20 +25,106 @@
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
 }
 
+/*
+ * shadcn's semantic tokens, wired to the palette above so its components come
+ * out in the site's own colours rather than the preset's neutrals.
+ *
+ * The sidebar and chart tokens the preset ships with are deliberately absent:
+ * nothing here renders a chart or a sidebar. `shadcn add` re-adds the tokens a
+ * component needs when it needs them, so dropping them costs nothing.
+ */
+@theme inline {
+  --font-heading: var(--font-sans);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * One block for both selectors because the site is dark-only: there is no theme
+ * toggle and no light design to fall back to. The `.dark` class is still set on
+ * <html> (see __root.tsx) so that the `dark:` variants baked into shadcn's own
+ * components resolve, rather than silently doing nothing.
+ */
+:root,
+.dark {
+  --background: var(--color-ink);
+  --foreground: var(--color-paper);
+
+  --card: var(--color-panel);
+  --card-foreground: var(--color-paper);
+  --popover: var(--color-panel);
+  --popover-foreground: var(--color-paper);
+
+  --primary: var(--color-amber);
+  /* Amber is a light surface, so its text goes dark rather than paper. */
+  --primary-foreground: var(--color-ink);
+
+  --secondary: var(--color-panel-line);
+  --secondary-foreground: var(--color-paper);
+
+  --muted: var(--color-panel);
+  --muted-foreground: var(--color-mist);
+
+  --accent: var(--color-panel-line);
+  --accent-foreground: var(--color-paper);
+
+  --destructive: var(--color-coral);
+
+  --border: var(--color-panel-line);
+  --input: var(--color-panel-line);
+  --ring: var(--color-amber);
+
+  /* The preset's "small" radius. */
+  --radius: 0.45rem;
+}
+
 @layer base {
   html {
     color-scheme: dark;
+    @apply font-sans;
   }
 
   body {
-    background: var(--color-ink);
-    color: var(--color-paper);
-    font-family: var(--font-sans);
+    @apply bg-background text-foreground;
   }
 
   ::selection {
     background: var(--color-amber);
     color: var(--color-ink);
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 

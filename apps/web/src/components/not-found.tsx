@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 
 export function NotFound() {
   return (
     <main className="mx-auto flex max-w-5xl flex-col items-start px-6 py-24 sm:py-32">
-      <span className="rounded-full bg-coral/15 px-2 py-0.5 font-mono text-[10px] tracking-wide text-coral uppercase">
+      <Badge variant="destructive" className="tracking-wide uppercase">
         Error
-      </span>
+      </Badge>
       <h1 className="mt-4 text-3xl leading-tight font-semibold text-balance text-paper sm:text-4xl">
         This route isn't in the cache.
       </h1>
@@ -14,16 +16,18 @@ export function NotFound() {
         examples page.
       </p>
       <div className="mt-8 flex gap-3">
-        <Link
-          to="/"
-          className="inline-flex items-center justify-center rounded-md bg-amber px-3 py-1.5 font-mono text-xs font-medium text-ink transition-colors hover:bg-amber/85"
-        >
+        {/*
+          `buttonVariants` rather than the `Button` component: these navigate,
+          so they have to stay real links. Base UI's Button offers no way to
+          keep that. Composing it onto an anchor with the default
+          `nativeButton` warns, and `nativeButton={false}` applies
+          `role="button"`, which takes the link semantics away from assistive
+          tech. The class helper gives identical styling with none of that.
+        */}
+        <Link to="/" className={buttonVariants({ size: "sm" })}>
           Go home
         </Link>
-        <Link
-          to="/examples"
-          className="inline-flex items-center justify-center rounded-md border border-panel-line px-3 py-1.5 font-mono text-xs font-medium text-paper transition-colors hover:border-mist"
-        >
+        <Link to="/examples" className={buttonVariants({ variant: "outline", size: "sm" })}>
           See examples
         </Link>
       </div>

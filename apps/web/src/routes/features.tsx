@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { C, Feature, FeatureGroup } from "@/components/feature";
+import { Badge } from "@/components/ui/badge";
 
 const TITLE = "Features | RTK Query Devtools";
 const DESCRIPTION =
@@ -49,13 +50,17 @@ function Features() {
 
       <nav aria-label="Sections" className="mt-8 flex flex-wrap gap-2">
         {SECTIONS.map((section) => (
-          <a
+          // Deliberately not the shared `textLink` treatment: these are a pill
+          // index, not prose links, and underlining them would flatten the
+          // distinction (see lib/link.ts).
+          <Badge
             key={section.id}
-            href={`#${section.id}`}
-            className="rounded-full border border-panel-line px-3 py-1 font-mono text-xs text-mist transition-colors hover:border-mist hover:text-paper"
+            variant="outline"
+            className="h-auto px-3 py-1 text-mist transition-colors hover:border-mist hover:text-paper"
+            render={<a href={`#${section.id}`} />}
           >
             {section.label}
-          </a>
+          </Badge>
         ))}
       </nav>
 

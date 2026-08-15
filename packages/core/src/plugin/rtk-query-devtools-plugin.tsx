@@ -17,8 +17,8 @@ import { TagsTab } from "./components/tags-tab";
 import { TimelineTab } from "./components/timeline-tab";
 import { enumCodec, setCodec, usePersistentState } from "./hooks/use-persistent-state";
 import { useRtkQueryDevtoolsState } from "./hooks/use-rtkq-state";
+import { ensurePanelStyles } from "./panel-styles";
 import { SpinKeyframes } from "./spin-keyframes";
-import "./styles.css";
 import { getClasses, resolveThemeMode } from "./theme";
 
 export interface RtkQueryDevtoolsPluginProps {
@@ -47,6 +47,13 @@ const STATUS_FILTER_VALUES: ReadonlyArray<DerivedQueryStatus> = [
 ];
 
 export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevtoolsPluginProps) {
+  // In the render body rather than at module scope or in an effect. Module
+  // scope would be a top-level side effect, which stops a bundler dropping
+  // this module in production; an effect runs after the first paint, which
+  // would flash the panel unstyled. Idempotent, so a re-render or a second
+  // panel costs nothing.
+  ensurePanelStyles();
+
   const registry = devtoolsRegistry ?? defaultRegistry;
   // Namespaced per instance so the tab/panel ids stay unique if a host ever
   // mounts two panels (e.g. one per store).

@@ -1,9 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, ListTree, Radio, Tags } from "lucide-react";
-import { CopyButton } from "@/components/copy-button";
+import { Gamepad2, ListTree, Radio, Tags } from "lucide-react";
 import { DormantBoard, FlipBoard } from "@/components/flip-board";
 import { StoreProvider } from "@/components/store-provider";
-import { textLink } from "@/lib/link";
+import { Button } from "@/components/ui/button";
+import { InstallCommand, MultiFileCodeBlock } from "@/components/ui/code-block";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -46,19 +46,27 @@ function Home() {
           Live status badges, tag-based invalidation, and a request timeline, right inside TanStack
           DevTools. No more digging through the Redux action log to guess what's cached.
         </p>
+        {/*
+          Base UI's docs say a link should be styled directly rather than
+          rendered through Button, because Button imposes button semantics.
+          The two props below are what make the component safe to use here
+          anyway: `nativeButton={false}` is the documented setting for a
+          rendered element that isn't a <button> (it silences the warning),
+          and the explicit `role` overrides the `role="button"` Base UI
+          applies in that case, so this stays a link to assistive tech.
+        */}
+        <Button
+          size="lg"
+          className="mt-4"
+          nativeButton={false}
+          role="link"
+          render={<Link to="/examples" />}
+        >
+          <Gamepad2 aria-hidden="true" />
+          Playground
+        </Button>
 
-        <div className="mt-8 flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2 rounded-lg border border-panel-line bg-panel px-4 py-2.5 font-mono text-sm text-paper">
-            <span className="text-mist select-none">$</span>
-            pnpm add rtk-query-devtools
-            <CopyButton text="pnpm add rtk-query-devtools" />
-          </div>
-          <Link to="/examples" className="flex items-center gap-1.5 font-mono text-sm text-paper">
-            {/* Underline on the label only, so the arrow isn't struck through. */}
-            <span className={textLink}>See it running</span>
-            <ArrowRight size={15} aria-hidden="true" />
-          </Link>
-        </div>
+        <InstallCommand className="mt-8" packageName="rtk-query-devtools" />
 
         <div className="mt-14">
           <StoreProvider fallback={<DormantBoard />}>
@@ -88,32 +96,55 @@ function Home() {
           <p className="mt-2 max-w-lg text-sm text-mist">
             Add the middleware to your store, then register the plugin. No provider, no config file.
           </p>
-          <CodeBlock className="mt-6" />
+          <MultiFileCodeBlock className="mt-6" files={WIRE_UP_FILES} bodyClassName="bg-panel" />
         </div>
       </section>
     </main>
   );
 }
 
-function CodeBlock({ className }: { className?: string }) {
+/**
+ * Two tabs rather than one blob: the setup genuinely spans two files, which
+ * the previous single snippet could only convey with `// store.ts` and
+ * `// App.tsx` comments.
+ *
+ * Kept deliberately in step with the package README's usage section, including
+ * the `rtkqDevtools` name, so copying from either lands you in the same place.
+ * `highlightLines` marks the lines this package actually adds, which is what
+ * makes the "two lines" claim above checkable. Module-level so the arrays keep
+ * a stable identity (see the note on `FileEntry`).
+ */
+const WIRE_UP_FILES = [
+  {
+    filename: "store.ts",
+    language: "ts",
+    highlightLines: [2, 5, 10],
+    code: `import { configureStore } from "@reduxjs/toolkit";
+import { createRtkQueryDevtools } from "rtk-query-devtools";
+import { api } from "./api";
+
+export const rtkqDevtools = createRtkQueryDevtools({ apis: [api] });
+
+export const store = configureStore({
+  reducer: { [api.reducerPath]: api.reducer },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(api.middleware, rtkqDevtools.middleware),
+});`,
+  },
+  {
+    filename: "App.tsx",
+    language: "tsx",
+    highlightLines: [2, 8],
+    code: `import { TanStackDevtools } from "@tanstack/react-devtools";
+import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools";
+
+export function App() {
   return (
-    <pre
-      className={`overflow-x-auto rounded-xl border border-panel-line bg-panel p-5 font-mono text-sm leading-relaxed text-paper ${className ?? ""}`}
-    >
-      <code>
-        <span className="text-mist">{"// store.ts"}</span>
-        {"\n"}
-        <span className="text-amber">const</span> devtools = createRtkQueryDevtools({"{"} apis:
-        [api] {"}"}){"\n\n"}
-        configureStore({"{"}
-        {"\n  "}middleware: (getDefaultMiddleware) {"=>"}
-        {"\n    "}getDefaultMiddleware().concat(api.middleware, devtools.middleware),
-        {"\n"}
-        {"}"}){"\n\n"}
-        <span className="text-mist">{"// App.tsx"}</span>
-        {"\n"}
-        {"<TanStackDevtools "}plugins={"{"}[createRtkQueryDevtoolsPlugin()]{"}"} {"/>"}
-      </code>
-    </pre>
+    <>
+      <YourApp />
+      <TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />
+    </>
   );
-}
+}`,
+  },
+];

@@ -7,9 +7,10 @@
  * hover, which also covers links that already sit at full contrast.
  *
  * Deliberately *not* applied to the things that only look like links: the
- * brand wordmark, the button-styled calls to action on the 404 page, and the
- * pill-shaped section index on /features. Those are different affordances and
- * underlining them would flatten the distinction.
+ * brand wordmark, the calls to action carrying `buttonVariants` (the homepage
+ * Playground button and both on the 404 page), and the pill-shaped section
+ * index on /features. Those are different affordances and underlining them
+ * would flatten the distinction.
  */
 export const textLink =
   "underline decoration-panel-line underline-offset-2 transition-colors hover:text-paper hover:decoration-mist";

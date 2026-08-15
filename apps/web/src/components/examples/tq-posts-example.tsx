@@ -1,9 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createPost, fetchPosts, removePost } from "@rtk-query-devtools/demo-api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 export function TqPostsExample() {
   const queryClient = useQueryClient();
@@ -20,55 +21,63 @@ export function TqPostsExample() {
 
   return (
     <Card>
-      <h3 className="text-sm font-semibold text-paper">Posts &amp; tags</h3>
-      <p className="mt-1 text-sm text-mist">
-        Adding a post invalidates the <code className="font-mono text-paper">["posts"]</code> query
-        key. Watch it refetch automatically in the TanStack Query panel.
-      </p>
+      <CardHeader>
+        <CardTitle>Posts &amp; tags</CardTitle>
+        <CardDescription>
+          Adding a post invalidates the <code className="font-mono text-paper">["posts"]</code>{" "}
+          query key. Watch it refetch automatically in the TanStack Query panel.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          className="flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!title.trim()) return;
+            addPost.mutate({ title, body: "Added from the examples page." });
+            setTitle("");
+          }}
+        >
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="New post title…"
+            className="font-mono text-sm"
+          />
+          <Button type="submit" size="sm" disabled={addPost.isPending}>
+            {addPost.isPending ? (
+              <Loader2 size={13} className="animate-spin" />
+            ) : (
+              <Plus size={13} />
+            )}
+            Add
+          </Button>
+        </form>
 
-      <form
-        className="mt-4 flex gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!title.trim()) return;
-          addPost.mutate({ title, body: "Added from the examples page." });
-          setTitle("");
-        }}
-      >
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="New post title…"
-          className="min-w-0 flex-1 rounded-md border border-panel-line bg-ink px-3 py-1.5 font-mono text-sm text-paper placeholder:text-mist focus:border-amber focus:outline-none"
-        />
-        <Button type="submit" variant="solid" disabled={addPost.isPending}>
-          {addPost.isPending ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
-          Add
-        </Button>
-      </form>
-
-      <ul className="mt-4 flex max-h-56 flex-col gap-1.5 overflow-y-auto">
-        {isLoading ? (
-          <li className="font-mono text-sm text-mist">Loading…</li>
-        ) : (
-          posts?.map((post) => (
-            <li
-              key={post.id}
-              className="flex items-center justify-between gap-2 rounded-md border border-panel-line px-3 py-2 font-mono text-sm text-paper"
-            >
-              <span className="truncate">{post.title}</span>
-              <button
-                type="button"
-                aria-label={`Delete ${post.title}`}
-                onClick={() => deletePost.mutate(post.id)}
-                className="shrink-0 text-mist hover:text-coral"
+        <ul className="mt-4 flex max-h-56 flex-col gap-1.5 overflow-y-auto">
+          {isLoading ? (
+            <li className="font-mono text-sm text-mist">Loading…</li>
+          ) : (
+            posts?.map((post) => (
+              <li
+                key={post.id}
+                className="flex items-center justify-between gap-2 rounded-md border border-panel-line px-3 py-2 font-mono text-sm text-paper"
               >
-                <Trash2 size={14} />
-              </button>
-            </li>
-          ))
-        )}
-      </ul>
+                <span className="truncate">{post.title}</span>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label={`Delete ${post.title}`}
+                  onClick={() => deletePost.mutate(post.id)}
+                  className="text-mist hover:text-coral"
+                >
+                  <Trash2 size={14} />
+                </Button>
+              </li>
+            ))
+          )}
+        </ul>
+      </CardContent>
     </Card>
   );
 }

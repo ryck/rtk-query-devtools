@@ -59,7 +59,9 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    // Dark-only by design, so the class is hard-coded rather than toggled. It
+    // exists so shadcn's own `dark:` variants resolve; see styles.css.
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>

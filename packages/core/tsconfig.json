@@ -2,7 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    // `vite/client` is for Vite's import suffixes, specifically the
+    // `./styles.css?inline` in plugin/panel-styles.tsx. Naming any types at
+    // all replaces the default "everything in @types", so `node` has to be
+    // listed too: `process.env.NODE_ENV` is what gates the production no-op.
+    "types": ["vite/client", "node"]
   },
   "include": ["src"]
 }

@@ -45,10 +45,19 @@ Then register the plugin:
 ```tsx
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools";
-import "rtk-query-devtools/style.css";
 
-<TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />;
+export function App() {
+  return (
+    <>
+      <YourApp />
+      <TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />
+    </>
+  );
+}
 ```
+
+No stylesheet import: the panel carries its own styles and injects them when it
+first renders.
 
 Multiple APIs are discovered automatically. An API selector appears in each tab once more
 than one is found.
