@@ -3,6 +3,7 @@ import { Gamepad2, ListTree, Radio, Tags } from "lucide-react";
 import { DormantBoard, FlipBoard } from "@/components/flip-board";
 import { StoreProvider } from "@/components/store-provider";
 import { Button } from "@/components/ui/button";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { InstallCommand, MultiFileCodeBlock } from "@/components/ui/code-block";
 
 export const Route = createFileRoute("/")({
@@ -79,13 +80,22 @@ function Home() {
       </section>
 
       <section className="border-t border-panel-line">
-        <div className="mx-auto grid max-w-5xl gap-10 px-6 py-16 sm:grid-cols-3 sm:py-20">
+        <div className="mx-auto grid max-w-5xl gap-6 px-6 py-16 sm:grid-cols-3 sm:py-20">
           {FEATURES.map((feature) => (
-            <div key={feature.title}>
-              <feature.icon size={18} className="text-amber" aria-hidden="true" />
-              <h2 className="mt-3 text-sm font-semibold text-paper">{feature.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-mist">{feature.body}</p>
-            </div>
+            <Card key={feature.title}>
+              <CardHeader>
+                {/*
+                  CardTitle renders a div, so the explicit role keeps these as
+                  real headings in the document outline, which they were as
+                  `h2` before.
+                */}
+                <CardTitle role="heading" aria-level={2} className="flex items-center gap-2">
+                  <feature.icon size={16} className="shrink-0 text-amber" aria-hidden="true" />
+                  {feature.title}
+                </CardTitle>
+                <CardDescription className="leading-relaxed">{feature.body}</CardDescription>
+              </CardHeader>
+            </Card>
           ))}
         </div>
       </section>
