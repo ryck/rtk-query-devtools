@@ -13,7 +13,7 @@ export function SlowQueryPanel() {
       <CardHeader>
         <CardTitle>Slow query</CardTitle>
         <CardDescription>
-          Deliberately takes 2.5s — open the Queries tab and watch the "fetching" badge linger, then
+          Deliberately takes 2.5s. Open the Queries tab and watch the "fetching" badge linger, then
           check the Timeline tab for its duration.
         </CardDescription>
       </CardHeader>

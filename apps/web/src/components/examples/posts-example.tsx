@@ -18,7 +18,7 @@ export function PostsExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Posts &amp; tags</h3>
       <p className="mt-1 text-sm text-mist">
-        Adding a post invalidates the <code className="font-mono text-paper">Post:LIST</code> tag —
+        Adding a post invalidates the <code className="font-mono text-paper">Post:LIST</code> tag.
         watch <code className="font-mono text-paper">listPosts</code> refetch automatically in the
         Timeline tab below.
       </p>

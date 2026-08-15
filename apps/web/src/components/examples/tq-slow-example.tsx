@@ -17,7 +17,7 @@ export function TqSlowExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Slow query</h3>
       <p className="mt-1 text-sm text-mist">
-        Takes 2.5s on purpose — open the TanStack Query panel and watch the{" "}
+        Takes 2.5s on purpose. Open the TanStack Query panel and watch the{" "}
         <code className="font-mono text-paper">fetching</code> status linger.
       </p>
       <div className="mt-4">

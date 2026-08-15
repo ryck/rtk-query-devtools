@@ -12,7 +12,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 
 /**
  * Wires a Redux middleware into the module-level devtools registry. Call
- * once alongside `configureStore`. Safe to include unconditionally — outside
+ * once alongside `configureStore`. Safe to include unconditionally: outside
  * development this returns a passthrough middleware and never touches the
  * registry, so bundlers can dead-code-eliminate the rest of this module.
  */

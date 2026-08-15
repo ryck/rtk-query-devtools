@@ -18,7 +18,7 @@ export default defineConfig({
     },
   ],
   // The devtools plugin intentionally no-ops outside development (see
-  // create-rtk-query-devtools-plugin.tsx) — a production build+preview would
+  // create-rtk-query-devtools-plugin.tsx), and a production build+preview would
   // never render the panel these tests exercise, so this runs the dev server.
   webServer: {
     command: "pnpm --filter demo run dev",

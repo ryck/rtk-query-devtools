@@ -171,7 +171,7 @@ export function QueriesTab({
               title={
                 environment.online
                   ? "Simulate going offline"
-                  : "Go back online — queries with refetchOnReconnect will refetch"
+                  : "Go back online; queries with refetchOnReconnect will refetch"
               }
               onClick={() => setOnline(registry, !environment.online)}
             >
@@ -185,7 +185,7 @@ export function QueriesTab({
               title={
                 environment.focused
                   ? "Simulate the tab losing focus"
-                  : "Refocus — queries with refetchOnFocus will refetch"
+                  : "Refocus; queries with refetchOnFocus will refetch"
               }
               onClick={() => setFocused(registry, !environment.focused)}
             >
@@ -357,7 +357,7 @@ function QueryDetail({
         { label: "Arguments", value: entry.originalArgs },
         { label: "Data", value: entry.data },
         ...(entry.error !== undefined ? [{ label: "Error", value: entry.error }] : []),
-        // The whole derived entry, mirroring TanStack's "Query Explorer" — the
+        // The whole derived entry, mirroring TanStack's "Query Explorer". The
         // meta rows above are a curated view, and this is the escape hatch for
         // anything they leave out (raw `status`, `requestId`, tag shapes).
         { label: "Query entry", value: entry },

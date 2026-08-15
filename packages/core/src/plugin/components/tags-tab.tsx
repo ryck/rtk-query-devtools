@@ -19,7 +19,7 @@ export interface TagsTabProps {
   activeApi: string;
   onApiChange: (reducerPath: string) => void;
   onNavigateToQuery: (queryCacheKey: string) => void;
-  /** Seeds the search box — pass the tag type when navigating here from a tag chip elsewhere. */
+  /** Seeds the search box. Pass the tag type when navigating here from a tag chip elsewhere. */
   initialSearch?: string;
 }
 

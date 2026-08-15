@@ -5,7 +5,7 @@
  *   pnpm --filter web run logos
  *
  * The lockup needs the site's real mono face, which only exists in the build
- * output — so run `pnpm --filter web run build` first. The script fails loudly
+ * output, so run `pnpm --filter web run build` first. The script fails loudly
  * rather than silently falling back to a system font.
  */
 import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
@@ -51,7 +51,7 @@ try {
   const icon = page.locator("#icon");
   for (const { file, size } of ICONS) {
     // Re-render the mark at its true pixel size rather than downscaling one
-    // big capture — keeps the small sizes from going mushy. Sequential by
+    // big capture, which keeps the small sizes from going mushy. Sequential by
     // necessity: every size resizes the same element before capturing it.
     // eslint-disable-next-line no-await-in-loop
     await icon.evaluate((el, s) => el.style.setProperty("--s", `${s}px`), size);

@@ -18,7 +18,7 @@ const FEATURES = [
   {
     icon: Radio,
     title: "Status at a glance",
-    body: "Fetching, fresh, error, inactive — every cache entry, labeled. No more inferring status from a stream of dispatched actions.",
+    body: "Fetching, fresh, error, inactive: every cache entry, labeled. No more inferring status from a stream of dispatched actions.",
   },
   {
     icon: Tags,
@@ -28,7 +28,7 @@ const FEATURES = [
   {
     icon: ListTree,
     title: "A real request timeline",
-    body: "Every query and mutation, in order, with how long it took. Pause it, filter it, clear it — like a network tab for your cache.",
+    body: "Every query and mutation, in order, with how long it took. Pause it, filter it, clear it, like a network tab for your cache.",
   },
 ];
 
@@ -43,7 +43,7 @@ function Home() {
           RTK Query has a cache. Now you can actually see it.
         </h1>
         <p className="mt-5 max-w-xl text-base leading-relaxed text-mist sm:text-lg">
-          Live status badges, tag-based invalidation, and a request timeline — right inside TanStack
+          Live status badges, tag-based invalidation, and a request timeline, right inside TanStack
           DevTools. No more digging through the Redux action log to guess what's cached.
         </p>
 
@@ -65,7 +65,7 @@ function Home() {
             <FlipBoard />
           </StoreProvider>
           <p className="mt-3 font-mono text-xs text-mist">
-            ↑ live — actually running RTK Query on this page
+            ↑ live, actually running RTK Query on this page
           </p>
         </div>
       </section>

@@ -19,7 +19,7 @@ import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
 
 /**
- * Mutations don't have a meaningful "freshness" — reusing StatusBadge's
+ * Mutations don't have a meaningful "freshness", and reusing StatusBadge's
  * query vocabulary (fresh/inactive) here reads oddly for a one-shot
  * request, so this mirrors timeline-tab's OutcomeBadge pattern instead:
  * same color palette, mutation-appropriate labels.
@@ -76,7 +76,7 @@ const MUTATION_STATUS_SEVERITY: Record<MutationEntry["status"], number> = {
   uninitialized: 3,
 };
 
-/** Ascending, like `compareQueries` — see the note there on Asc/Desc. */
+/** Ascending, like `compareQueries`. See the note there on Asc/Desc. */
 function compareMutations(a: MutationEntry, b: MutationEntry, sort: SortKey): number {
   if (sort === "endpoint") return a.endpointName.localeCompare(b.endpointName);
   if (sort === "status") {
@@ -141,7 +141,7 @@ export function MutationsTab({
 
   // RTK's mutation substate doesn't retain the args, so they're recovered from
   // the timeline. Keyed on the *event's* existence rather than on its
-  // `originalArgs` being defined — a no-arg mutation legitimately has
+  // `originalArgs` being defined, since a no-arg mutation legitimately has
   // `undefined` args, and should still show an Arguments section.
   //
   // Deliberately not memoized, matching timeline-tab: the registry mutates

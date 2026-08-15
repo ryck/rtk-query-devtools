@@ -35,7 +35,7 @@ const STATUS_STYLES: Record<TileStatus, string> = {
 
 /**
  * The board's rows are driven by real RTK Query hooks, polling on staggered
- * intervals so they flip independently rather than in lockstep — this is
+ * intervals so they flip independently rather than in lockstep. This is
  * genuinely live cache activity, not a scripted animation. listPostsFlaky
  * fails ~2 times out of 3 by design (see @rtk-query-devtools/demo-api),
  * which is what gives the board its ERROR row without any extra faking.
@@ -57,7 +57,7 @@ export function FlipBoard() {
     <div className="overflow-hidden rounded-2xl border border-panel-line bg-panel shadow-[0_0_0_1px_rgba(0,0,0,0.2)]">
       <div className="flex items-center justify-between border-b border-panel-line px-4 py-3 sm:px-6">
         <span className="font-mono text-[11px] tracking-[0.2em] text-mist uppercase">
-          rtk-query-devtools — live status
+          rtk-query-devtools live status
         </span>
         <span className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.2em] text-teal uppercase">
           <span className="animate-pulse-dot size-1.5 rounded-full bg-teal" aria-hidden="true" />
@@ -130,7 +130,7 @@ export function DormantBoard() {
     <div className="overflow-hidden rounded-2xl border border-panel-line bg-panel">
       <div className="flex items-center justify-between border-b border-panel-line px-4 py-3 sm:px-6">
         <span className="font-mono text-[11px] tracking-[0.2em] text-mist uppercase">
-          rtk-query-devtools — live status
+          rtk-query-devtools live status
         </span>
         <span className="font-mono text-[11px] tracking-[0.2em] text-mist uppercase">
           connecting…

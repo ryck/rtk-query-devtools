@@ -12,7 +12,7 @@ export function SlowExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Slow query</h3>
       <p className="mt-1 text-sm text-mist">
-        Takes 2.5s on purpose — open the Queries tab below and watch the{" "}
+        Takes 2.5s on purpose. Open the Queries tab below and watch the{" "}
         <code className="font-mono text-paper">fetching</code> badge linger.
       </p>
       <div className="mt-4">

@@ -23,7 +23,7 @@ import { getClasses, resolveThemeMode } from "./theme";
 
 export interface RtkQueryDevtoolsPluginProps {
   theme?: "light" | "dark";
-  /** Overrides the module-level registry — mainly for tests or multi-store apps. */
+  /** Overrides the module-level registry, mainly for tests or multi-store apps. */
   devtoolsRegistry?: DevtoolsRegistry;
 }
 
@@ -51,7 +51,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
   // Namespaced per instance so the tab/panel ids stay unique if a host ever
   // mounts two panels (e.g. one per store).
   const idPrefix = useId();
-  // Subscribes to registry changes — re-renders on every throttled version
+  // Subscribes to registry changes, re-rendering on every throttled version
   // bump, which is also what keeps every child tab below up to date.
   const { state, reducerPaths } = useRtkQueryDevtoolsState(registry);
   const classes = getClasses(resolveThemeMode(theme));
@@ -62,7 +62,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
     enumCodec(TAB_IDS),
   );
   // Persisted, but the effect below still validates it against the APIs this
-  // store actually has — a remembered path may be gone on the next reload.
+  // store actually has, since a remembered path may be gone on the next reload.
   const [activeApi, setActiveApi] = usePersistentState<string>("activeApi", "");
   const [selectedQueryKey, setSelectedQueryKey] = useState<string | undefined>(undefined);
   const [tagFocus, setTagFocus] = useState<TagDescription | undefined>(undefined);
@@ -78,7 +78,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
       setActiveApi(first);
     }
     // `setActiveApi` is React's own `useState` setter and so is stable, but
-    // that's invisible to the lint rule through a custom hook — listing it is
+    // that's invisible to the lint rule through a custom hook, so listing it is
     // free and keeps the rule honest.
   }, [reducerPaths, activeApi, setActiveApi]);
 
@@ -91,7 +91,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
         : [],
     [state, activeApi, registry],
   );
-  // Global RTK Query state, but read through the active api's config slice —
+  // Global RTK Query state, but read through the active api's config slice;
   // every api mirrors the same value.
   const environment = useMemo(
     () => (activeApi ? selectEnvironment(state, activeApi) : { online: true, focused: true }),
@@ -103,7 +103,7 @@ export function RtkQueryDevtoolsPlugin({ theme, devtoolsRegistry }: RtkQueryDevt
   );
 
   // Live counts beside each tab label. The timeline is read unmemoized on
-  // purpose — see the note in timeline-tab; every render already implies it
+  // purpose. See the note in timeline-tab; every render already implies it
   // may have changed.
   const tabCounts: Record<TabId, number> = {
     queries: queryEntries.length,

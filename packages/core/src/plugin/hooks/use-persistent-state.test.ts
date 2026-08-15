@@ -5,7 +5,7 @@ import { enumCodec, setCodec, sortOrderCodec, usePersistentState } from "./use-p
 const PREFIX = "rtkq-devtools:";
 
 afterEach(() => {
-  // Unstub *first* — one test replaces `localStorage` with a throwing stub,
+  // Unstub *first*, because one test replaces `localStorage` with a throwing stub,
   // and clearing before restoring would throw and leak that stub into the
   // rest of the file.
   vi.unstubAllGlobals();

@@ -4,14 +4,14 @@ import { fetchUsers, type User } from "./fake-users-backend";
 export type { User };
 
 /**
- * A second, independent `createApi` instance with its own reducerPath —
+ * A second, independent `createApi` instance with its own reducerPath, which
  * exercises the devtools panel's multi-API discovery and the API selector
  * that appears in each tab's toolbar once more than one is detected.
  */
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: fakeBaseQuery<unknown>(),
-  // See the note in posts-api — enabled so the devtools environment toggles
+  // See the note in posts-api. Enabled so the devtools environment toggles
   // have something observable to do.
   refetchOnFocus: true,
   refetchOnReconnect: true,

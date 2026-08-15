@@ -5,7 +5,7 @@
  *   pnpm --filter web run feature-shots # in another
  *
  * Shots come from the actual panel rather than mockups, so they can't drift
- * from what the plugin really renders — re-run this after any UI change.
+ * from what the plugin really renders. Re-run this after any UI change.
  */
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -26,7 +26,7 @@ const context = await browser.newContext({
   deviceScaleFactor: 2,
 });
 
-// Seed the shell so the panel opens tall and dark on load — otherwise every
+// Seed the shell so the panel opens tall and dark on load. Otherwise every
 // shot needs a click and comes out 290px high.
 await context.addInitScript(() => {
   localStorage.setItem(
@@ -68,7 +68,7 @@ const demoTab = (name) => page.getByRole("tab", { name, exact: true });
 
 /**
  * The panel is taller than most of these views need, so each shot is cropped
- * to roughly its own content height — otherwise half of every image is empty
+ * to roughly its own content height. Otherwise half of every image is empty
  * background.
  */
 async function shot(name, height) {

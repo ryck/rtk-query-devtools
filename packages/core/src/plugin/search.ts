@@ -10,7 +10,7 @@ export interface SearchMatcher {
    * blanking out while you're mid-way through typing a pattern.
    */
   invalid: boolean;
-  /** Matches when *any* field does — endpoint name or serialized args, say. */
+  /** Matches when *any* field does: endpoint name or serialized args, say. */
   matches: (...fields: Array<string | undefined>) => boolean;
 }
 
@@ -20,7 +20,7 @@ const MATCH_ALL: SearchMatcher = { invalid: false, matches: () => true };
  * Built once per render rather than per row, so a regex is compiled a single
  * time no matter how many entries are filtered through it.
  *
- * Fuzzy is the default and matches TanStack Query devtools' behaviour —
+ * Fuzzy is the default and matches TanStack Query devtools' behaviour:
  * typing `lpf` finds `listPostsFlaky`, which a substring match would miss.
  */
 export function createSearchMatcher(query: string, mode: SearchMode = "fuzzy"): SearchMatcher {

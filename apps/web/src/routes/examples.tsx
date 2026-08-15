@@ -18,14 +18,14 @@ import { TqUsersExample } from "@/components/examples/tq-users-example";
 import { UsersExample } from "@/components/examples/users-example";
 import { createTanStackQueryDevtoolsPlugin } from "@/lib/create-tanstack-query-devtools-plugin";
 
-const TITLE = "Live examples — RTK Query Devtools";
+const TITLE = "Live examples | RTK Query Devtools";
 const DESCRIPTION =
   "The devtools panel running for real, with RTK Query and TanStack Query side by side against the same in-memory API.";
 const URL = "https://rtk-query-devtools.ryck.dev/examples";
 
 export const Route = createFileRoute("/examples")({
   component: Examples,
-  // See the note in features.tsx — each page needs its own canonical.
+  // See the note in features.tsx: each page needs its own canonical.
   head: () => ({
     meta: [
       { title: TITLE },
@@ -48,8 +48,8 @@ function Examples() {
         This is the panel. Actually running.
       </h1>
       <p className="mt-4 max-w-xl text-base leading-relaxed text-mist">
-        Every card below dispatches real requests against the same in-memory fake API — one column
-        through RTK Query, one through TanStack Query — covering arguments, mutations, errors,
+        Every card below dispatches real requests against the same in-memory fake API, one column
+        through RTK Query and one through TanStack Query, covering arguments, mutations, errors,
         polling, and pagination. Open the devtools panel in the bottom-right corner and switch
         between the two plugin tabs to compare them.
       </p>

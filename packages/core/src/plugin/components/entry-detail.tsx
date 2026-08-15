@@ -22,7 +22,7 @@ export interface EntryDetailProps {
   tags?: TagDescription[];
   onTagClick?: (tag: TagDescription) => void;
   jsonSections: DetailJsonSection[];
-  /** Rendered between the tags and the JSON sections — e.g. request history. */
+  /** Rendered between the tags and the JSON sections, e.g. request history. */
   extra?: ReactNode;
   actions?: ReactNode;
 }

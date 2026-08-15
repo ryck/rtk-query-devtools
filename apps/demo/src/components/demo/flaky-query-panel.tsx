@@ -11,7 +11,7 @@ export function FlakyQueryPanel() {
       <CardHeader>
         <CardTitle>Flaky query</CardTitle>
         <CardDescription>
-          Fails two times out of three (503) — refetch a couple of times to see the "error" status
+          Fails two times out of three (503). Refetch a couple of times to see the "error" status
           and rejected entries pile up in the Timeline tab.
         </CardDescription>
       </CardHeader>
@@ -22,7 +22,7 @@ export function FlakyQueryPanel() {
         </Button>
         {error && (
           <p className="flex items-center gap-1.5 text-sm text-destructive">
-            <AlertTriangle className="size-4" /> Request failed — try again.
+            <AlertTriangle className="size-4" /> Request failed. Try again.
           </p>
         )}
         {data && <p className="text-sm text-muted-foreground">Loaded {data.length} posts.</p>}

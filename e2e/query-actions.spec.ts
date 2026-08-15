@@ -35,7 +35,7 @@ test("the detail pane lists every request made for the selected entry", async ({
   await expect(page.getByText(/^Requests \(1\)$/)).toBeVisible();
 
   // Each refetch is a new requestId under the same cache key, so the history
-  // grows — the cache entry itself only ever holds the latest timings.
+  // grows. The cache entry itself only ever holds the latest timings.
   await page.getByRole("button", { name: "Refetch" }).click();
   await expect(page.getByText(/^Requests \(2\)$/)).toBeVisible();
 });
@@ -55,7 +55,7 @@ test("Invalidate tags refetches queries subscribed to that tag", async ({ page }
 });
 
 test("Remove drops the entry from the Mutations list", async ({ page }) => {
-  // A mutation, not a query — removing an actively-subscribed query entry
+  // A mutation, not a query, because removing an actively-subscribed query entry
   // would race with RTK Query immediately refetching it for that subscriber,
   // which makes the assertion flaky. Mutations have no such ambiguity.
   await gotoApp(page);

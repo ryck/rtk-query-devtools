@@ -24,7 +24,7 @@ const LABELS: Record<DerivedQueryStatus, string> = {
   inactive: "Inactive",
 };
 
-// Below this, the row drops the name text and shows dot + count only — the
+// Below this, the row drops the name text and shows dot + count only, the
 // same collapse `ReactQueryDevtoolsPanel` does once its own header gets
 // tight. Calibrated against the five labels at `text-xs`; the tab row this
 // lives in keeps the Queries/Mutations/Tags/Timeline tabs at a fixed width
@@ -40,11 +40,11 @@ export interface StatusSummaryProps {
 }
 
 /**
- * A color-coded count-per-status row — same idea as the pills in
+ * A color-coded count-per-status row, same idea as the pills in
  * `ReactQueryDevtoolsPanel`'s header, doubling as the query-list status
  * filter (click to toggle; unselected entries dim once any filter is
  * active). Each entry reads dot → name → count, where only the dot and
- * the count badge carry the status color — the name stays neutral so the
+ * the count badge carry the status color; the name stays neutral so the
  * row reads as text first, color second.
  */
 export function StatusSummary({ classes, counts, activeStatuses, onToggle }: StatusSummaryProps) {

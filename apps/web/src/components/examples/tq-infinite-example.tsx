@@ -18,8 +18,8 @@ export function TqInfiniteExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Infinite query</h3>
       <p className="mt-1 text-sm text-mist">
-        TanStack Query's native <code className="font-mono text-paper">useInfiniteQuery</code> —
-        compare how each panel represents the same paginated data.
+        TanStack Query's native <code className="font-mono text-paper">useInfiniteQuery</code>.
+        Compare how each panel represents the same paginated data.
       </p>
       <ul className="mt-4 flex max-h-40 flex-col gap-1.5 overflow-y-auto">
         {posts.map((post) => (

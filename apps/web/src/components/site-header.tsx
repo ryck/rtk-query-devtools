@@ -14,7 +14,7 @@ function LogoMark() {
   );
 }
 
-// lucide-react dropped brand/logo icons — a hand-drawn mark is the standard workaround.
+// lucide-react dropped brand/logo icons, so a hand-drawn mark is the standard workaround.
 function GithubMark({ size = 15 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -29,7 +29,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2.5 font-mono text-sm text-paper">
           <LogoMark />
-          {/* Same split as the logo lockup and the og:image — the amber picks
+          {/* Same split as the logo lockup and the og:image. The amber picks
               up the mark's accent tile. */}
           <span>
             rtk-query-<span className="text-amber">devtools</span>

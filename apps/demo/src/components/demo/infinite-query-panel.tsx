@@ -14,7 +14,7 @@ export function InfiniteQueryPanel() {
       <CardHeader>
         <CardTitle>Infinite query</CardTitle>
         <CardDescription>
-          Paginated posts, 3 per page — the Queries tab classifies this entry as{" "}
+          Paginated posts, 3 per page. The Queries tab classifies this entry as{" "}
           <code>infinitequery</code> from its <code>{"{ pages, pageParams }"}</code> data shape.
         </CardDescription>
       </CardHeader>

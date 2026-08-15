@@ -39,7 +39,7 @@ export function TimelineTab({
   onApiChange,
 }: TimelineTabProps) {
   const [search, setSearch] = usePersistentState("timeline.search", "");
-  // The timeline is recorded oldest-first, so descending is newest-first — the
+  // The timeline is recorded oldest-first, so descending is newest-first, the
   // sensible default for a live event log.
   const [sortOrder, setSortOrder] = usePersistentState<SortOrder>(
     "timeline.sortOrder",
@@ -54,12 +54,12 @@ export function TimelineTab({
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
 
   // The registry's `version` bump is what re-renders this component (via the
-  // panel root's useSyncExternalStore) — `getTimeline()` always returns a
+  // panel root's useSyncExternalStore). `getTimeline()` always returns a
   // fresh copy, so there's nothing worth memoizing here; every render already
   // means the timeline may have changed.
   const allEvents = registry.getTimeline().filter((e) => e.reducerPath === activeApi);
   // Deliberately computed over *all* events for the api rather than the
-  // filtered list — the summary describes the api, and would otherwise shift
+  // filtered list: the summary describes the api, and would otherwise shift
   // under you as you type in the search box.
   const stats = computeTimelineStats(allEvents);
   const matcher = createSearchMatcher(search, searchMode);

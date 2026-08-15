@@ -112,7 +112,7 @@ function StatsRow({
       </div>
       {[stats.fastestMs, stats.medianMs, stats.averageMs, stats.slowestMs].map((value, index) => (
         <div
-          // Fixed, ordered columns — index is a stable key here.
+          // Fixed, ordered columns, so index is a stable key here.
           key={COLUMNS[index]}
           className={clsx("rtkq:tabular-nums", classes.textMuted)}
         >

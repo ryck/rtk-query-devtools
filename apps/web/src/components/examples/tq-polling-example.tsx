@@ -17,7 +17,7 @@ export function TqPollingExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Polling</h3>
       <p className="mt-1 text-sm text-mist">
-        Refetches every 2s while on — open the TanStack Query panel and watch a fresh query run land
+        Refetches every 2s while on. Open the TanStack Query panel and watch a fresh query run land
         on schedule with nothing on the page to trigger it.
       </p>
       <div className="mt-4 flex items-center gap-3">

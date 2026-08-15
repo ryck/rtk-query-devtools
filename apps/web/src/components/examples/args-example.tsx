@@ -13,7 +13,7 @@ export function ArgsExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Query arguments</h3>
       <p className="mt-1 text-sm text-mist">
-        Each ID is its own cache entry — <code className="font-mono text-paper">getPost(1)</code>,{" "}
+        Each ID is its own cache entry: <code className="font-mono text-paper">getPost(1)</code>,{" "}
         <code className="font-mono text-paper">getPost(2)</code>… Switch between a few and watch the
         ones you leave go <code className="font-mono text-paper">inactive</code> in the Queries tab
         instead of disappearing.

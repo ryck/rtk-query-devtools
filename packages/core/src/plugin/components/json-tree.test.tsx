@@ -24,8 +24,8 @@ describe("JsonTree", () => {
     obj.self = obj;
 
     // The root renders expanded by default, and the circularity check runs
-    // before deciding whether a child needs its own expand/collapse toggle
-    // — so a direct one-level cycle like this is visible immediately, no
+    // before deciding whether a child needs its own expand/collapse toggle,
+    // so a direct one-level cycle like this is visible immediately, no
     // click needed.
     render(<JsonTree data={obj} classes={classes} />);
 
@@ -59,7 +59,7 @@ describe("JsonTree", () => {
   });
 
   // `name`/`message`/`stack` are non-enumerable, so `Object.entries` on an
-  // Error is `[]` — without special-casing, an error renders as a bare `{}`.
+  // Error is `[]`, so without special-casing, an error renders as a bare `{}`.
   it("renders an Error's non-enumerable fields instead of an empty object", () => {
     const error = Object.assign(new TypeError("boom"), { status: 500 });
 
@@ -68,7 +68,7 @@ describe("JsonTree", () => {
 
     expect(screen.getByText('"boom"')).toBeTruthy();
     expect(screen.getByText('"TypeError"')).toBeTruthy();
-    // Own enumerable props still come through — this is what carries the
+    // Own enumerable props still come through, which is what carries the
     // useful detail on RTK's SerializedError.
     expect(screen.getByText("500")).toBeTruthy();
   });
@@ -84,7 +84,7 @@ describe("JsonTree", () => {
     render(<JsonTree data={big} classes={classes} />);
 
     // 250 entries is past the auto-collapse threshold, so the root itself
-    // starts closed — open it to get at the chunk headers.
+    // starts closed. Open it to get at the chunk headers.
     fireEvent.click(screen.getByRole("button", { name: /250/ }));
 
     // Chunk headers are present...

@@ -7,7 +7,7 @@ import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from 
 const PREFIX = "rtkq-devtools:";
 
 /**
- * For values `JSON.stringify` can't round-trip on its own — `Set`, `Map`, and
+ * For values `JSON.stringify` can't round-trip on its own: `Set`, `Map`, and
  * friends. `parse` returning `undefined` means "stored value is unusable",
  * which falls back to the initial value rather than throwing.
  */
@@ -18,7 +18,7 @@ export interface PersistCodec<T> {
 
 function read<T>(key: string, initial: T, codec: PersistCodec<T> | undefined): T {
   // `localStorage` throws on access in some privacy modes, and is absent
-  // entirely during SSR — persistence is a convenience, never a hard
+  // entirely during SSR. Persistence is a convenience, never a hard
   // dependency, so every failure path silently yields the initial value.
   try {
     if (typeof window === "undefined") return initial;
@@ -68,7 +68,7 @@ export function setCodec<T extends string>(allowed?: ReadonlyArray<T>): PersistC
     serialize: (value) => Array.from(value),
     parse: (raw) => {
       if (!Array.isArray(raw)) return undefined;
-      // Values from storage are untrusted — a stale build may have written
+      // Values from storage are untrusted: a stale build may have written
       // names this build no longer knows about.
       const items = raw.filter(
         (item): item is T => typeof item === "string" && (!allowed || allowed.includes(item as T)),

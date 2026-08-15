@@ -40,7 +40,7 @@ describe("createSearchMatcher (regex)", () => {
     expect(matcher.matches("listPosts")).toBe(false);
   });
 
-  it("is stricter than fuzzy — an acronym no longer matches", () => {
+  it("is stricter than fuzzy: an acronym no longer matches", () => {
     expect(createSearchMatcher("lpf", "regex").matches("listPostsFlaky")).toBe(false);
   });
 

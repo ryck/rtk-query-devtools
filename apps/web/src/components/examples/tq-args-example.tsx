@@ -17,7 +17,7 @@ export function TqArgsExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Query arguments</h3>
       <p className="mt-1 text-sm text-mist">
-        Each ID is its own query key — <code className="font-mono text-paper">["post", 1]</code>,{" "}
+        Each ID is its own query key: <code className="font-mono text-paper">["post", 1]</code>,{" "}
         <code className="font-mono text-paper">["post", 2]</code>… each cached independently in the
         TanStack Query panel.
       </p>

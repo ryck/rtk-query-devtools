@@ -93,7 +93,7 @@ describe("selectQueryEntries", () => {
     result.unsubscribe();
   });
 
-  // RTK Query's infinite-query thunk plumbing is out of scope here — these
+  // RTK Query's infinite-query thunk plumbing is out of scope here; these
   // exercise our own classification heuristic directly against the two
   // substate shapes RTK Query actually produces (see selectors.ts).
   it("classifies an infinite query by its {pages, pageParams} data shape", () => {
@@ -229,7 +229,7 @@ describe("selectTagGroups", () => {
 
 /**
  * RTK 2.6.2 split `provided` from a flat tag map into `{ tags, keys }`. Our
- * peer range is `>=2.0.0`, so both shapes must work — reading `provided.tags`
+ * peer range is `>=2.0.0`, so both shapes must work: reading `provided.tags`
  * on the old shape yields `undefined` and throws.
  *
  * These use hand-built state rather than a real store (unlike the rest of this
@@ -250,7 +250,7 @@ describe("selectApiHealth", () => {
     expect(health).toMatchObject({
       reducerPath: api.reducerPath,
       middlewareRegistered: true,
-      // RTK's documented defaults — proof we're reading the real slice.
+      // RTK's documented defaults, proof we're reading the real slice.
       keepUnusedDataFor: 60,
       invalidationBehavior: "delayed",
       refetchOnFocus: false,
@@ -271,7 +271,7 @@ describe("selectApiHealth", () => {
     const second = createTestApi("sharedPath");
     const store = createTestStore(first, [second.middleware]);
 
-    // Registration is lazy — it happens on the first dispatched action.
+    // Registration is lazy: it happens on the first dispatched action.
     store.dispatch({ type: "noop" });
 
     expect(selectApiHealth(store.getState(), "sharedPath")?.middlewareRegistered).toBe("conflict");

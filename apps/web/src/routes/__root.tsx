@@ -9,9 +9,9 @@ import appCss from "../styles.css?url";
 const SITE_URL = "https://rtk-query-devtools.ryck.dev/";
 const TITLE = "RTK Query Devtools";
 const DESCRIPTION =
-  "See what your RTK Query cache is actually doing — live query status, tags, and request timeline, right inside TanStack DevTools.";
+  "See what your RTK Query cache is actually doing: live query status, tags, and request timeline, right inside TanStack DevTools.";
 const OG_IMAGE_ALT =
-  "rtk-query-devtools — a live status board listing cached RTK Query endpoints with fresh and error badges.";
+  "rtk-query-devtools: a live status board listing cached RTK Query endpoints with fresh and error badges.";
 
 export const Route = createRootRoute({
   notFoundComponent: NotFound,
@@ -28,7 +28,7 @@ export const Route = createRootRoute({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: SITE_URL },
-      // Absolute URL — unfurlers don't resolve relative paths.
+      // Absolute URL, because unfurlers don't resolve relative paths.
       { property: "og:image", content: `${SITE_URL}og-image.png` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
@@ -71,7 +71,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         </div>
         {/*
           Injects the analytics script on the client. It no-ops off Vercel, so
-          local dev and the prerender pass stay inert — nothing is recorded
+          local dev and the prerender pass stay inert, so nothing is recorded
           while the pages are being generated at build time.
         */}
         <Analytics />

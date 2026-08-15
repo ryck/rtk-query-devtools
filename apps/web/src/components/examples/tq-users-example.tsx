@@ -10,7 +10,7 @@ export function TqUsersExample() {
       <h3 className="text-sm font-semibold text-paper">Users (a different key)</h3>
       <p className="mt-1 text-sm text-mist">
         A separate <code className="font-mono text-paper">["users"]</code> query key in the same
-        client — see how TanStack Query lists every key in one flat cache.
+        client. See how TanStack Query lists every key in one flat cache.
       </p>
       <ul className="mt-4 flex flex-col gap-1.5">
         {isLoading ? (

@@ -27,13 +27,13 @@ function delay(ms: number) {
 }
 
 /**
- * A tiny in-memory "backend" instead of MSW — shared by both the RTK Query
+ * A tiny in-memory "backend" instead of MSW, shared by both the RTK Query
  * and TanStack Query demo APIs so their examples hit identical data and
  * timing, making the two devtools panels directly comparable.
  */
 export async function fetchPosts(): Promise<Post[]> {
   await delay(400);
-  // A fresh array, not the shared `DB` reference — both RTK Query and
+  // A fresh array, not the shared `DB` reference, because both RTK Query and
   // TanStack Query skip re-render when `data` is referentially unchanged,
   // so returning the same mutated array twice would hide writes (e.g.
   // createPost's `DB.push`) from the UI.

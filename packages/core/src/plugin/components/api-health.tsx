@@ -13,7 +13,7 @@ function formatFlag(value: boolean | number | undefined): string {
 /**
  * The api's configuration and size, which RTK populates but nothing surfaces.
  *
- * Collapsed by default so it costs no vertical space — except the
+ * Collapsed by default so it costs no vertical space, except the
  * `middlewareRegistered: "conflict"` warning, which is always visible because
  * it means the app is genuinely misconfigured.
  */
@@ -40,7 +40,7 @@ export function ApiHealthStrip({
           <AlertTriangle size={13} className="rtkq:mt-px rtkq:shrink-0" />
           <span>
             <strong>Middleware registered more than once.</strong> RTK Query flagged a conflict for{" "}
-            <code className="rtkq:font-mono">{health.reducerPath}</code> — caching and invalidation
+            <code className="rtkq:font-mono">{health.reducerPath}</code>. Caching and invalidation
             will misbehave until it's added to exactly one store, once.
           </span>
         </div>

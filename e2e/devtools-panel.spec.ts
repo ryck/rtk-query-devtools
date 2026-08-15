@@ -6,7 +6,7 @@ test("the devtools shell opens and shows the RTK Query plugin tab", async ({ pag
   await openDevtoolsShell(page);
 
   // The outer shell's own plugin selector is a plain button, not role="tab"
-  // — only our own Queries/Mutations/Tags/Timeline sub-tabs use that role.
+  // Only our own Queries/Mutations/Tags/Timeline sub-tabs use that role.
   await expect(page.getByTestId("plugin-tab-rtk-query-devtools")).toBeVisible();
   await expect(tab(page, "Queries")).toBeVisible();
 });
@@ -18,7 +18,7 @@ test("queries appear in the Queries tab and update as the app is used", async ({
   await expect(entryRow(page, "listPosts")).toBeVisible();
   await expect(entryRow(page, "listPosts")).toContainText("fresh");
 
-  // Delete a post from the app UI — the list refetches, the entry stays fresh.
+  // Delete a post from the app UI. The list refetches, the entry stays fresh.
   await page.getByRole("button", { name: "Delete Post #1" }).click();
   await expect(page.getByText("Post #1", { exact: true })).toBeHidden();
   await expect(entryRow(page, "listPosts")).toContainText("fresh");
@@ -46,11 +46,11 @@ test("status filter chips narrow the query list", async ({ page }) => {
 
   await expect(entryRow(page, "listPosts")).toBeVisible();
 
-  // "Fresh 1" chip — toggle it on, only fresh entries remain, listPosts stays visible.
+  // "Fresh 1" chip: toggle it on, only fresh entries remain, listPosts stays visible.
   await page.getByRole("button", { name: /^Fresh \d+$/ }).click();
   await expect(entryRow(page, "listPosts")).toBeVisible();
 
-  // "Error 0" chip — toggling it on with zero matches hides everything.
+  // "Error 0" chip: toggling it on with zero matches hides everything.
   await page.getByRole("button", { name: /^Fresh \d+$/ }).click(); // turn fresh back off
   await page.getByRole("button", { name: /^Error \d+$/ }).click();
   await expect(page.getByText("No queries yet")).toBeVisible();
@@ -143,7 +143,7 @@ test("the regex toggle filters by pattern and flags an invalid one", async ({ pa
   await page.getByPlaceholder("Search endpoint or args…").fill("^listPosts\\(");
   await expect(entryRow(page, "listPosts")).toBeVisible();
 
-  // Valid pattern that simply matches nothing — distinct from the invalid
+  // Valid pattern that simply matches nothing, distinct from the invalid
   // case below, which deliberately does *not* filter.
   await page.getByPlaceholder("Search endpoint or args…").fill("^zzzNoSuchEndpoint");
   await expect(entryRow(page, "listPosts")).toBeHidden();

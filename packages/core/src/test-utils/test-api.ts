@@ -10,7 +10,7 @@ export interface Post {
 /**
  * A minimal but realistic RTK Query api used across the unit tests, so
  * assertions run against real generated action types and reducer behavior
- * instead of hand-rolled state fixtures — the internal action types this
+ * instead of hand-rolled state fixtures. The internal action types this
  * package depends on (see actions.ts) are the main version-coupling risk,
  * and only a real store catches a rename.
  */

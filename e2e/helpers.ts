@@ -11,7 +11,7 @@ export async function openDevtoolsShell(page: Page) {
   // live in the DOM while the shell is closed (it toggles visibility, not
   // mount), which is what made an early `isVisible()` check race the shell's
   // mount. But the shell also persists its own open state, so after a reload
-  // it can come back already open with the trigger absent entirely — hence
+  // it can come back already open with the trigger absent entirely, hence
   // racing the two rather than waiting on the trigger alone.
   const trigger = page.getByRole("button", { name: "Open TanStack Devtools" });
   const wordmark = page.getByTestId("workbench-wordmark");

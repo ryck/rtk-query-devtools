@@ -12,7 +12,7 @@ export function InfiniteExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Infinite query</h3>
       <p className="mt-1 text-sm text-mist">
-        Paginated with <code className="font-mono text-paper">builder.infiniteQuery</code> — the
+        Paginated with <code className="font-mono text-paper">builder.infiniteQuery</code>. The
         Queries tab labels this entry's Type as{" "}
         <code className="font-mono text-paper">infinitequery</code>, not{" "}
         <code className="font-mono text-paper">query</code>.

@@ -9,7 +9,7 @@ export interface SelectOption {
   label: string;
 }
 
-/** `1` ascending, `-1` descending — multiplied into a tab's comparator. */
+/** `1` ascending, `-1` descending. Multiplied into a tab's comparator. */
 export type SortOrder = 1 | -1;
 
 export interface ToolbarProps {
@@ -90,7 +90,7 @@ export function Toolbar({
             }
             title={
               searchInvalid
-                ? "Invalid regular expression — showing everything"
+                ? "Invalid regular expression, showing everything"
                 : searchMode === "regex"
                   ? "Searching by regular expression"
                   : "Search by regular expression"

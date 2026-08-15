@@ -64,7 +64,7 @@ describe("ApiHealthStrip", () => {
     const alert = screen.getByRole("alert");
     expect(alert.textContent).toContain("Middleware registered more than once");
     expect(alert.textContent).toContain("postsApi");
-    // Still collapsed — the warning is independent of the disclosure.
+    // Still collapsed: the warning is independent of the disclosure.
     expect(screen.getByRole("button", { name: /API config/ }).getAttribute("aria-expanded")).toBe(
       "false",
     );

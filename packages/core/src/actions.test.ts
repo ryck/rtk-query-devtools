@@ -162,7 +162,7 @@ describe("setOnline / setFocused", () => {
     setOnline(registry, false);
     setFocused(registry, false);
 
-    // These carry no reducerPath — they are global RTK Query actions. Filtered
+    // These carry no reducerPath: they are global RTK Query actions. Filtered
     // because the api also emits a lazy `config/middlewareRegistered` here.
     expect(recorder.actions.map((a) => a.type).filter((t) => t.startsWith("__rtkq/"))).toEqual([
       "__rtkq/offline",

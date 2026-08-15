@@ -6,7 +6,7 @@
  *
  * The template's @font-face rules are rewritten to point at the real woff2
  * files the site ships, so the card uses the actual brand typefaces rather
- * than a system fallback. That means the site must be built first — the
+ * than a system fallback. That means the site must be built first. The
  * script fails loudly if the fonts aren't there, rather than silently
  * rendering in Helvetica.
  */

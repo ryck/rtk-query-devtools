@@ -10,7 +10,7 @@ beforeEach(() => {
 describe("createDevtoolsMiddleware", () => {
   it("attaches the store to the registry as soon as the store is built", async () => {
     // Redux calls a middleware's outer function synchronously while
-    // `configureStore` assembles the middleware chain — the store api is
+    // `configureStore` assembles the middleware chain, so the store api is
     // available before the store is returned, not just on first dispatch.
     const registry = new DevtoolsRegistry();
     const api = createTestApi();
@@ -58,7 +58,7 @@ describe("createDevtoolsMiddleware", () => {
     const result = store.dispatch(api.endpoints.getPost.initiate(1));
     await result;
     // A refetch of the same entry is a *new* requestId under the same cache
-    // key — which is exactly what makes a per-entry history worth showing.
+    // key, which is exactly what makes a per-entry history worth showing.
     await store.dispatch(api.endpoints.getPost.initiate(1, { forceRefetch: true }));
 
     const events = registry.getTimeline().filter((e) => e.queryCacheKey === "getPost(1)");
@@ -100,7 +100,7 @@ describe("createDevtoolsMiddleware", () => {
 
     vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
 
-    // Two overlapping subscriptions to the same cache key — RTK Query
+    // Two overlapping subscriptions to the same cache key: RTK Query
     // dedupes the second and rejects it with `meta.condition = true`.
     const first = store.dispatch(api.endpoints.getPost.initiate(1));
     const second = store.dispatch(api.endpoints.getPost.initiate(1));
@@ -120,7 +120,7 @@ describe("createDevtoolsMiddleware", () => {
     registry.configure({ maxTimelineEntries: 2 });
     const api = createTestApi();
     const store = createTestStore(api, [createDevtoolsMiddleware(registry)]);
-    // A fresh Response per call — reusing one `Response` instance across
+    // A fresh Response per call, because reusing one `Response` instance across
     // multiple `fetch()` calls breaks once its body has been consumed.
     vi.mocked(fetch).mockImplementation(async () =>
       jsonResponse({ id: 1, title: "Hello" } satisfies Post),
@@ -148,9 +148,9 @@ describe("createDevtoolsMiddleware", () => {
 
   it("schedules a panel re-render for any action, not just query/mutation lifecycle actions", async () => {
     // Regression guard: recordAction() only schedules a notify for matched
-    // executeQuery/executeMutation actions, so plain actions — our own
+    // executeQuery/executeMutation actions, so plain actions (our own
     // resetApiState/invalidateTags/removeQueryResult, and RTK Query's own
-    // internal subscriptionsUpdated — would silently never refresh the
+    // internal subscriptionsUpdated) would silently never refresh the
     // panel unless the middleware also calls scheduleNotify() unconditionally.
     vi.useFakeTimers({ toFake: ["setTimeout"] });
     try {

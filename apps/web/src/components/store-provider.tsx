@@ -5,8 +5,8 @@ import { store } from "@/lib/store";
 
 /**
  * Wraps live RTK Query content in a client-only boundary. The store is
- * never touched during SSR — no hook subscribes, so nothing dispatches or
- * fetches server-side — this only comes alive once hydrated in the
+ * never touched during SSR. No hook subscribes, so nothing dispatches or
+ * fetches server-side; it only comes alive once hydrated in the
  * visitor's own browser tab.
  */
 export function StoreProvider({

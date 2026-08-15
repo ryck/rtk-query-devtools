@@ -13,7 +13,7 @@ export {
 export type { User } from "./users-api";
 export { useListUsersQuery, usersApi } from "./users-api";
 
-// Raw async fetchers behind both `createApi` instances above — exported so
+// Raw async fetchers behind both `createApi` instances above, exported so
 // other data-fetching libraries (e.g. TanStack Query) can hit the exact
 // same fake backend and be directly comparable in the devtools.
 export {

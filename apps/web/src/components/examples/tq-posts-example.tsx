@@ -23,7 +23,7 @@ export function TqPostsExample() {
       <h3 className="text-sm font-semibold text-paper">Posts &amp; tags</h3>
       <p className="mt-1 text-sm text-mist">
         Adding a post invalidates the <code className="font-mono text-paper">["posts"]</code> query
-        key — watch it refetch automatically in the TanStack Query panel.
+        key. Watch it refetch automatically in the TanStack Query panel.
       </p>
 
       <form

@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { C, Feature, FeatureGroup } from "@/components/feature";
 
-const TITLE = "Features — RTK Query Devtools";
+const TITLE = "Features | RTK Query Devtools";
 const DESCRIPTION =
   "Every feature of the RTK Query devtools panel, with screenshots: cache status, tags and invalidation, a request timeline with per-endpoint timings, a data explorer, and offline/focus simulation.";
 const URL = "https://rtk-query-devtools.ryck.dev/features";
 
 export const Route = createFileRoute("/features")({
   component: Features,
-  // Overrides the root defaults — without its own canonical, this page would
+  // Overrides the root defaults. Without its own canonical, this page would
   // claim to be a duplicate of the homepage.
   head: () => ({
     meta: [
@@ -43,8 +43,8 @@ function Features() {
       </h1>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-mist">
         Four tabs, a data explorer, and a set of controls for poking at the cache while you debug.
-        Every screenshot below is captured from the real panel running against the demo app — not a
-        mockup — so what you see here is what you get.
+        Every screenshot below is captured from the real panel running against the demo app, not a
+        mockup, so what you see here is what you get.
       </p>
 
       <nav aria-label="Sections" className="mt-8 flex flex-wrap gap-2">
@@ -72,11 +72,12 @@ function Features() {
             alt="The Queries tab listing four cache entries with fresh, error, and inactive badges"
           >
             Each entry gets a derived status: <C>fresh</C>, <C>fetching</C>, <C>error</C>,{" "}
-            <C>inactive</C>, or <C>uninitialized</C> — colour-coded, with the endpoint name, the
+            <C>inactive</C>, or <C>uninitialized</C>, colour-coded, with the endpoint name, the
             serialized cache key, subscriber count, and when it last updated. There is deliberately
             no <C>stale</C> badge: RTK Query has no staleness model, it evicts via{" "}
             <C>keepUnusedDataFor</C>. An entry that is fulfilled with zero subscribers reads as{" "}
-            <C>inactive</C>, which is the state that actually matters — it's about to be collected.
+            <C>inactive</C>, which is the state that actually matters, because it's about to be
+            collected.
           </Feature>
 
           <Feature
@@ -102,7 +103,7 @@ function Features() {
 
           <Feature title="Sort, in either direction">
             Order by last updated, endpoint name, or status severity, ascending or descending. The
-            default — most recently updated first — is usually what you want when something just
+            default, most recently updated first, is usually what you want when something just
             changed.
           </Feature>
 
@@ -113,7 +114,7 @@ function Features() {
           >
             Select an entry for its endpoint, type (<C>query</C> or <C>infinitequery</C>),
             subscriber count, timings, and duration. Provided tags render as chips that jump
-            straight to the Tags tab. Subscriber counts carry a note that they can lag ~500ms —
+            straight to the Tags tab. Subscriber counts carry a note that they can lag ~500ms:
             that's RTK Query syncing subscriptions on a throttled timer, not a bug in the panel.
           </Feature>
 
@@ -123,7 +124,7 @@ function Features() {
             alt="A Requests list showing four fulfilled requests with durations and forced markers"
           >
             A cache entry only remembers its <em>latest</em> request. This lists every request that
-            targeted it — each refetch, its outcome, duration, and whether it was forced. It's how
+            targeted it: each refetch, its outcome, duration, and whether it was forced. It's how
             you answer "has this refetched, how often, and did any of them fail?"
           </Feature>
 
@@ -139,7 +140,7 @@ function Features() {
           id="data"
           eyebrow="Data explorer"
           title="Read your cached data without hanging the panel"
-          lead="Used everywhere a value is shown — arguments, data, errors, and the raw entry."
+          lead="Used everywhere a value is shown: arguments, data, errors, and the raw entry."
         >
           <Feature
             title="Collapsible, copyable, lazy"
@@ -153,13 +154,14 @@ function Features() {
 
           <Feature title="Handles what real data actually contains">
             <C>Map</C>, <C>Set</C>, <C>BigInt</C>, <C>Date</C>, functions, symbols and circular
-            references all render sensibly. <C>Error</C> instances show name, message and stack —
-            they'd otherwise appear as an empty <C>{"{}"}</C>, since those fields aren't enumerable.
+            references all render sensibly. <C>Error</C> instances show name, message and stack.
+            Without that they'd appear as an empty <C>{"{}"}</C>, since those fields aren't
+            enumerable.
           </Feature>
 
           <Feature title="The raw entry, when the summary isn't enough">
             Each detail pane ends with the complete derived entry, so nothing is hidden behind the
-            curated rows above it — including the true cache key, raw status, and request id.
+            curated rows above it, including the true cache key, raw status, and request id.
           </Feature>
         </FeatureGroup>
 
@@ -174,7 +176,7 @@ function Features() {
             shot="mutations"
             alt="A selected mutation showing its arguments, timings and Remove action"
           >
-            RTK Query doesn't keep mutation arguments in state — so the panel recovers them by
+            RTK Query doesn't keep mutation arguments in state, so the panel recovers them by
             correlating against the timeline. You get the arguments, the result or error, timings,
             duration, and a <C>Remove</C> action. Same search and sort controls as Queries.
           </Feature>
@@ -221,9 +223,9 @@ function Features() {
             alt="A timings table showing fastest, median, average and slowest per endpoint, slowest first"
           >
             Fastest, median, average and slowest per endpoint, ordered slowest first, with error
-            counts. Cache state can't tell you this — it only holds the latest request's timestamps
-            — so "which endpoint is slow, and how often does it fail?" is only answerable from the
-            log. Skipped requests are excluded so they can't drag the numbers toward zero.
+            counts. Cache state can't tell you this, because it only holds the latest request's
+            timestamps, so "which endpoint is slow, and how often does it fail?" is only answerable
+            from the log. Skipped requests are excluded so they can't drag the numbers toward zero.
           </Feature>
         </FeatureGroup>
 
@@ -240,7 +242,7 @@ function Features() {
           >
             Toggle offline or blur the tab without touching your network or your code. These
             dispatch RTK Query's own global actions, so <C>refetchOnReconnect</C> and{" "}
-            <C>refetchOnFocus</C> fire for real when you switch back — they aren't cosmetic flags.
+            <C>refetchOnFocus</C> fire for real when you switch back. They aren't cosmetic flags.
           </Feature>
 
           <Feature
@@ -254,10 +256,10 @@ function Features() {
           </Feature>
 
           <Feature title="A warning for a bug you can't otherwise see">
-            If RTK Query reports <C>middlewareRegistered: "conflict"</C> — the same api's middleware
-            registered twice, usually a duplicated module or bad HMR — the panel shows a persistent
-            warning. Caching and invalidation misbehave silently in that state, and no other tool
-            reports it.
+            If RTK Query reports <C>middlewareRegistered: "conflict"</C>, meaning the same api's
+            middleware registered twice, usually a duplicated module or bad HMR, the panel shows a
+            persistent warning. Caching and invalidation misbehave silently in that state, and no
+            other tool reports it.
           </Feature>
         </FeatureGroup>
 
@@ -268,8 +270,8 @@ function Features() {
           lead="Behaviour that matters once your cache is bigger than a demo."
         >
           <Feature title="Multiple APIs, discovered automatically">
-            Every RTK Query api in your store is found by inspecting state — no configuration. An
-            api selector appears in each tab once there's more than one.
+            Every RTK Query api in your store is found by inspecting state, with no configuration.
+            An api selector appears in each tab once there's more than one.
           </Feature>
 
           <Feature title="Virtualized lists">
@@ -296,8 +298,8 @@ function Features() {
 
           <Feature title="Works across RTK Query 2.x">
             Supports <C>@reduxjs/toolkit</C> from <C>2.0.0</C> up, including the internal change in{" "}
-            <C>2.6.2</C> that reshaped the tag index — handled transparently, so the panel doesn't
-            care which side of that line you're on.
+            <C>2.6.2</C> that reshaped the tag index. It's handled transparently, so the panel
+            doesn't care which side of that line you're on.
           </Feature>
         </FeatureGroup>
       </div>

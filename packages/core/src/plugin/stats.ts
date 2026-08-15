@@ -14,7 +14,7 @@ export interface EndpointStats extends DurationStats {
 }
 
 export interface TimelineStats {
-  /** Slowest endpoint first — the ordering you actually want when debugging. */
+  /** Slowest endpoint first, the ordering you actually want when debugging. */
   endpoints: EndpointStats[];
   /** Undefined when nothing has settled yet. */
   overall: DurationStats | undefined;
@@ -36,7 +36,7 @@ function median(durationsAsc: number[]): number {
 }
 
 function summarise(events: TimelineEvent[]): DurationStats {
-  // Numeric comparator, not the default lexicographic one — `[100, 90]` sorts
+  // Numeric comparator, not the default lexicographic one: `[100, 90]` sorts
   // to `[100, 90]` by default, which silently corrupts the median.
   const durations = events.map((e) => e.durationMs ?? 0).toSorted((a, b) => a - b);
   const total = durations.reduce((sum, d) => sum + d, 0);
@@ -52,7 +52,7 @@ function summarise(events: TimelineEvent[]): DurationStats {
 }
 
 /**
- * Per-endpoint request timings, which a cache entry can't tell you — it only
+ * Per-endpoint request timings, which a cache entry can't tell you. It only
  * retains the latest request's timestamps, so "which endpoint is slowest, and
  * how often does it fail?" is only answerable from the event log.
  */

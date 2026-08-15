@@ -9,7 +9,7 @@ export default defineConfig({
     // Prerendered to static HTML rather than server-rendered. Every piece of
     // live content here is already behind <ClientOnly> (the store is a browser
     // singleton and the "API" is an in-memory fake), so there is nothing for a
-    // server to render — this keeps the deploy a pure static upload with no
+    // server to render. This keeps the deploy a pure static upload with no
     // serverless runtime.
     tanstackStart({ prerender: { enabled: true, crawlLinks: true } }),
     viteReact(),

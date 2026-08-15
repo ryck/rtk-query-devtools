@@ -5,7 +5,7 @@ import { queryClient } from "@/lib/query-client";
 
 /**
  * Composes the Redux store and TanStack Query client behind the same
- * <ClientOnly> boundary `StoreProvider` already establishes — the examples
+ * <ClientOnly> boundary `StoreProvider` already establishes. The examples
  * page needs both live at once so the RTK Query and TanStack Query devtools
  * plugins can be compared side by side.
  */

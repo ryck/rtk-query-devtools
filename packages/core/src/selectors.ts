@@ -53,7 +53,7 @@ type RawProvidedKeys = Record<string, TagDescription[]>;
  * - `<= 2.6.1`: `{ [tagType]: { [id]: QueryCacheKey[] } }`
  * - `>= 2.6.2`: `{ tags: { [tagType]: … }, keys: { [cacheKey]: … } }`
  *
- * Our peer range is `>=2.0.0`, so both shapes have to work — reading
+ * Our peer range is `>=2.0.0`, so both shapes have to work: reading
  * `provided.tags` on the old shape yields `undefined` and throws.
  */
 type RawProvided = RawProvidedTags | { tags: RawProvidedTags; keys: RawProvidedKeys };
@@ -88,8 +88,8 @@ function isSplitProvided(
 }
 
 /**
- * Keyed on the raw `provided` object so the returned value — and therefore
- * `.tags` / `.keys` — keeps a stable identity for as long as RTK's own object
+ * Keyed on the raw `provided` object so the returned value (and therefore
+ * `.tags` / `.keys`) keeps a stable identity for as long as RTK's own object
  * does. That is load-bearing, not an optimization: `selectQueryEntries` and
  * `selectTagGroups` memoize on exactly those references, so handing back a
  * fresh object per call would silently disable both caches.
@@ -126,7 +126,7 @@ function normalizeProvided(provided: RawProvided): NormalizedProvided {
 /**
  * `online` and `focused` are global RTK Query state that every api's config
  * slice mirrors, so reading from any one api gives the same answer. Both
- * default to `true` — the normal, un-simulated environment — when the slice
+ * default to `true` (the normal, un-simulated environment) when the slice
  * hasn't been read yet.
  */
 export function selectEnvironment(
@@ -142,7 +142,7 @@ export interface ApiHealth {
   /**
    * `"conflict"` means RTK saw the same api's middleware registered more than
    * once (or against two stores). Caching silently misbehaves when this
-   * happens, and nothing else reports it — which is why the panel surfaces it
+   * happens, and nothing else reports it, which is why the panel surfaces it
    * rather than burying it with the rest of the config.
    */
   middlewareRegistered: boolean | "conflict";
@@ -153,7 +153,7 @@ export interface ApiHealth {
   refetchOnMountOrArgChange: boolean | number | undefined;
   cachedQueries: number;
   cachedMutations: number;
-  /** Total live subscribers across every cache entry — lags by up to 500ms. */
+  /** Total live subscribers across every cache entry. Lags by up to 500ms. */
   subscriberCount: number;
 }
 
@@ -213,7 +213,7 @@ function deriveQueryStatus(status: QueryStatus, subscriberCount: number): Derive
 
 /**
  * RTK Query always stores infinite query results as `{ pages, pageParams }`,
- * from the very first fetch — unlike the substate's `direction` field, which
+ * from the very first fetch, unlike the substate's `direction` field, which
  * is only set once a `fetchNextPage`/`fetchPreviousPage` call has happened.
  * This makes it the more reliable of the two infinite-query signals.
  */
@@ -244,7 +244,7 @@ const queryEntriesCache = new Map<string, QueryEntriesCacheRecord>();
 /**
  * Derives the query/infinite-query entries for a single api slice. Memoized
  * on the identity of `queries`, `subscriptions`, and `provided.keys` so a
- * render triggered by an unrelated slice change reuses the same array —
+ * render triggered by an unrelated slice change reuses the same array.
  * `subscriptions` is included because its throttled sync is the only source
  * of live subscriber counts, not just `queries`.
  */

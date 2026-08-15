@@ -1,10 +1,10 @@
 /**
  * RTK Query's own cache key for a no-arg query (`builder.query<T, void>`)
- * is literally `${endpointName}(undefined)` — `defaultSerializeQueryArgs`
+ * is literally `${endpointName}(undefined)`, because `defaultSerializeQueryArgs`
  * runs `JSON.stringify(undefined)`, which returns the JS value `undefined`,
  * and the template literal that builds the key then coerces it to the text
  * "undefined". That's the real Redux state key, so `queryCacheKey` itself
- * is left untouched everywhere else (selection, actions) — this only
+ * is left untouched everywhere else (selection, actions); this only
  * cleans up how it reads in the UI, and only when `originalArgs` (the
  * actual field RTK Query recorded, not a string guess) confirms the args
  * really were `undefined`.
@@ -38,7 +38,7 @@ export function formatRelativeTime(
 
 /**
  * A JSON.stringify that survives the shapes real app data actually contains
- * — circular references, BigInt, Map/Set, functions — instead of throwing.
+ * (circular references, BigInt, Map/Set, functions) instead of throwing.
  * Only ever call this on demand (e.g. a "copy" button); never eagerly on
  * render, since it walks the entire value.
  *

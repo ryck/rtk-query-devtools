@@ -14,7 +14,7 @@ export function PollingExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Polling</h3>
       <p className="mt-1 text-sm text-mist">
-        Refetches every 2s while on — open the Queries tab and watch the{" "}
+        Refetches every 2s while on. Open the Queries tab and watch the{" "}
         <code className="font-mono text-paper">polling</code> pill, or the Timeline tab to see a
         request land on schedule with nothing on the page to trigger it.
       </p>

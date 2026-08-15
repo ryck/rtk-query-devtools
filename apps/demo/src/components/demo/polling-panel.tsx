@@ -14,7 +14,7 @@ export function PollingPanel() {
       <CardHeader>
         <CardTitle>Polling subscription</CardTitle>
         <CardDescription>
-          Subscribes to the same <code>listPosts</code> cache entry with a 3s poll interval — the
+          Subscribes to the same <code>listPosts</code> cache entry with a 3s poll interval. The
           Queries tab shows a "polling" pill on this entry while active.
         </CardDescription>
       </CardHeader>

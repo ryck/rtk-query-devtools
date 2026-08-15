@@ -29,7 +29,7 @@ export interface QueryEntry {
 
 export interface MutationEntry {
   reducerPath: string;
-  /** The key this entry is stored under in `mutations` — either `requestId` or a user-supplied `fixedCacheKey`. */
+  /** The key this entry is stored under in `mutations`: either `requestId` or a user-supplied `fixedCacheKey`. */
   cacheKey: string;
   requestId: string;
   endpointName: string;
@@ -77,7 +77,7 @@ export interface TimelineEvent {
 
 /**
  * The minimal surface of an RTK Query `api` object this package relies on.
- * Deliberately narrow — `endpoints[name].initiate` is the only thing we
+ * Deliberately narrow: `endpoints[name].initiate` is the only thing we
  * actually call (for Refetch; see actions.ts). Every other cache-mutating
  * action (reset/remove/invalidate) is constructible from `reducerPath` alone
  * as a plain action object, so this doesn't need `api.util.*` at all, which
@@ -90,7 +90,7 @@ export interface RtkQueryApiLike {
     string,
     {
       // `arg`'s real type is per-endpoint (e.g. `number` for `getPost`, an
-      // object for others) — `unknown` is too wide to be assignable *from*
+      // object for others), and `unknown` is too wide to be assignable *from*
       // a real, narrower `initiate`, per function parameter contravariance.
       // `any` is the correct, deliberate escape valve for this kind of
       // structural "the exact generic instantiation doesn't matter" typing.

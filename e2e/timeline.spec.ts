@@ -16,7 +16,7 @@ test("the Timeline tab records query and mutation lifecycle events", async ({ pa
   await expect(page.getByText("Timeline test post", { exact: true })).toBeVisible();
 
   // Adding a post invalidates Post:LIST, triggering a second listPosts fetch
-  // — the timeline should grow, and an addPost mutation should appear too.
+  // The timeline should grow, and an addPost mutation should appear too.
   await expect
     .poll(async () => page.locator('div[role="button"]').filter({ hasText: "listPosts" }).count())
     .toBeGreaterThan(before);

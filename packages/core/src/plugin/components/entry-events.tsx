@@ -9,7 +9,7 @@ import { OutcomeBadge } from "./outcome-badge";
  *
  * A cache entry holds only the *latest* request's timings, so this is the one
  * place the panel can answer "how many times has this refetched, and did any
- * of them fail?" — each refetch gets a fresh `requestId` under the same
+ * of them fail?" Each refetch gets a fresh `requestId` under the same
  * `queryCacheKey`.
  */
 export function EntryEvents({

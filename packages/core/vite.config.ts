@@ -8,7 +8,7 @@ export default defineConfig({
     tailwindcss(),
     dts({
       include: ["src"],
-      // Tests and their scaffolding are not part of the public surface — without
+      // Tests and their scaffolding are not part of the public surface. Without
       // this they ship as stray `.d.ts` files in the published tarball.
       exclude: ["src/**/*.test.*", "src/test-utils/**"],
       bundleTypes: true,

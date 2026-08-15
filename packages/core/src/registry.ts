@@ -3,7 +3,7 @@ import type { EndpointType, RtkQueryApiLike, TimelineEvent, TimelineOutcome } fr
 
 /**
  * Matches Redux's real `UnknownAction` (`{ type: string } & Record<string, unknown>`).
- * Declaring it locally — rather than importing it from `redux`/`@reduxjs/toolkit` —
+ * Declaring it locally, rather than importing it from `redux`/`@reduxjs/toolkit`,
  * keeps this module dependency-free while still being structurally identical,
  * which is what actually matters: `StoreLike` must be assignable *from* a real
  * `MiddlewareAPI` for `DevtoolsMiddleware` to satisfy Redux's `Middleware` type.
@@ -80,7 +80,7 @@ export class DevtoolsRegistry {
   }
 
   /**
-   * Deliberately typed `unknown`, not `DevtoolsAction` — callers like
+   * Deliberately typed `unknown`, not `DevtoolsAction`, because callers like
    * `refetch()` in actions.ts dispatch a thunk function (from `initiate()`),
    * not a plain action object. The real store's dispatch handles both fine
    * at runtime; only `StoreLike`'s declared type needs to look like plain
@@ -118,7 +118,7 @@ export class DevtoolsRegistry {
   }
 
   /**
-   * Returns a shallow copy, not the live array — timeline entries are
+   * Returns a shallow copy, not the live array, because timeline entries are
    * mutated in place on settle (see `#handleThunkAction`), so the internal
    * array's reference alone can't signal "changed" to a memoized consumer.
    */
@@ -271,7 +271,7 @@ export class DevtoolsRegistry {
     };
   }
 
-  /** Cheap identity for `useSyncExternalStore` — an incrementing integer. */
+  /** Cheap identity for `useSyncExternalStore`: an incrementing integer. */
   getVersion(): number {
     return this.#version;
   }

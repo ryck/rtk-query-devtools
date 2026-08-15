@@ -33,7 +33,7 @@ describe("findRtkQueryReducerPaths", () => {
 
   it("ignores a slice whose config.reducerPath disagrees with its key", () => {
     // e.g. two api instances accidentally sharing a reducerPath, or a
-    // moved/renamed reducer key — config.reducerPath is the source of truth.
+    // moved/renamed reducer key; config.reducerPath is the source of truth.
     const state = { renamedApi: rtkQuerySlice("originalApi") };
     expect(findRtkQueryReducerPaths(state)).toEqual([]);
   });

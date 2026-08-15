@@ -17,7 +17,7 @@ test("the offline toggle flips state and refetches on reconnect", async ({ page 
   await expect(offline).toHaveAttribute("aria-pressed", "true");
 
   // Going back online drives a real refetchOnReconnect pass, which the
-  // Timeline records — this is what proves the toggle isn't just a flag.
+  // Timeline records. This is what proves the toggle isn't just a flag.
   await switchTab(page, "Timeline");
   const before = await entryRow(page, "listPosts").count();
 

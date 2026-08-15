@@ -25,8 +25,8 @@ export function PostsPanel() {
         </CardTitle>
         <CardDescription>
           A normal query (<code>listPosts</code>) with tag-based cache invalidation. Adding a post
-          invalidates the <code>Post:LIST</code> tag, which refetches this list automatically —
-          watch it happen in the Timeline tab.
+          invalidates the <code>Post:LIST</code> tag, which refetches this list automatically. watch
+          it happen in the Timeline tab.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

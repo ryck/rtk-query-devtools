@@ -8,7 +8,7 @@ export function UsersExample() {
     <Card>
       <h3 className="text-sm font-semibold text-paper">Users (a second API)</h3>
       <p className="mt-1 text-sm text-mist">
-        A completely separate <code className="font-mono text-paper">createApi</code> instance — the
+        A completely separate <code className="font-mono text-paper">createApi</code> instance. The
         devtools panel's toolbar shows an API selector once it detects more than one.
       </p>
       <ul className="mt-4 flex flex-col gap-1.5">

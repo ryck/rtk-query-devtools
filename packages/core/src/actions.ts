@@ -2,7 +2,7 @@ import type { DevtoolsRegistry } from "./registry";
 import type { MutationEntry, RefetchResult, TagDescription } from "./types";
 
 /**
- * These four action types are constructible from `reducerPath` alone — they
+ * These four action types are constructible from `reducerPath` alone. They
  * are plain `createAction`/`createSlice` action creators in RTK Query with
  * no transformation of their payload, so dispatching the literal action
  * object is equivalent to calling `api.util.<name>(...)`. Only Refetch
@@ -50,7 +50,7 @@ export function invalidateTags(
  * config slice reduces them. That's why, unlike everything else in this file,
  * they take no `reducerPath` argument.
  *
- * They are not inert flags — RTK Query's middleware matches `__rtkq/online`
+ * They are not inert flags. RTK Query's middleware matches `__rtkq/online`
  * and `__rtkq/focused` to drive `refetchOnReconnect` and `refetchOnFocus`
  * refetches, so toggling these exercises the same code path a real
  * reconnect or tab-focus would.
@@ -59,7 +59,7 @@ export function setOnline(registry: DevtoolsRegistry, online: boolean): void {
   registry.dispatch({ type: online ? "__rtkq/online" : "__rtkq/offline" });
 }
 
-/** See {@link setOnline} — also global, and drives `refetchOnFocus`. */
+/** See {@link setOnline}. Also global, and drives `refetchOnFocus`. */
 export function setFocused(registry: DevtoolsRegistry, focused: boolean): void {
   registry.dispatch({ type: focused ? "__rtkq/focused" : "__rtkq/unfocused" });
 }

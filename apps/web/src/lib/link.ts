@@ -1,5 +1,5 @@
 /**
- * The single treatment for text links — header nav, footer, and inline prose.
+ * The single treatment for text links: header nav, footer, and inline prose.
  *
  * A hairline underline rather than colour alone, so links are identifiable
  * without relying on a colour difference that's easy to miss against this

@@ -10,7 +10,7 @@ export function UsersPanel() {
       <CardHeader>
         <CardTitle>Users (second API)</CardTitle>
         <CardDescription>
-          A completely separate <code>createApi</code> instance with its own reducer path — the
+          A completely separate <code>createApi</code> instance with its own reducer path. The
           devtools panel's toolbar will show an API selector once it detects more than one.
         </CardDescription>
       </CardHeader>

@@ -17,7 +17,7 @@ const AUTO_COLLAPSE_ENTRY_COUNT = 30;
 /**
  * Collections longer than this are split into collapsible chunks. Auto-collapse
  * only governs a node's *initial* state, so without chunking, expanding a
- * 50k-element array would render 50k unvirtualized rows — the one remaining way
+ * 50k-element array would render 50k unvirtualized rows, the one remaining way
  * to hang the panel on a large cache entry.
  */
 const CHUNK_SIZE = 100;
@@ -63,8 +63,8 @@ function describeCollection(data: object): Collection {
 }
 
 /**
- * `Object.entries(new Error("boom"))` is `[]` — `name`, `message`, and `stack`
- * are all non-enumerable — so without this an Error renders as a bare `{}`.
+ * `Object.entries(new Error("boom"))` is `[]`, because `name`, `message`, and `stack`
+ * are all non-enumerable, so without this an Error renders as a bare `{}`.
  * Own enumerable properties are appended, which is what carries the useful
  * detail on RTK's `SerializedError` and on custom error subclasses.
  */
@@ -84,7 +84,7 @@ function describeError(error: Error): Collection {
 
 /**
  * Objects that read better as a single value than as a tree of their (usually
- * empty) own properties — `Object.entries(new Date())` is `[]`, so without this
+ * empty) own properties. `Object.entries(new Date())` is `[]`, so without this
  * a Date renders as a bare `{}` and `PrimitiveToken`'s Date branch is
  * unreachable.
  */
@@ -94,7 +94,7 @@ function isLeafObject(value: object): boolean {
 
 /**
  * Renders arbitrary app data as a collapsible tree without ever calling
- * `JSON.stringify` on the whole value — large cache entries would otherwise
+ * `JSON.stringify` on the whole value; large cache entries would otherwise
  * hang the panel. Nodes past the default expand depth or with many entries
  * start collapsed; expanding is opt-in per node.
  */
@@ -189,7 +189,7 @@ function EntryList({
       <CollapsibleNode
         key={start}
         classes={classes}
-        // The real end index, not `start + CHUNK_SIZE - 1` — the final chunk is
+        // The real end index, not `start + CHUNK_SIZE - 1`, because the final chunk is
         // usually partial, and labelling it with a range it doesn't contain is
         // a small lie the reader has to debug around.
         label={`[${start}…${end - 1}]`}
@@ -285,7 +285,7 @@ function CollapsibleNode({
 type CopyState = "idle" | "copied" | "error";
 
 /**
- * The only place `safeStringify` is called — deliberately on demand, since it
+ * The only place `safeStringify` is called, deliberately on demand, since it
  * walks the entire value (see its docstring in ../format).
  */
 function CopyButton({ classes, value }: { classes: RtkQueryDevtoolsClasses; value: unknown }) {

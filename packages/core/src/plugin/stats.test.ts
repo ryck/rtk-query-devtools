@@ -86,7 +86,7 @@ describe("computeTimelineStats", () => {
   });
 
   // Deduped requests settle almost instantly and describe work that never
-  // happened — including them would drag `fastest` and the average to zero.
+  // happened, so including them would drag `fastest` and the average to zero.
   it("ignores deduped/skipped requests entirely", () => {
     const stats = computeTimelineStats([event("listPosts", 300), event("listPosts", 0, "skipped")]);
 
