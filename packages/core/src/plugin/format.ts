@@ -23,6 +23,18 @@ export function formatDuration(ms: number | undefined): string {
   return `${minutes}m ${seconds}s`;
 }
 
+/**
+ * Wall-clock time (`HH:MM:SS`) for a row's fixed-width timestamp column.
+ * Kept separate from `formatRelativeTime` so every row list (Queries,
+ * Mutations, Timeline) can render the *same* clock-time format in the *same*
+ * column position, regardless of which timestamp field each entry type
+ * happens to track (`fulfilledTimeStamp` vs `startedTimeStamp`).
+ */
+export function formatTimestamp(timestamp: number | undefined): string {
+  if (timestamp === undefined) return "—";
+  return new Date(timestamp).toLocaleTimeString();
+}
+
 export function formatRelativeTime(
   timestamp: number | undefined,
   now: number = Date.now(),

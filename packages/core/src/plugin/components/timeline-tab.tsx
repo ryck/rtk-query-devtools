@@ -1,10 +1,10 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import clsx from "clsx";
 import { Pause, Play, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import type { DevtoolsRegistry } from "../../registry";
 import type { EndpointType, TimelineEvent } from "../../types";
-import { formatDuration } from "../format";
+import { formatDuration, formatTimestamp } from "../format";
+import { useDetailPanelWidth } from "../hooks/use-detail-panel-width";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
 import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
 import { computeTimelineStats } from "../stats";
@@ -13,6 +13,7 @@ import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
 import { OutcomeBadge } from "./outcome-badge";
+import { ResizableDivider } from "./resizable-divider";
 import { TimelineStatsPanel } from "./timeline-stats";
 import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
@@ -69,6 +70,7 @@ export function TimelineTab({
   const paused = registry.isTimelinePaused();
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const { width: detailPanelWidth, resizeBy, reset: resetWidth } = useDetailPanelWidth();
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => parentRef.current,
@@ -156,45 +158,41 @@ export function TimelineTab({
         </div>
 
         {selected && (
-          <div
-            className={clsx(
-              "rtkq:w-[380px] rtkq:shrink-0 rtkq:border-l rtkq:overflow-hidden",
-              classes.border,
-            )}
-          >
-            <EntryDetail
-              classes={classes}
-              heading={selected.endpointName}
-              statusNode={<OutcomeBadge outcome={selected.outcome} classes={classes} />}
-              metaRows={[
-                { label: "Kind", value: KIND_LABEL[selected.kind] },
-                { label: "Request ID", value: selected.requestId },
-                {
-                  label: "Started",
-                  value: new Date(selected.startedTimeStamp).toLocaleTimeString(),
-                },
-                {
-                  label: "Settled",
-                  value: selected.settledTimeStamp
-                    ? new Date(selected.settledTimeStamp).toLocaleTimeString()
-                    : "—",
-                },
-                {
-                  label: "Duration",
-                  value:
-                    selected.durationMs !== undefined ? formatDuration(selected.durationMs) : "—",
-                },
-                { label: "forceRefetch", value: String(!!selected.forceRefetch) },
-                { label: "subscribe", value: String(selected.subscribe !== false) },
-              ]}
-              jsonSections={[
-                { label: "Arguments", value: selected.originalArgs },
-                ...(selected.error !== undefined
-                  ? [{ label: "Error", value: selected.error }]
-                  : []),
-              ]}
-            />
-          </div>
+          <>
+            <ResizableDivider classes={classes} onResize={resizeBy} onReset={resetWidth} />
+            <div className="rtkq:shrink-0 rtkq:overflow-hidden" style={{ width: detailPanelWidth }}>
+              <EntryDetail
+                classes={classes}
+                heading={selected.endpointName}
+                statusNode={<OutcomeBadge outcome={selected.outcome} classes={classes} />}
+                metaRows={[
+                  { label: "Kind", value: KIND_LABEL[selected.kind] },
+                  { label: "Request ID", value: selected.requestId },
+                  {
+                    label: "Started",
+                    value: formatTimestamp(selected.startedTimeStamp),
+                  },
+                  {
+                    label: "Settled",
+                    value: formatTimestamp(selected.settledTimeStamp),
+                  },
+                  {
+                    label: "Duration",
+                    value: formatDuration(selected.durationMs),
+                  },
+                  { label: "forceRefetch", value: String(!!selected.forceRefetch) },
+                  { label: "subscribe", value: String(selected.subscribe !== false) },
+                ]}
+                onClose={() => setSelectedId(undefined)}
+                jsonSections={[
+                  { label: "Arguments", value: selected.originalArgs },
+                  ...(selected.error !== undefined
+                    ? [{ label: "Error", value: selected.error }]
+                    : []),
+                ]}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -220,11 +218,8 @@ function TimelineRow({
       statusNode={<OutcomeBadge outcome={event.outcome} classes={classes} />}
       title={event.endpointName}
       subtitle={KIND_LABEL[event.kind]}
-      metaRight={
-        <span className={clsx("rtkq:text-[10px] rtkq:shrink-0", classes.textMuted)}>
-          {event.durationMs !== undefined ? formatDuration(event.durationMs) : "…"}
-        </span>
-      }
+      timestamp={formatTimestamp(event.startedTimeStamp)}
+      duration={formatDuration(event.durationMs)}
     />
   );
 }

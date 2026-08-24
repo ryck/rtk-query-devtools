@@ -1,20 +1,21 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import clsx from "clsx";
-import { CheckCircle2, CircleSlash, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, CircleSlash, Loader2, Trash2, XCircle } from "lucide-react";
 import type { ComponentType, CSSProperties } from "react";
 import { useMemo, useRef, useState } from "react";
 import { removeMutationEntry } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import { selectMutationEntries } from "../../selectors";
 import type { DerivedQueryStatus, MutationEntry } from "../../types";
-import { formatDuration, formatRelativeTime } from "../format";
+import { formatDuration, formatRelativeTime, formatTimestamp } from "../format";
+import { useDetailPanelWidth } from "../hooks/use-detail-panel-width";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
 import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
-import { SPIN_ANIMATION_NAME } from "../spin-keyframes";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { EmptyState } from "./empty-state";
 import { EntryDetail } from "./entry-detail";
 import { EntryRow } from "./entry-row";
+import { ResizableDivider } from "./resizable-divider";
+import { IconBadge } from "./status-badge";
 import type { SelectOption, SortOrder } from "./toolbar";
 import { Toolbar, ToolbarButton } from "./toolbar";
 
@@ -33,10 +34,10 @@ const MUTATION_STATUS_META: Record<
     palette: DerivedQueryStatus;
   }
 > = {
-  pending: { label: "pending", icon: Loader2, spin: true, palette: "fetching" },
-  fulfilled: { label: "fulfilled", icon: CheckCircle2, palette: "fresh" },
-  rejected: { label: "error", icon: XCircle, palette: "error" },
-  uninitialized: { label: "uninitialized", icon: CircleSlash, palette: "uninitialized" },
+  pending: { label: "Pending", icon: Loader2, spin: true, palette: "fetching" },
+  fulfilled: { label: "Fulfilled", icon: CheckCircle2, palette: "fresh" },
+  rejected: { label: "Error", icon: XCircle, palette: "error" },
+  uninitialized: { label: "Uninitialized", icon: CircleSlash, palette: "uninitialized" },
 };
 
 function MutationStatusBadge({
@@ -47,22 +48,8 @@ function MutationStatusBadge({
   classes: RtkQueryDevtoolsClasses;
 }) {
   const meta = MUTATION_STATUS_META[status];
-  const Icon = meta.icon;
   const palette = classes.status[meta.palette];
-  return (
-    <span
-      className={clsx(
-        "rtkq:inline-flex rtkq:items-center rtkq:gap-1 rtkq:px-1.5 rtkq:py-0.5 rtkq:rounded-full rtkq:text-[10px] rtkq:font-semibold rtkq:uppercase rtkq:tracking-wide rtkq:whitespace-nowrap",
-        palette.badge,
-      )}
-    >
-      <Icon
-        size={11}
-        style={meta.spin ? { animation: `${SPIN_ANIMATION_NAME} 0.9s linear infinite` } : undefined}
-      />
-      {meta.label}
-    </span>
-  );
+  return <IconBadge icon={meta.icon} label={meta.label} palette={palette.badge} spin={meta.spin} />;
 }
 
 const SORT_KEYS = ["updated", "endpoint", "status"] as const;
@@ -155,6 +142,7 @@ export function MutationsTab({
     : undefined;
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const { width: detailPanelWidth, resizeBy, reset: resetWidth } = useDetailPanelWidth();
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => parentRef.current,
@@ -214,13 +202,11 @@ export function MutationsTab({
                       transform: `translateY(${row.start}px)`,
                     }}
                   >
-                    <EntryRow
+                    <MutationRow
                       classes={classes}
+                      entry={entry}
                       selected={entry.cacheKey === selectedKey}
                       onSelect={() => setSelectedKey(entry.cacheKey)}
-                      statusNode={<MutationStatusBadge status={entry.status} classes={classes} />}
-                      title={entry.endpointName}
-                      subtitle={entry.requestId}
                     />
                   </div>
                 );
@@ -230,66 +216,94 @@ export function MutationsTab({
         </div>
 
         {selected && (
-          <div
-            className={clsx(
-              "rtkq:w-[380px] rtkq:shrink-0 rtkq:border-l rtkq:overflow-hidden",
-              classes.border,
-            )}
-          >
-            <EntryDetail
-              classes={classes}
-              heading={selected.endpointName}
-              statusNode={<MutationStatusBadge status={selected.status} classes={classes} />}
-              metaRows={[
-                { label: "Request ID", value: selected.requestId },
-                {
-                  label: "Started",
-                  value: selected.startedTimeStamp
-                    ? new Date(selected.startedTimeStamp).toLocaleTimeString()
-                    : "—",
-                },
-                {
-                  label: "Fulfilled",
-                  value: selected.fulfilledTimeStamp
-                    ? `${new Date(selected.fulfilledTimeStamp).toLocaleTimeString()} (${formatRelativeTime(selected.fulfilledTimeStamp)})`
-                    : "—",
-                },
-                {
-                  label: "Duration",
-                  value:
-                    selected.startedTimeStamp !== undefined &&
-                    selected.fulfilledTimeStamp !== undefined
-                      ? formatDuration(selected.fulfilledTimeStamp - selected.startedTimeStamp)
+          <>
+            <ResizableDivider classes={classes} onResize={resizeBy} onReset={resetWidth} />
+            <div className="rtkq:shrink-0 rtkq:overflow-hidden" style={{ width: detailPanelWidth }}>
+              <EntryDetail
+                classes={classes}
+                heading={selected.endpointName}
+                statusNode={<MutationStatusBadge status={selected.status} classes={classes} />}
+                metaRows={[
+                  { label: "Request ID", value: selected.requestId },
+                  {
+                    label: "Started",
+                    value: selected.startedTimeStamp
+                      ? new Date(selected.startedTimeStamp).toLocaleTimeString()
                       : "—",
-                },
-              ]}
-              jsonSections={[
-                // Absent once the event has aged out of the ring buffer.
-                ...(mutationEvent
-                  ? [{ label: "Arguments", value: mutationEvent.originalArgs }]
-                  : []),
-                { label: "Data", value: selected.data },
-                ...(selected.error !== undefined
-                  ? [{ label: "Error", value: selected.error }]
-                  : []),
-                { label: "Mutation entry", value: selected },
-              ]}
-              actions={
-                <ToolbarButton
-                  classes={classes}
-                  variant="danger"
-                  onClick={() => {
-                    removeMutationEntry(registry, activeApi, selected);
-                    setSelectedKey(undefined);
-                  }}
-                >
-                  Remove
-                </ToolbarButton>
-              }
-            />
-          </div>
+                  },
+                  {
+                    label: "Fulfilled",
+                    value: selected.fulfilledTimeStamp
+                      ? `${new Date(selected.fulfilledTimeStamp).toLocaleTimeString()} (${formatRelativeTime(selected.fulfilledTimeStamp)})`
+                      : "—",
+                  },
+                  {
+                    label: "Duration",
+                    value:
+                      selected.startedTimeStamp !== undefined &&
+                      selected.fulfilledTimeStamp !== undefined
+                        ? formatDuration(selected.fulfilledTimeStamp - selected.startedTimeStamp)
+                        : "—",
+                  },
+                ]}
+                onClose={() => setSelectedKey(undefined)}
+                jsonSections={[
+                  ...(mutationEvent
+                    ? [{ label: "Arguments", value: mutationEvent.originalArgs }]
+                    : []),
+                  { label: "Data", value: selected.data },
+                  ...(selected.error !== undefined
+                    ? [{ label: "Error", value: selected.error }]
+                    : []),
+                  { label: "Mutation entry", value: selected },
+                ]}
+                actions={
+                  <ToolbarButton
+                    classes={classes}
+                    icon={Trash2}
+                    variant="danger"
+                    onClick={() => {
+                      removeMutationEntry(registry, activeApi, selected);
+                      setSelectedKey(undefined);
+                    }}
+                  >
+                    Remove
+                  </ToolbarButton>
+                }
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
+  );
+}
+
+function MutationRow({
+  classes,
+  entry,
+  selected,
+  onSelect,
+}: {
+  classes: RtkQueryDevtoolsClasses;
+  entry: MutationEntry;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const durationMs =
+    entry.startedTimeStamp !== undefined && entry.fulfilledTimeStamp !== undefined
+      ? entry.fulfilledTimeStamp - entry.startedTimeStamp
+      : undefined;
+  return (
+    <EntryRow
+      classes={classes}
+      selected={selected}
+      onSelect={onSelect}
+      statusNode={<MutationStatusBadge status={entry.status} classes={classes} />}
+      title={entry.endpointName}
+      subtitle={entry.requestId}
+      timestamp={formatTimestamp(entry.fulfilledTimeStamp)}
+      duration={formatDuration(durationMs)}
+    />
   );
 }

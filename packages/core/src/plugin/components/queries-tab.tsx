@@ -1,6 +1,6 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
-import { Eye, EyeOff, Wifi, WifiOff } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, RotateCcw, RotateCw, Trash2, Wifi, WifiOff } from "lucide-react";
 import { useMemo, useRef } from "react";
 import {
   invalidateTags,
@@ -13,8 +13,14 @@ import {
 import type { DevtoolsRegistry } from "../../registry";
 import type { ApiHealth } from "../../selectors";
 import type { DerivedQueryStatus, QueryEntry, TagDescription, TimelineEvent } from "../../types";
-import { formatDuration, formatQueryCacheKey, formatRelativeTime } from "../format";
+import {
+  formatDuration,
+  formatQueryCacheKey,
+  formatRelativeTime,
+  formatTimestamp,
+} from "../format";
 import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
+import { useDetailPanelWidth } from "../hooks/use-detail-panel-width";
 import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
 import type { RtkQueryDevtoolsClasses } from "../theme";
 import { ApiHealthStrip } from "./api-health";
@@ -23,6 +29,7 @@ import { EntryDetail } from "./entry-detail";
 import { EntryEvents } from "./entry-events";
 import { EntryRow } from "./entry-row";
 import { PollingPill, StatusBadge } from "./status-badge";
+import { ResizableDivider } from "./resizable-divider";
 import { Toolbar, ToolbarButton } from "./toolbar";
 import type { SelectOption, SortOrder } from "./toolbar";
 
@@ -128,6 +135,7 @@ export function QueriesTab({
     : [];
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const { width: detailPanelWidth, resizeBy, reset: resetWidth } = useDetailPanelWidth();
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => parentRef.current,
@@ -193,7 +201,9 @@ export function QueriesTab({
             </ToolbarButton>
             <ToolbarButton
               classes={classes}
+              icon={RotateCcw}
               variant="danger"
+              title="Dispatches resetApiState: clears every cached query/mutation result, error, and subscriber for this api slice, and cancels in-flight requests. Equivalent to calling api.util.resetApiState()."
               onClick={() => {
                 if (
                   window.confirm("Reset API state? This clears every cached query and mutation.")
@@ -202,7 +212,7 @@ export function QueriesTab({
                 }
               }}
             >
-              Reset API state
+              Reset API
             </ToolbarButton>
           </>
         }
@@ -248,21 +258,19 @@ export function QueriesTab({
         </div>
 
         {selected && (
-          <div
-            className={clsx(
-              "rtkq:w-[380px] rtkq:shrink-0 rtkq:border-l rtkq:overflow-hidden",
-              classes.border,
-            )}
-          >
-            <QueryDetail
-              classes={classes}
-              registry={registry}
-              entry={selected}
-              events={eventsForSelected}
-              onSelectTag={onSelectTag}
-              onRemoved={() => onSelectKey(undefined)}
-            />
-          </div>
+          <>
+            <ResizableDivider classes={classes} onResize={resizeBy} onReset={resetWidth} />
+            <div className="rtkq:shrink-0 rtkq:overflow-hidden" style={{ width: detailPanelWidth }}>
+              <QueryDetail
+                classes={classes}
+                registry={registry}
+                entry={selected}
+                events={eventsForSelected}
+                onSelectTag={onSelectTag}
+                onRemoved={() => onSelectKey(undefined)}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -280,6 +288,10 @@ function QueryRow({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const durationMs =
+    entry.startedTimeStamp !== undefined && entry.fulfilledTimeStamp !== undefined
+      ? entry.fulfilledTimeStamp - entry.startedTimeStamp
+      : undefined;
   return (
     <EntryRow
       classes={classes}
@@ -288,19 +300,16 @@ function QueryRow({
       statusNode={<StatusBadge status={entry.derivedStatus} classes={classes} />}
       title={entry.endpointName}
       subtitle={formatQueryCacheKey(entry.queryCacheKey, entry.originalArgs)}
-      metaRight={
+      badges={
         <div className="rtkq:flex rtkq:items-center rtkq:gap-1.5 rtkq:shrink-0">
           {entry.isPolling && <PollingPill classes={classes} />}
           <span className={clsx("rtkq:text-[10px]", classes.textMuted)}>
             {entry.subscriberCount} subs
           </span>
-          {entry.fulfilledTimeStamp !== undefined && (
-            <span className={clsx("rtkq:text-[10px] rtkq:tabular-nums", classes.textDimmed)}>
-              {formatRelativeTime(entry.fulfilledTimeStamp)}
-            </span>
-          )}
         </div>
       }
+      timestamp={formatTimestamp(entry.fulfilledTimeStamp)}
+      duration={formatDuration(durationMs)}
     />
   );
 }
@@ -353,6 +362,7 @@ function QueryDetail({
       tags={entry.providedTags}
       onTagClick={onSelectTag}
       extra={<EntryEvents events={events} classes={classes} />}
+      onClose={onRemoved}
       jsonSections={[
         { label: "Arguments", value: entry.originalArgs },
         { label: "Data", value: entry.data },
@@ -366,6 +376,7 @@ function QueryDetail({
         <>
           <ToolbarButton
             classes={classes}
+            icon={RefreshCw}
             disabled={!canRefetch}
             title={
               canRefetch
@@ -381,13 +392,15 @@ function QueryDetail({
           {entry.providedTags.length > 0 && (
             <ToolbarButton
               classes={classes}
+              icon={RotateCw}
               onClick={() => invalidateTags(registry, entry.reducerPath, entry.providedTags)}
             >
-              Invalidate tags
+              Invalidate
             </ToolbarButton>
           )}
           <ToolbarButton
             classes={classes}
+            icon={Trash2}
             variant="danger"
             onClick={() => {
               removeQueryEntry(registry, entry.reducerPath, entry.queryCacheKey);

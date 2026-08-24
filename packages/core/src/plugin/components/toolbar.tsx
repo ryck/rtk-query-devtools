@@ -183,25 +183,26 @@ export function ToolbarButton({
   classes: RtkQueryDevtoolsClasses;
   onClick: () => void;
   children: ReactNode;
-  icon?: ComponentType<{ size?: number }>;
-  variant?: "default" | "danger" | "warning";
+  icon?: ComponentType<{ size?: number; className?: string }>;
+  variant?: "default" | "danger" | "warning" | "success";
   disabled?: boolean;
   /** Renders the button as a toggle, exposing `aria-pressed`. */
   pressed?: boolean;
   title?: string;
 }) {
-  const colorClasses =
-    variant === "danger"
+  // Only the icon carries the variant's colour (accent/danger/warning/success)
+  // — the button's own border and label text always stay neutral, so a row
+  // of toolbar buttons reads as one consistent group rather than a mix of
+  // differently-outlined pills.
+  const iconColorClasses = disabled
+    ? classes.textDimmed
+    : variant === "danger"
       ? classes.danger
       : variant === "warning"
         ? classes.warning
-        : classes.accent;
-  const borderClasses =
-    variant === "danger"
-      ? classes.dangerBorder
-      : variant === "warning"
-        ? classes.warningBorder
-        : classes.accentBorder;
+        : variant === "success"
+          ? classes.status.fresh.icon
+          : classes.accent;
   return (
     <button
       type="button"
@@ -211,12 +212,13 @@ export function ToolbarButton({
       title={title}
       className={clsx(
         "rtkq:inline-flex rtkq:items-center rtkq:gap-1 rtkq:px-2 rtkq:py-1 rtkq:rounded-md rtkq:border rtkq:bg-transparent rtkq:text-[10px] rtkq:font-semibold rtkq:whitespace-nowrap",
+        classes.borderInput,
         disabled
-          ? clsx(classes.border, classes.textDimmed, "rtkq:cursor-not-allowed")
-          : clsx(borderClasses, colorClasses, "rtkq:cursor-pointer"),
+          ? clsx(classes.textDimmed, "rtkq:cursor-not-allowed")
+          : clsx(classes.textPrimary, "rtkq:cursor-pointer"),
       )}
     >
-      {Icon && <Icon size={12} />}
+      {Icon && <Icon size={12} className={iconColorClasses} />}
       {children}
     </button>
   );

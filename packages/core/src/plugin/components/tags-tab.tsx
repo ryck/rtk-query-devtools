@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { ChevronDown, ChevronRight, Tag as TagIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Check, ChevronDown, ChevronRight, RotateCw, Tag as TagIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { invalidateTags } from "../../actions";
 import type { DevtoolsRegistry } from "../../registry";
 import { NO_TAG_ID, selectTagGroups } from "../../selectors";
@@ -45,6 +45,20 @@ export function TagsTab({
   const [expanded, setExpanded] = useState<Set<string>>(
     initialSearch ? new Set([initialSearch]) : new Set(),
   );
+
+  // Invalidating tags only *marks* matching queries stale — RTK Query only
+  // actually refetches ones with an active subscriber, so clicking these
+  // buttons can otherwise look like nothing happened. This shows a brief
+  // "Invalidated" confirmation so the click is never silent, regardless of
+  // whether anything was actively subscribed to refetch.
+  const [feedbackKey, setFeedbackKey] = useState<string | null>(null);
+  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(feedbackTimeoutRef.current), []);
+  const flashFeedback = (key: string) => {
+    clearTimeout(feedbackTimeoutRef.current);
+    setFeedbackKey(key);
+    feedbackTimeoutRef.current = setTimeout(() => setFeedbackKey(null), 1200);
+  };
 
   const groups = useMemo(
     () => (activeApi ? selectTagGroups(state, activeApi) : []),
@@ -134,58 +148,71 @@ export function TagsTab({
                 </div>
                 <ToolbarButton
                   classes={classes}
-                  onClick={() => invalidateTags(registry, activeApi, [{ type: group.tagType }])}
+                  icon={feedbackKey === `all:${group.tagType}` ? Check : RotateCw}
+                  variant={feedbackKey === `all:${group.tagType}` ? "success" : "default"}
+                  title="Marks every query providing this tag as stale; only queries with an active subscriber refetch immediately, others refetch next time they're subscribed."
+                  onClick={() => {
+                    invalidateTags(registry, activeApi, [{ type: group.tagType }]);
+                    flashFeedback(`all:${group.tagType}`);
+                  }}
                 >
-                  Invalidate all
+                  {feedbackKey === `all:${group.tagType}` ? "Invalidated" : "Invalidate all"}
                 </ToolbarButton>
               </div>
 
               {expanded.has(group.tagType) && (
                 <div className="rtkq:pb-1.5">
-                  {group.entries.map((entry) => (
-                    <div key={entry.id} className="rtkq:pl-8 rtkq:pr-3 rtkq:py-1">
-                      <div className="rtkq:flex rtkq:items-center rtkq:gap-2">
-                        <span
-                          className={clsx(
-                            "rtkq:flex-1 rtkq:min-w-0 rtkq:truncate rtkq:font-mono rtkq:text-[11px]",
-                            classes.textSecondary,
-                          )}
-                        >
-                          id: {entry.id === NO_TAG_ID ? "none" : entry.id}
-                        </span>
-                        <ToolbarButton
-                          classes={classes}
-                          onClick={() =>
-                            invalidateTags(registry, activeApi, [
-                              {
-                                type: group.tagType,
-                                id: entry.id === NO_TAG_ID ? undefined : entry.id,
-                              },
-                            ])
-                          }
-                        >
-                          Invalidate
-                        </ToolbarButton>
-                      </div>
-                      <div className="rtkq:flex rtkq:flex-wrap rtkq:gap-1 rtkq:mt-1">
-                        {entry.queryCacheKeys.map((key) => (
-                          <button
-                            key={key}
-                            type="button"
-                            title={key}
-                            onClick={() => onNavigateToQuery(key)}
+                  {group.entries.map((entry) => {
+                    const entryKey = `id:${group.tagType}:${entry.id}`;
+                    return (
+                      <div key={entry.id} className="rtkq:pl-8 rtkq:pr-3 rtkq:py-1">
+                        <div className="rtkq:flex rtkq:items-center rtkq:gap-2">
+                          <span
                             className={clsx(
-                              "rtkq:max-w-[220px] rtkq:truncate rtkq:rounded rtkq:border rtkq:bg-transparent rtkq:px-1.5 rtkq:py-0.5 rtkq:font-mono rtkq:text-[10px] rtkq:cursor-pointer",
-                              classes.border,
-                              classes.textMuted,
+                              "rtkq:flex-1 rtkq:min-w-0 rtkq:truncate rtkq:font-mono rtkq:text-[11px]",
+                              classes.textSecondary,
                             )}
                           >
-                            {key}
-                          </button>
-                        ))}
+                            id: {entry.id === NO_TAG_ID ? "none" : entry.id}
+                          </span>
+                          <ToolbarButton
+                            classes={classes}
+                            icon={feedbackKey === entryKey ? Check : RotateCw}
+                            variant={feedbackKey === entryKey ? "success" : "default"}
+                            title="Marks queries providing this tag as stale; only queries with an active subscriber refetch immediately, others refetch next time they're subscribed."
+                            onClick={() => {
+                              invalidateTags(registry, activeApi, [
+                                {
+                                  type: group.tagType,
+                                  id: entry.id === NO_TAG_ID ? undefined : entry.id,
+                                },
+                              ]);
+                              flashFeedback(entryKey);
+                            }}
+                          >
+                            {feedbackKey === entryKey ? "Invalidated" : "Invalidate"}
+                          </ToolbarButton>
+                        </div>
+                        <div className="rtkq:flex rtkq:flex-wrap rtkq:gap-1 rtkq:mt-1">
+                          {entry.queryCacheKeys.map((key) => (
+                            <button
+                              key={key}
+                              type="button"
+                              title={key}
+                              onClick={() => onNavigateToQuery(key)}
+                              className={clsx(
+                                "rtkq:max-w-[220px] rtkq:truncate rtkq:rounded rtkq:border rtkq:bg-transparent rtkq:px-1.5 rtkq:py-0.5 rtkq:font-mono rtkq:text-[10px] rtkq:cursor-pointer",
+                                classes.border,
+                                classes.textMuted,
+                              )}
+                            >
+                              {key}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -6,8 +6,23 @@ export interface EntryRowProps {
   classes: RtkQueryDevtoolsClasses;
   statusNode: ReactNode;
   title: string;
+  /**
+   * Rendered inline right after `title` on the same line (e.g. a cache key,
+   * request id, or kind label) rather than stacked on a second line, so a row
+   * never grows past a single line no matter how many fields it carries.
+   */
   subtitle?: string;
-  metaRight?: ReactNode;
+  /** Tab-specific indicators (polling pill, subscriber count, "forced", …), rendered before the timestamp/duration columns. */
+  badges?: ReactNode;
+  /**
+   * Preformatted (e.g. via `formatTimestamp`), fixed-width column. Passing
+   * the same format from every row list keeps this column aligned and
+   * reading as "the same kind of data" across Queries/Mutations/Timeline,
+   * even though each entry type sources it from a different timestamp field.
+   */
+  timestamp?: string;
+  /** Preformatted (e.g. via `formatDuration`), fixed-width column, always the row's rightmost element. */
+  duration?: string;
   selected: boolean;
   onSelect: () => void;
 }
@@ -17,7 +32,9 @@ export function EntryRow({
   statusNode,
   title,
   subtitle,
-  metaRight,
+  badges,
+  timestamp,
+  duration,
   selected,
   onSelect,
 }: EntryRowProps) {
@@ -36,15 +53,42 @@ export function EntryRow({
       tabIndex={0}
     >
       {statusNode}
-      <div className="rtkq:flex-1 rtkq:min-w-0">
-        <div className={clsx("rtkq:text-xs rtkq:truncate", classes.textPrimary)}>{title}</div>
+      <div className="rtkq:flex rtkq:flex-1 rtkq:min-w-0 rtkq:items-baseline rtkq:gap-1.5">
+        <span className={clsx("rtkq:shrink-0 rtkq:truncate rtkq:text-xs", classes.textPrimary)}>
+          {title}
+        </span>
         {subtitle && (
-          <div className={clsx("rtkq:text-[10px] rtkq:truncate", classes.textMuted)}>
+          <span
+            className={clsx(
+              "rtkq:min-w-0 rtkq:truncate rtkq:font-mono rtkq:text-[10px]",
+              classes.textMuted,
+            )}
+          >
             {subtitle}
-          </div>
+          </span>
         )}
       </div>
-      {metaRight}
+      {badges}
+      {timestamp !== undefined && (
+        <span
+          className={clsx(
+            "rtkq:w-14 rtkq:shrink-0 rtkq:text-right rtkq:text-[10px] rtkq:tabular-nums",
+            classes.textDimmed,
+          )}
+        >
+          {timestamp}
+        </span>
+      )}
+      {duration !== undefined && (
+        <span
+          className={clsx(
+            "rtkq:w-12 rtkq:shrink-0 rtkq:text-right rtkq:text-[10px] rtkq:tabular-nums",
+            classes.textMuted,
+          )}
+        >
+          {duration}
+        </span>
+      )}
     </div>
   );
 }

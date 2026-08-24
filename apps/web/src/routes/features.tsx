@@ -115,7 +115,7 @@ function Features() {
           <Feature
             title="The detail pane"
             shot="query-detail"
-            alt="A selected query showing Refetch, Invalidate tags and Remove actions above its metadata"
+            alt="A selected query showing Refetch, Invalidate and Remove actions above its metadata"
           >
             Select an entry for its endpoint, type (<C>query</C> or <C>infinitequery</C>),
             subscriber count, timings, and duration. Provided tags render as chips that jump
@@ -134,10 +134,10 @@ function Features() {
           </Feature>
 
           <Feature title="Act on the cache">
-            <C>Refetch</C> forces a fresh request. <C>Invalidate tags</C> invalidates everything the
-            entry provides. <C>Remove</C> drops it. <C>Reset API state</C> clears the whole cache,
-            behind a confirmation. Refetch needs the real api object, so it's disabled with an
-            explanation if you didn't pass <C>apis</C>.
+            <C>Refetch</C> forces a fresh request. <C>Invalidate</C> invalidates everything the
+            entry provides. <C>Remove</C> drops it. <C>Reset API</C> clears the whole cache, behind
+            a confirmation. Refetch needs the real api object, so it's disabled with an explanation
+            if you didn't pass <C>apis</C>.
           </Feature>
         </FeatureGroup>
 

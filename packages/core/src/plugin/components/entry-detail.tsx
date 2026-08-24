@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import type { TagDescription } from "../../types";
 import type { RtkQueryDevtoolsClasses } from "../theme";
@@ -25,6 +26,8 @@ export interface EntryDetailProps {
   /** Rendered between the tags and the JSON sections, e.g. request history. */
   extra?: ReactNode;
   actions?: ReactNode;
+  /** Shows a close (X) button in the header when provided. */
+  onClose?: () => void;
 }
 
 export function EntryDetail({
@@ -37,6 +40,7 @@ export function EntryDetail({
   jsonSections,
   extra,
   actions,
+  onClose,
 }: EntryDetailProps) {
   return (
     <div className="rtkq:p-3 rtkq:overflow-y-auto rtkq:h-full rtkq:box-border">
@@ -50,6 +54,20 @@ export function EntryDetail({
           {heading}
         </div>
         {statusNode}
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close details"
+            title="Close details"
+            className={clsx(
+              "rtkq:ml-auto rtkq:inline-flex rtkq:shrink-0 rtkq:items-center rtkq:justify-center rtkq:rounded-md rtkq:size-6 rtkq:cursor-pointer rtkq:bg-transparent rtkq:border-0",
+              classes.textMuted,
+            )}
+          >
+            <X size={14} />
+          </button>
+        )}
       </div>
 
       {actions && <div className="rtkq:flex rtkq:gap-1.5 rtkq:mb-3 rtkq:flex-wrap">{actions}</div>}
