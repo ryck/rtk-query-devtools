@@ -7,10 +7,18 @@ import { Button } from "@/components/ui/button";
  * Every page here is prerendered to static HTML, so the markup ships with
  * whatever theme the build produced. Without this running synchronously in
  * `<head>`, a reader who picked dark would get a flash of the light page while
- * React hydrates. Falls back to the OS setting when nothing is stored, so the
- * first visit already matches the reader's system.
+ * React hydrates.
+ *
+ * Order of precedence: an explicit choice, then the OS setting, then dark.
+ *
+ * Both queries are tested rather than just one so that "the OS says light"
+ * and "there is nothing to go on" stay distinguishable, with the latter
+ * falling to dark, the design this site was built in. In practice that last
+ * branch is only reached by browsers too old to support the feature at all:
+ * `no-preference` was dropped from the spec, and current browsers report a
+ * system with no opinion as `light`.
  */
-export const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+export const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d;if(t){d=t==="dark"}else if(matchMedia("(prefers-color-scheme: dark)").matches){d=true}else if(matchMedia("(prefers-color-scheme: light)").matches){d=false}else{d=true}document.documentElement.classList.toggle("dark",d)}catch(e){document.documentElement.classList.add("dark")}})()`;
 
 function toggleTheme() {
   const next = !document.documentElement.classList.contains("dark");
