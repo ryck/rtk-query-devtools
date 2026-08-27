@@ -27,10 +27,10 @@ function deriveStatus(hook: {
 }
 
 const STATUS_STYLES: Record<TileStatus, string> = {
-  fetching: "bg-amber/15 text-amber",
-  fresh: "bg-teal/15 text-teal",
-  error: "bg-coral/15 text-coral",
-  inactive: "bg-panel-line/60 text-mist",
+  fetching: "bg-primary/15 text-primary",
+  fresh: "bg-success/15 text-success",
+  error: "bg-destructive/15 text-destructive",
+  inactive: "bg-secondary text-muted-foreground",
 };
 
 /**
@@ -54,18 +54,18 @@ export function FlipBoard() {
   ];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-panel-line bg-panel shadow-[0_0_0_1px_rgba(0,0,0,0.2)]">
-      <div className="flex items-center justify-between border-b border-panel-line px-4 py-3 sm:px-6">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-mist uppercase">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_0_0_1px_rgba(0,0,0,0.2)]">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
           rtk-query-devtools live status
         </span>
-        <span className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.2em] text-teal uppercase">
-          <span className="animate-pulse-dot size-1.5 rounded-full bg-teal" aria-hidden="true" />
+        <span className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.2em] text-success uppercase">
+          <span className="animate-pulse-dot size-1.5 rounded-full bg-success" aria-hidden="true" />
           live
         </span>
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 border-b border-panel-line px-4 py-2 font-mono text-[10px] tracking-[0.15em] text-mist uppercase sm:px-6">
+      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 border-b border-border px-4 py-2 font-mono text-[10px] tracking-[0.15em] text-muted-foreground uppercase sm:px-6">
         <span>Endpoint</span>
         <span className="hidden sm:block">Args</span>
         <span>Status</span>
@@ -85,18 +85,18 @@ function BoardRowView({ row }: { row: BoardRow }) {
   return (
     <div
       role="row"
-      className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-4 border-b border-panel-line/60 px-4 py-3 font-mono text-sm text-paper last:border-b-0 sm:px-6"
+      className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-4 border-b border-border/60 px-4 py-3 font-mono text-sm text-foreground last:border-b-0 sm:px-6"
     >
       <span className="truncate" role="cell">
         {row.endpoint}
       </span>
-      <span className="hidden text-mist sm:block" role="cell">
+      <span className="hidden text-muted-foreground sm:block" role="cell">
         {row.args}
       </span>
       <span role="cell">
         <FlipTile status={row.status} />
       </span>
-      <span className="text-right text-mist" role="cell">
+      <span className="text-right text-muted-foreground" role="cell">
         {row.subs}
       </span>
     </div>
@@ -127,16 +127,16 @@ export function DormantBoard() {
   ];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-panel-line bg-panel">
-      <div className="flex items-center justify-between border-b border-panel-line px-4 py-3 sm:px-6">
-        <span className="font-mono text-[11px] tracking-[0.2em] text-mist uppercase">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
           rtk-query-devtools live status
         </span>
-        <span className="font-mono text-[11px] tracking-[0.2em] text-mist uppercase">
+        <span className="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
           connecting…
         </span>
       </div>
-      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 border-b border-panel-line px-4 py-2 font-mono text-[10px] tracking-[0.15em] text-mist uppercase sm:px-6">
+      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 border-b border-border px-4 py-2 font-mono text-[10px] tracking-[0.15em] text-muted-foreground uppercase sm:px-6">
         <span>Endpoint</span>
         <span className="hidden sm:block">Args</span>
         <span>Status</span>
@@ -145,14 +145,14 @@ export function DormantBoard() {
       {rows.map((row) => (
         <div
           key={row.endpoint}
-          className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-4 border-b border-panel-line/60 px-4 py-3 font-mono text-sm text-paper last:border-b-0 sm:px-6"
+          className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-4 border-b border-border/60 px-4 py-3 font-mono text-sm text-foreground last:border-b-0 sm:px-6"
         >
           <span className="truncate">{row.endpoint}</span>
-          <span className="hidden text-mist sm:block">{row.args}</span>
-          <span className="inline-flex w-[84px] items-center justify-center rounded-md bg-panel-line/60 px-2 py-1 text-[10px] font-semibold tracking-[0.1em] text-mist uppercase">
+          <span className="hidden text-muted-foreground sm:block">{row.args}</span>
+          <span className="inline-flex w-[84px] items-center justify-center rounded-md bg-secondary px-2 py-1 text-[10px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
             idle
           </span>
-          <span className="text-right text-mist">—</span>
+          <span className="text-right text-muted-foreground">—</span>
         </div>
       ))}
     </div>

@@ -1,15 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { clsx } from "clsx";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { textLink, textLinkActive } from "@/lib/link";
 
 function LogoMark() {
   return (
     <svg width="18" height="18" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <rect width="32" height="32" rx="7" fill="var(--color-ink)" />
-      <rect x="5" y="5" width="9" height="9" rx="1.5" fill="var(--color-paper)" />
-      <rect x="18" y="5" width="9" height="9" rx="1.5" fill="var(--color-panel-line)" />
-      <rect x="5" y="18" width="9" height="9" rx="1.5" fill="var(--color-panel-line)" />
-      <rect x="18" y="18" width="9" height="9" rx="1.5" fill="var(--color-amber)" />
+      {/* Semantic tokens, not the raw palette, so the mark inverts with the
+          page instead of staying a dark tile on a cream header. */}
+      <rect width="32" height="32" rx="7" fill="var(--background)" />
+      <rect x="5" y="5" width="9" height="9" rx="1.5" fill="var(--foreground)" />
+      <rect x="18" y="5" width="9" height="9" rx="1.5" fill="var(--border)" />
+      <rect x="5" y="18" width="9" height="9" rx="1.5" fill="var(--border)" />
+      <rect x="18" y="18" width="9" height="9" rx="1.5" fill="var(--primary)" />
     </svg>
   );
 }
@@ -25,22 +28,26 @@ function GithubMark({ size = 15 }: { size?: number }) {
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-panel-line">
+    // Translucent + blurred rather than opaque, so content scrolling underneath
+    // stays legible as motion instead of vanishing at a hard edge. The `/85`
+    // fallback applies where `backdrop-filter` is unsupported, where a more
+    // transparent bar would leave the nav unreadable.
+    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/65">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex items-center gap-2.5 font-mono text-sm text-paper">
+        <Link to="/" className="flex items-center gap-2.5 font-mono text-sm text-foreground">
           <LogoMark />
           {/* Same split as the logo lockup and the og:image. The amber picks
               up the mark's accent tile. */}
           <span>
-            rtk-query-<span className="text-amber">devtools</span>
+            rtk-query-<span className="text-primary">devtools</span>
           </span>
         </Link>
-        <nav className="flex items-center gap-6 font-mono text-sm text-mist">
+        <nav className="flex items-center gap-6 font-mono text-sm text-muted-foreground">
           <Link to="/features" className={textLink} activeProps={{ className: textLinkActive }}>
             Features
           </Link>
-          <Link to="/examples" className={textLink} activeProps={{ className: textLinkActive }}>
-            Examples
+          <Link to="/playground" className={textLink} activeProps={{ className: textLinkActive }}>
+            Playground
           </Link>
           <a
             href="https://github.com/ryck/rtk-query-devtools"
@@ -48,11 +55,12 @@ export function SiteHeader() {
             rel="noreferrer"
             // The icon sits outside the underline, so the decoration tracks the
             // label rather than striking through the mark.
-            className="flex items-center gap-1.5 transition-colors hover:text-paper"
+            className="flex items-center gap-1.5 transition-colors hover:text-foreground"
           >
             <GithubMark />
             <span className={clsx(textLink, "hidden sm:inline")}>GitHub</span>
           </a>
+          <ThemeToggle />
         </nav>
       </div>
     </header>

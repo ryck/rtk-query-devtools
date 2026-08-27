@@ -44,3 +44,21 @@ export async function switchTab(page: Page, name: TabName) {
 export function entryRow(page: Page, endpointName: string) {
   return page.locator('div[role="button"]').filter({ hasText: endpointName });
 }
+
+/**
+ * A row's status badge, located by accessible name.
+ *
+ * The panel renders these icon-only, carrying the status on `aria-label` and
+ * `title` rather than as visible text, so there is nothing for a text-based
+ * assertion to match. Asserting on the accessible name is also the better
+ * test: it checks what a screen reader is told, which is the only way the
+ * status is conveyed to anyone not perceiving the colour.
+ */
+export function entryStatus(page: Page, endpointName: string, status: string) {
+  return entryRow(page, endpointName).getByLabel(status, { exact: true });
+}
+
+/** A timeline outcome badge (Pending/Fulfilled/Rejected/Skipped), same idea. */
+export function outcomeBadge(page: Page, outcome: string) {
+  return page.getByLabel(outcome, { exact: true });
+}

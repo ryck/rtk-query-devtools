@@ -16,8 +16,8 @@ export function PollingExample() {
         <CardTitle>Polling</CardTitle>
         <CardDescription>
           Refetches every 2s while on. Open the Queries tab and watch the{" "}
-          <code className="font-mono text-paper">polling</code> pill, or the Timeline tab to see a
-          request land on schedule with nothing on the page to trigger it.
+          <code className="font-mono text-foreground">polling</code> pill, or the Timeline tab to
+          see a request land on schedule with nothing on the page to trigger it.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -31,12 +31,16 @@ export function PollingExample() {
             {enabled ? "Polling on" : "Polling off"}
           </Button>
           {fulfilledTimeStamp && (
-            <span className="font-mono text-xs text-mist">
+            <span className="font-mono text-xs text-muted-foreground">
               last fetch {new Date(fulfilledTimeStamp).toLocaleTimeString()}
             </span>
           )}
         </div>
-        {data && <p className="mt-3 font-mono text-xs text-mist">{data.length} users loaded.</p>}
+        {data && (
+          <p className="mt-3 font-mono text-xs text-muted-foreground">
+            {data.length} users loaded.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

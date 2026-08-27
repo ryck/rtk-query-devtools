@@ -14,10 +14,11 @@ export function ArgsExample() {
       <CardHeader>
         <CardTitle>Query arguments</CardTitle>
         <CardDescription>
-          Each ID is its own cache entry: <code className="font-mono text-paper">getPost(1)</code>,{" "}
-          <code className="font-mono text-paper">getPost(2)</code>… Switch between a few and watch
-          the ones you leave go <code className="font-mono text-paper">inactive</code> in the
-          Queries tab instead of disappearing.
+          Each ID is its own cache entry:{" "}
+          <code className="font-mono text-foreground">getPost(1)</code>,{" "}
+          <code className="font-mono text-foreground">getPost(2)</code>… Switch between a few and
+          watch the ones you leave go <code className="font-mono text-foreground">inactive</code> in
+          the Queries tab instead of disappearing.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -30,7 +31,7 @@ export function ArgsExample() {
               onClick={() => setSelectedId(id)}
               className={
                 id === selectedId
-                  ? "border-amber bg-amber/15 text-amber hover:bg-amber/20 hover:text-amber"
+                  ? "border-primary bg-primary/15 text-primary hover:bg-primary/20 hover:text-primary"
                   : undefined
               }
             >
@@ -38,7 +39,7 @@ export function ArgsExample() {
             </Button>
           ))}
         </div>
-        <p className="mt-3 font-mono text-xs text-mist">
+        <p className="mt-3 font-mono text-xs text-muted-foreground">
           {isFetching ? "Loading…" : data ? `#${data.id}: ${data.title}` : "—"}
         </p>
       </CardContent>

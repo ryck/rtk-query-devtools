@@ -18,9 +18,10 @@ export function TqArgsExample() {
       <CardHeader>
         <CardTitle>Query arguments</CardTitle>
         <CardDescription>
-          Each ID is its own query key: <code className="font-mono text-paper">["post", 1]</code>,{" "}
-          <code className="font-mono text-paper">["post", 2]</code>… each cached independently in
-          the TanStack Query panel.
+          Each ID is its own query key:{" "}
+          <code className="font-mono text-foreground">["post", 1]</code>,{" "}
+          <code className="font-mono text-foreground">["post", 2]</code>… each cached independently
+          in the TanStack Query panel.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -33,7 +34,7 @@ export function TqArgsExample() {
               onClick={() => setSelectedId(id)}
               className={
                 id === selectedId
-                  ? "border-amber bg-amber/15 text-amber hover:bg-amber/20 hover:text-amber"
+                  ? "border-primary bg-primary/15 text-primary hover:bg-primary/20 hover:text-primary"
                   : undefined
               }
             >
@@ -41,7 +42,7 @@ export function TqArgsExample() {
             </Button>
           ))}
         </div>
-        <p className="mt-3 font-mono text-xs text-mist">
+        <p className="mt-3 font-mono text-xs text-muted-foreground">
           {isFetching ? "Loading…" : data ? `#${data.id}: ${data.title}` : "—"}
         </p>
       </CardContent>

@@ -5,6 +5,7 @@ import { StoreProvider } from "@/components/store-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { InstallCommand, MultiFileCodeBlock } from "@/components/ui/code-block";
+import { textLink } from "@/lib/link";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -37,15 +38,23 @@ function Home() {
   return (
     <main>
       <section className="mx-auto max-w-5xl px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
-        <span className="font-mono text-xs tracking-[0.2em] text-amber uppercase">
+        <span className="font-mono text-xs tracking-[0.2em] text-primary uppercase">
           TanStack DevTools plugin
         </span>
-        <h1 className="mt-4 max-w-2xl text-4xl leading-[1.1] font-semibold text-balance text-paper sm:text-5xl">
+        <h1 className="mt-4 max-w-2xl text-4xl leading-[1.1] font-semibold text-balance text-foreground sm:text-5xl">
           RTK Query has a cache. Now you can actually see it.
         </h1>
-        <p className="mt-5 max-w-xl text-base leading-relaxed text-mist sm:text-lg">
-          Live status badges, tag-based invalidation, and a request timeline, right inside TanStack
-          DevTools. No more digging through the Redux action log to guess what's cached.
+        <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          Live status badges, tag-based invalidation, and a request timeline, right inside{" "}
+          <a
+            href="https://tanstack.com/devtools"
+            target="_blank"
+            rel="noreferrer"
+            className={textLink}
+          >
+            TanStack DevTools
+          </a>
+          . No more digging through the Redux action log to guess what's cached.
         </p>
         {/*
           Base UI's docs say a link should be styled directly rather than
@@ -61,7 +70,7 @@ function Home() {
           className="mt-4"
           nativeButton={false}
           role="link"
-          render={<Link to="/examples" />}
+          render={<Link to="/playground" />}
         >
           <Gamepad2 aria-hidden="true" />
           Playground
@@ -73,13 +82,13 @@ function Home() {
           <StoreProvider fallback={<DormantBoard />}>
             <FlipBoard />
           </StoreProvider>
-          <p className="mt-3 font-mono text-xs text-mist">
+          <p className="mt-3 font-mono text-xs text-muted-foreground">
             ↑ live, actually running RTK Query on this page
           </p>
         </div>
       </section>
 
-      <section className="border-t border-panel-line">
+      <section className="border-t border-border">
         <div className="mx-auto grid max-w-5xl gap-6 px-6 py-16 sm:grid-cols-3 sm:py-20">
           {FEATURES.map((feature) => (
             <Card key={feature.title}>
@@ -90,7 +99,7 @@ function Home() {
                   `h2` before.
                 */}
                 <CardTitle role="heading" aria-level={2} className="flex items-center gap-2">
-                  <feature.icon size={16} className="shrink-0 text-amber" aria-hidden="true" />
+                  <feature.icon size={16} className="shrink-0 text-primary" aria-hidden="true" />
                   {feature.title}
                 </CardTitle>
                 <CardDescription className="leading-relaxed">{feature.body}</CardDescription>
@@ -100,13 +109,13 @@ function Home() {
         </div>
       </section>
 
-      <section className="border-t border-panel-line">
+      <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-          <h2 className="text-sm font-semibold text-paper">Wire it up in two lines</h2>
-          <p className="mt-2 max-w-lg text-sm text-mist">
+          <h2 className="text-sm font-semibold text-foreground">Wire it up in two lines</h2>
+          <p className="mt-2 max-w-lg text-sm text-muted-foreground">
             Add the middleware to your store, then register the plugin. No provider, no config file.
           </p>
-          <MultiFileCodeBlock className="mt-6" files={WIRE_UP_FILES} bodyClassName="bg-panel" />
+          <MultiFileCodeBlock className="mt-6" files={WIRE_UP_FILES} bodyClassName="bg-card" />
         </div>
       </section>
     </main>

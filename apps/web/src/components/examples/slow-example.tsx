@@ -14,7 +14,7 @@ export function SlowExample() {
         <CardTitle>Slow query</CardTitle>
         <CardDescription>
           Takes 2.5s on purpose. Open the Queries tab below and watch the{" "}
-          <code className="font-mono text-paper">fetching</code> badge linger.
+          <code className="font-mono text-foreground">fetching</code> badge linger.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -27,7 +27,9 @@ export function SlowExample() {
           {isFetching && <Loader2 size={13} className="animate-spin" />}
           Fetch post {((id ?? 0) % 8) + 1}
         </Button>
-        {data && <p className="mt-3 font-mono text-xs text-mist">Loaded: {data.title}</p>}
+        {data && (
+          <p className="mt-3 font-mono text-xs text-muted-foreground">Loaded: {data.title}</p>
+        )}
       </CardContent>
     </Card>
   );

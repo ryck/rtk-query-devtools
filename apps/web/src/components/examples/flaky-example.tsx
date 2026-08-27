@@ -21,11 +21,15 @@ export function FlakyExample() {
           Refetch
         </Button>
         {error && (
-          <p className="mt-3 flex items-center gap-1.5 font-mono text-xs text-coral">
+          <p className="mt-3 flex items-center gap-1.5 font-mono text-xs text-destructive">
             <AlertTriangle size={13} /> Request failed. Try again.
           </p>
         )}
-        {data && <p className="mt-3 font-mono text-xs text-mist">Loaded {data.length} posts.</p>}
+        {data && (
+          <p className="mt-3 font-mono text-xs text-muted-foreground">
+            Loaded {data.length} posts.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

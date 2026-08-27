@@ -1,37 +1,43 @@
+import { Heart } from "lucide-react";
 import { textLink } from "@/lib/link";
 
 const LINKS = [
-  { href: "https://github.com/ryck/rtk-query-devtools", label: "GitHub" },
   { href: "https://www.npmjs.com/package/rtk-query-devtools", label: "npm" },
-  { href: "https://redux-toolkit.js.org/rtk-query/overview", label: "RTK Query docs" },
+  { href: "https://tanstack.com/devtools", label: "DevTools" },
+  { href: "https://redux-toolkit.js.org/rtk-query/overview", label: "RTK Query" },
 ];
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-panel-line">
-      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-8 font-mono text-xs text-mist sm:flex-row sm:items-center sm:justify-between">
+    <footer className="border-t border-border">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-8 font-mono text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <span>
-          MIT Licensed · built on{" "}
-          <a
-            href="https://tanstack.com/devtools"
-            target="_blank"
-            rel="noreferrer"
-            className={textLink}
-          >
-            TanStack DevTools
-          </a>{" "}
-          · Made with{" "}
           {/*
-            Labelled rather than left bare: a screen reader announces the raw
-            emoji as "red heart", so this reads "Made with love by ryck.dev".
+            The phrase is the hover target, not the heart: at 12px the icon
+            alone is a fiddly thing to land on.
           */}
-          <span role="img" aria-label="love">
-            💛
-          </span>{" "}
-          by{" "}
-          <a href="https://ryck.dev" target="_blank" rel="noreferrer" className={textLink}>
-            ryck.dev
-          </a>
+          <span className="group">
+            Made with{" "}
+            {/*
+              A lucide icon rather than an emoji, so the heart takes the brand
+              amber instead of the font's own colour. `fill-primary` wins over
+              lucide's `fill="none"` attribute because CSS beats presentation
+              attributes. `inline-block` because transforms do not apply to
+              inline boxes, so the beat would otherwise do nothing. Labelled,
+              so this reads "Made with love by ryck.dev" rather than skipping
+              the word entirely.
+            */}
+            <Heart
+              size={12}
+              role="img"
+              aria-label="love"
+              className="inline-block align-[-0.1em] fill-primary text-primary group-hover:animate-heartbeat"
+            />{" "}
+            by{" "}
+            <a href="https://ryck.dev" target="_blank" rel="noreferrer" className={textLink}>
+              ryck.dev
+            </a>
+          </span>
         </span>
         <div className="flex gap-4">
           {LINKS.map((link) => (

@@ -33,12 +33,16 @@ export function TqPollingExample() {
             {enabled ? "Polling on" : "Polling off"}
           </Button>
           {dataUpdatedAt > 0 && (
-            <span className="font-mono text-xs text-mist">
+            <span className="font-mono text-xs text-muted-foreground">
               last fetch {new Date(dataUpdatedAt).toLocaleTimeString()}
             </span>
           )}
         </div>
-        {data && <p className="mt-3 font-mono text-xs text-mist">{data.length} users loaded.</p>}
+        {data && (
+          <p className="mt-3 font-mono text-xs text-muted-foreground">
+            {data.length} users loaded.
+          </p>
+        )}
       </CardContent>
     </Card>
   );

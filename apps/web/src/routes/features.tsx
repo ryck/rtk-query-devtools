@@ -38,11 +38,11 @@ const SECTIONS = [
 function Features() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-      <span className="font-mono text-xs tracking-[0.2em] text-amber uppercase">Features</span>
-      <h1 className="mt-4 max-w-2xl text-3xl leading-tight font-semibold text-balance text-paper sm:text-4xl">
+      <span className="font-mono text-xs tracking-[0.2em] text-primary uppercase">Features</span>
+      <h1 className="mt-4 max-w-2xl text-3xl leading-tight font-semibold text-balance text-foreground sm:text-4xl">
         Everything the panel can do.
       </h1>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-mist">
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
         Four tabs, a data explorer, and a set of controls for poking at the cache while you debug.
         Every screenshot below is captured from the real panel running against the demo app, not a
         mockup, so what you see here is what you get.
@@ -56,7 +56,7 @@ function Features() {
           <Badge
             key={section.id}
             variant="outline"
-            className="h-auto px-3 py-1 text-mist transition-colors hover:border-mist hover:text-paper"
+            className="h-auto px-3 py-1 text-muted-foreground transition-colors hover:border-mist hover:text-foreground"
             render={<a href={`#${section.id}`} />}
           >
             {section.label}

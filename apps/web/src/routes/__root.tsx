@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { NotFound } from "@/components/not-found";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { themeScript } from "@/components/theme-toggle";
 import appCss from "../styles.css?url";
 
 const SITE_URL = "https://rtk-query-devtools.ryck.dev/";
@@ -59,11 +60,15 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    // Dark-only by design, so the class is hard-coded rather than toggled. It
-    // exists so shadcn's own `dark:` variants resolve; see styles.css.
-    <html lang="en" className="dark">
+    // `suppressHydrationWarning` because `themeScript` mutates the class list
+    // before React hydrates, which React would otherwise flag as a mismatch.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        {/* Must stay synchronous and inline: a deferred or external script
+            would run after first paint, which is the flash it exists to
+            prevent. */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         <div className="flex min-h-screen flex-col">

@@ -48,7 +48,7 @@ test("Invalidate tags refetches queries subscribed to that tag", async ({ page }
 
   await switchTab(page, "Queries");
   await entryRow(page, "listPosts").click();
-  await page.getByRole("button", { name: "Invalidate tags" }).click();
+  await page.getByRole("button", { name: "Invalidate", exact: true }).click();
 
   await switchTab(page, "Timeline");
   await expect.poll(() => timelineEntryCount(page, "listPosts")).toBeGreaterThan(before);

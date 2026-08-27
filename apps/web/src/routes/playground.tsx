@@ -19,13 +19,13 @@ import { UsersExample } from "@/components/examples/users-example";
 import { Card, CardContent } from "@/components/ui/card";
 import { createTanStackQueryDevtoolsPlugin } from "@/lib/create-tanstack-query-devtools-plugin";
 
-const TITLE = "Live examples | RTK Query Devtools";
+const TITLE = "Playground | RTK Query Devtools";
 const DESCRIPTION =
   "The devtools panel running for real, with RTK Query and TanStack Query side by side against the same in-memory API.";
-const URL = "https://rtk-query-devtools.ryck.dev/examples";
+const URL = "https://rtk-query-devtools.ryck.dev/playground";
 
-export const Route = createFileRoute("/examples")({
-  component: Examples,
+export const Route = createFileRoute("/playground")({
+  component: Playground,
   // See the note in features.tsx: each page needs its own canonical.
   head: () => ({
     meta: [
@@ -41,21 +41,21 @@ export const Route = createFileRoute("/examples")({
   }),
 });
 
-function Examples() {
+function Playground() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-      <span className="font-mono text-xs tracking-[0.2em] text-amber uppercase">Live examples</span>
-      <h1 className="mt-4 max-w-xl text-3xl leading-tight font-semibold text-balance text-paper sm:text-4xl">
+      <span className="font-mono text-xs tracking-[0.2em] text-primary uppercase">Playground</span>
+      <h1 className="mt-4 max-w-xl text-3xl leading-tight font-semibold text-balance text-foreground sm:text-4xl">
         This is the panel. Actually running.
       </h1>
-      <p className="mt-4 max-w-xl text-base leading-relaxed text-mist">
+      <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
         Every card below dispatches real requests against the same in-memory fake API, one column
         through RTK Query and one through TanStack Query, covering arguments, mutations, errors,
         polling, and pagination. Open the devtools panel in the bottom-right corner and switch
         between the two plugin tabs to compare them.
       </p>
 
-      <AppProviders fallback={<ExamplesFallback />}>
+      <AppProviders fallback={<PlaygroundFallback />}>
         <div className="mt-10 grid gap-10 lg:grid-cols-2">
           <div>
             <SectionLabel>RTK Query</SectionLabel>
@@ -95,17 +95,17 @@ function Examples() {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <h2 className="border-b border-panel-line pb-2 font-mono text-xs tracking-[0.2em] text-mist uppercase">
+    <h2 className="border-b border-border pb-2 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
       {children}
     </h2>
   );
 }
 
-function ExamplesFallback() {
+function PlaygroundFallback() {
   return (
     <Card className="mt-10">
-      <CardContent className="flex items-center justify-center py-18 font-mono text-sm text-mist">
-        Loading examples…
+      <CardContent className="flex items-center justify-center py-18 font-mono text-sm text-muted-foreground">
+        Loading the playground…
       </CardContent>
     </Card>
   );

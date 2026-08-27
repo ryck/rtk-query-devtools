@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { entryRow, gotoApp, openDevtoolsShell, switchTab, tab } from "./helpers";
+import { entryRow, entryStatus, gotoApp, openDevtoolsShell, switchTab, tab } from "./helpers";
 
 test("the devtools shell opens and shows the RTK Query plugin tab", async ({ page }) => {
   await gotoApp(page);
@@ -16,12 +16,12 @@ test("queries appear in the Queries tab and update as the app is used", async ({
   await openDevtoolsShell(page);
 
   await expect(entryRow(page, "listPosts")).toBeVisible();
-  await expect(entryRow(page, "listPosts")).toContainText("fresh");
+  await expect(entryStatus(page, "listPosts", "Fresh")).toBeVisible();
 
   // Delete a post from the app UI. The list refetches, the entry stays fresh.
   await page.getByRole("button", { name: "Delete Post #1" }).click();
   await expect(page.getByText("Post #1", { exact: true })).toBeHidden();
-  await expect(entryRow(page, "listPosts")).toContainText("fresh");
+  await expect(entryStatus(page, "listPosts", "Fresh")).toBeVisible();
 });
 
 test("search filters the query list by endpoint name", async ({ page }) => {

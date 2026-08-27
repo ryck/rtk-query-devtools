@@ -8,10 +8,10 @@ export function NotFound() {
       <Badge variant="destructive" className="tracking-wide uppercase">
         Error
       </Badge>
-      <h1 className="mt-4 text-3xl leading-tight font-semibold text-balance text-paper sm:text-4xl">
+      <h1 className="mt-4 text-3xl leading-tight font-semibold text-balance text-foreground sm:text-4xl">
         This route isn't in the cache.
       </h1>
-      <p className="mt-4 max-w-md text-base leading-relaxed text-mist">
+      <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
         Nothing fulfilled at this path. Head back to the homepage, or see the plugin running on the
         examples page.
       </p>
@@ -27,8 +27,8 @@ export function NotFound() {
         <Link to="/" className={buttonVariants({ size: "sm" })}>
           Go home
         </Link>
-        <Link to="/examples" className={buttonVariants({ variant: "outline", size: "sm" })}>
-          See examples
+        <Link to="/playground" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          Open the playground
         </Link>
       </div>
     </main>

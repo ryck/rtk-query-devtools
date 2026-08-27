@@ -19,8 +19,9 @@ export function TqInfiniteExample() {
       <CardHeader>
         <CardTitle>Infinite query</CardTitle>
         <CardDescription>
-          TanStack Query's native <code className="font-mono text-paper">useInfiniteQuery</code>.
-          Compare how each panel represents the same paginated data.
+          TanStack Query's native{" "}
+          <code className="font-mono text-foreground">useInfiniteQuery</code>. Compare how each
+          panel represents the same paginated data.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -28,7 +29,7 @@ export function TqInfiniteExample() {
           {posts.map((post) => (
             <li
               key={post.id}
-              className="rounded-md border border-panel-line px-3 py-2 font-mono text-sm text-paper"
+              className="rounded-md border border-border px-3 py-2 font-mono text-sm text-foreground"
             >
               {post.title}
             </li>

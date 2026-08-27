@@ -13,10 +13,10 @@ export function InfiniteExample() {
       <CardHeader>
         <CardTitle>Infinite query</CardTitle>
         <CardDescription>
-          Paginated with <code className="font-mono text-paper">builder.infiniteQuery</code>. The
-          Queries tab labels this entry's Type as{" "}
-          <code className="font-mono text-paper">infinitequery</code>, not{" "}
-          <code className="font-mono text-paper">query</code>.
+          Paginated with <code className="font-mono text-foreground">builder.infiniteQuery</code>.
+          The Queries tab labels this entry's Type as{" "}
+          <code className="font-mono text-foreground">infinitequery</code>, not{" "}
+          <code className="font-mono text-foreground">query</code>.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -24,7 +24,7 @@ export function InfiniteExample() {
           {posts.map((post) => (
             <li
               key={post.id}
-              className="rounded-md border border-panel-line px-3 py-2 font-mono text-sm text-paper"
+              className="rounded-md border border-border px-3 py-2 font-mono text-sm text-foreground"
             >
               {post.title}
             </li>

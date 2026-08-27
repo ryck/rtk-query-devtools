@@ -20,9 +20,9 @@ export function PostsExample() {
       <CardHeader>
         <CardTitle>Posts &amp; tags</CardTitle>
         <CardDescription>
-          Adding a post invalidates the <code className="font-mono text-paper">Post:LIST</code> tag.
-          watch <code className="font-mono text-paper">listPosts</code> refetch automatically in the
-          Timeline tab below.
+          Adding a post invalidates the <code className="font-mono text-foreground">Post:LIST</code>{" "}
+          tag. watch <code className="font-mono text-foreground">listPosts</code> refetch
+          automatically in the Timeline tab below.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -49,12 +49,12 @@ export function PostsExample() {
 
         <ul className="mt-4 flex max-h-56 flex-col gap-1.5 overflow-y-auto">
           {isLoading ? (
-            <li className="font-mono text-sm text-mist">Loading…</li>
+            <li className="font-mono text-sm text-muted-foreground">Loading…</li>
           ) : (
             posts?.map((post) => (
               <li
                 key={post.id}
-                className="flex items-center justify-between gap-2 rounded-md border border-panel-line px-3 py-2 font-mono text-sm text-paper"
+                className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 font-mono text-sm text-foreground"
               >
                 <span className="truncate">{post.title}</span>
                 <Button
@@ -62,7 +62,7 @@ export function PostsExample() {
                   size="icon-xs"
                   aria-label={`Delete ${post.title}`}
                   onClick={() => deletePost(post.id)}
-                  className="text-mist hover:text-coral"
+                  className="text-muted-foreground hover:text-destructive"
                 >
                   <Trash2 size={14} />
                 </Button>

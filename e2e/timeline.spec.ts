@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { gotoApp, openDevtoolsShell, switchTab } from "./helpers";
+import { gotoApp, openDevtoolsShell, outcomeBadge, switchTab } from "./helpers";
 
 test("the Timeline tab records query and mutation lifecycle events", async ({ page }) => {
   await gotoApp(page);
@@ -7,7 +7,7 @@ test("the Timeline tab records query and mutation lifecycle events", async ({ pa
   await switchTab(page, "Timeline");
 
   // The initial listPosts fetch on load should already be recorded.
-  await expect(page.getByText("fulfilled", { exact: true }).first()).toBeVisible();
+  await expect(outcomeBadge(page, "Fulfilled").first()).toBeVisible();
 
   const before = await page.locator('div[role="button"]').filter({ hasText: "listPosts" }).count();
 
@@ -70,7 +70,7 @@ test("Clear empties the timeline", async ({ page }) => {
   await openDevtoolsShell(page);
   await switchTab(page, "Timeline");
 
-  await expect(page.getByText("fulfilled", { exact: true }).first()).toBeVisible();
+  await expect(outcomeBadge(page, "Fulfilled").first()).toBeVisible();
 
   await page.getByRole("button", { name: "Clear" }).click();
 

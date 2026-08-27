@@ -13,7 +13,8 @@
     "og-image": "node scripts/og-image.mjs",
     "preview": "vite preview",
     "typecheck": "tsr generate && tsc --noEmit",
-    "logos": "node scripts/logos.mjs"
+    "logos": "node scripts/logos.mjs",
+    "feature-shots": "node scripts/feature-shots.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

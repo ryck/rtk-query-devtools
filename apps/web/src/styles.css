@@ -21,8 +21,37 @@
   --color-teal: #34d399;
   --color-coral: #fb7166;
 
+  /*
+   * Light-mode counterparts, matching shadcn-familytree so the two projects
+   * read as one family. A warm near-white page rather than the cream `paper`
+   * itself, with white cards lifting off it.
+   *
+   * Amber, teal and coral were all chosen to glow on near-black, which leaves
+   * them around 2:1 on a light page, well under the 4.5:1 body text needs. The
+   * `-deep` values are the same hues taken darker.
+   */
+  --color-parchment: #fbfaf7;
+  --color-parchment-raised: #ffffff;
+  --color-parchment-line: #e3ded2;
+  --color-parchment-sunken: #f0ede5;
+  --color-quill: #0c0f16;
+  --color-quill-soft: #1b212c;
+  --color-shadow: #6b7385;
+  --color-bronze: #b8761a;
+  --color-bronze-foreground: #fffdf8;
+  --color-teal-deep: #0f766e;
+  --color-coral-deep: #d0483c;
+
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  /*
+   * A theme token rather than a hand-written `.animate-heartbeat` class,
+   * because only a real utility can carry variants: the footer needs
+   * `group-hover:animate-heartbeat`, which Tailwind cannot generate for a
+   * class it does not know about. The keyframes live below.
+   */
+  --animate-heartbeat: heartbeat 1.2s ease-in-out infinite;
 }
 
 /*
@@ -55,6 +84,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /*
+   * One addition to shadcn's set: `success`, because the panel has a fourth status colour (fresh/fulfilled)
+   * that shadcn has no token for, and it needs a light variant like the rest.
+   *
+   */
+  --color-success: var(--success);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -65,12 +101,49 @@
 }
 
 /*
- * One block for both selectors because the site is dark-only: there is no theme
- * toggle and no light design to fall back to. The `.dark` class is still set on
- * <html> (see __root.tsx) so that the `dark:` variants baked into shadcn's own
- * components resolve, rather than silently doing nothing.
+ * Light is the `:root` default and dark is opt-in via the `.dark` class, which
+ * is what `themeScript` in theme-toggle.tsx sets before first paint. Anything
+ * shared by both themes lives here once.
  */
-:root,
+:root {
+  --background: var(--color-parchment);
+  --foreground: var(--color-quill);
+
+  /* Cards lift *off* a light page, so they go lighter, not darker. */
+  --card: var(--color-parchment-raised);
+  --card-foreground: var(--color-quill);
+  --popover: var(--color-parchment-raised);
+  --popover-foreground: var(--color-quill);
+
+  /*
+   * Bronze rather than the dark theme's bright amber. It is dark enough to
+   * carry light text as a button surface *and* to be read as prose on the
+   * page, which is what lets the accent be one token in both themes.
+   */
+  --primary: var(--color-bronze);
+  --primary-foreground: var(--color-bronze-foreground);
+
+  --secondary: var(--color-parchment-sunken);
+  --secondary-foreground: var(--color-quill-soft);
+
+  --muted: var(--color-parchment-sunken);
+  --muted-foreground: var(--color-shadow);
+
+  --accent: var(--color-parchment-sunken);
+  --accent-foreground: var(--color-quill-soft);
+
+  --destructive: var(--color-coral-deep);
+  --success: var(--color-teal-deep);
+
+  --border: var(--color-parchment-line);
+  --input: var(--color-parchment-line);
+  /* Amber both ways: the focus ring sits on top of a surface, not in it. */
+  --ring: var(--color-amber);
+
+  /* The preset's "small" radius. */
+  --radius: 0.45rem;
+}
+
 .dark {
   --background: var(--color-ink);
   --foreground: var(--color-paper);
@@ -94,19 +167,33 @@
   --accent-foreground: var(--color-paper);
 
   --destructive: var(--color-coral);
+  --success: var(--color-teal);
 
   --border: var(--color-panel-line);
   --input: var(--color-panel-line);
   --ring: var(--color-amber);
-
-  /* The preset's "small" radius. */
-  --radius: 0.45rem;
 }
 
 @layer base {
   html {
-    color-scheme: dark;
+    /* Tells the browser which way to render its own chrome: scrollbars, form
+       controls, the address bar on mobile. */
+    color-scheme: light;
+    /* For the /features section index, so jumping between sections reads as
+       movement through the page rather than a cut. Guarded below, since a
+       long smooth scroll is exactly what vestibular sensitivity reacts to. */
+    scroll-behavior: smooth;
     @apply font-sans;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -152,6 +239,24 @@
   }
 }
 
+/* Two thumps then a rest, rather than an even pulse, so it reads as a beat. */
+@keyframes heartbeat {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.3);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.18);
+  }
+}
+
 .animate-flip-in {
   animation: flip-in 340ms cubic-bezier(0.2, 0.7, 0.3, 1);
   transform-style: preserve-3d;
@@ -163,7 +268,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-flip-in,
-  .animate-pulse-dot {
+  .animate-pulse-dot,
+  .animate-heartbeat {
     animation: none;
   }
 }

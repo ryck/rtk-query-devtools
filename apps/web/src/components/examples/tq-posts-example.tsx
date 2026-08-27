@@ -24,7 +24,7 @@ export function TqPostsExample() {
       <CardHeader>
         <CardTitle>Posts &amp; tags</CardTitle>
         <CardDescription>
-          Adding a post invalidates the <code className="font-mono text-paper">["posts"]</code>{" "}
+          Adding a post invalidates the <code className="font-mono text-foreground">["posts"]</code>{" "}
           query key. Watch it refetch automatically in the TanStack Query panel.
         </CardDescription>
       </CardHeader>
@@ -56,12 +56,12 @@ export function TqPostsExample() {
 
         <ul className="mt-4 flex max-h-56 flex-col gap-1.5 overflow-y-auto">
           {isLoading ? (
-            <li className="font-mono text-sm text-mist">Loading…</li>
+            <li className="font-mono text-sm text-muted-foreground">Loading…</li>
           ) : (
             posts?.map((post) => (
               <li
                 key={post.id}
-                className="flex items-center justify-between gap-2 rounded-md border border-panel-line px-3 py-2 font-mono text-sm text-paper"
+                className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 font-mono text-sm text-foreground"
               >
                 <span className="truncate">{post.title}</span>
                 <Button
@@ -69,7 +69,7 @@ export function TqPostsExample() {
                   size="icon-xs"
                   aria-label={`Delete ${post.title}`}
                   onClick={() => deletePost.mutate(post.id)}
-                  className="text-mist hover:text-coral"
+                  className="text-muted-foreground hover:text-destructive"
                 >
                   <Trash2 size={14} />
                 </Button>

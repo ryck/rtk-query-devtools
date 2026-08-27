@@ -4,7 +4,7 @@ import type { HighlighterCore } from "shiki/core";
 import { Check, Copy, FileCode2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { brandCodeTheme } from "@/lib/shiki-theme";
+import { brandCodeTheme, brandCodeThemeLight } from "@/lib/shiki-theme";
 import { Button } from "@/components/ui/button";
 
 import type { SVGProps } from "react";
@@ -102,6 +102,7 @@ const CB_STYLES = `
 .cbln .line::before{content:counter(line);counter-increment:line;display:inline-block;min-width:1.5rem;padding-right:.75rem;margin-right:1rem;text-align:right;font-size:.75rem;line-height:1.7;user-select:none;color:color-mix(in srgb,var(--muted-foreground,#888) 55%,transparent)}
 .cbhl code{display:grid}
 .cbhl .line{min-height:1lh}
+.dark .shiki,.dark .shiki span{color:var(--shiki-dark) !important}
 .cbhl .line-highlighted{background-color:color-mix(in srgb,var(--color-amber) 12%,transparent);border-left:2px solid var(--color-amber);margin:0 -1rem;padding:0 1rem}
 `;
 
@@ -195,7 +196,7 @@ function getHighlighter() {
       import("shiki/engine/javascript"),
     ]);
     return core.createHighlighterCore({
-      themes: [brandCodeTheme],
+      themes: [brandCodeTheme, brandCodeThemeLight],
       // Grammars are added by `loadLang` below instead of up front, so a page
       // showing only TypeScript never fetches the TSX grammar.
       langs: [],
@@ -234,9 +235,12 @@ async function renderCode(
   return shiki.codeToHtml(code, {
     lang,
     // Swapped from the registry default of github-light/github-dark-default,
-    // which is off-palette. The site is dark-only, so this is a single theme
-    // rather than a light/dark pair. See lib/shiki-theme.ts.
-    theme: brandCodeTheme,
+    // which is off-palette. Both site themes, emitted as one payload: Shiki
+    // writes the light colour inline and the dark one into a `--shiki-dark`
+    // custom property, which CB_STYLES activates under `.dark`. That keeps
+    // theme switching in CSS, with no re-highlight and no flash.
+    themes: { light: brandCodeThemeLight, dark: brandCodeTheme },
+    defaultColor: "light",
     tabindex: false,
     transformers: [
       {
@@ -271,7 +275,7 @@ function CopyBtn({ code }: { code: string }) {
   };
   return (
     <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={copy}>
-      {copied ? <Check className="h-3.5 w-3.5 text-teal-400" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
     </Button>
   );
 }
@@ -580,7 +584,7 @@ export function InstallCommand({ registryUrl, packageName, className }: InstallC
         <code className="grow truncate text-sm">{command}</code>
         <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={copy}>
           {copied ? (
-            <Check className="h-3.5 w-3.5 text-teal-400" />
+            <Check className="h-3.5 w-3.5 text-success" />
           ) : (
             <Copy className="h-3.5 w-3.5" />
           )}
