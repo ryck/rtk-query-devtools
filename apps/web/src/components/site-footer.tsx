@@ -19,6 +19,18 @@ export function SiteFooter() {
             className={textLink}
           >
             TanStack DevTools
+          </a>{" "}
+          · Made with{" "}
+          {/*
+            Labelled rather than left bare: a screen reader announces the raw
+            emoji as "red heart", so this reads "Made with love by ryck.dev".
+          */}
+          <span role="img" aria-label="love">
+            💛
+          </span>{" "}
+          by{" "}
+          <a href="https://ryck.dev" target="_blank" rel="noreferrer" className={textLink}>
+            ryck.dev
           </a>
         </span>
         <div className="flex gap-4">
