@@ -1,41 +1,55 @@
-import { createPost, fetchPosts, removePost } from "@rtk-query-devtools/demo-api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import {
+  createPost,
+  fetchPosts,
+  removePost,
+} from "@rtk-query-devtools/demo-api"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { Loader2, Plus, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 export function TqPostsExample() {
-  const queryClient = useQueryClient();
-  const { data: posts, isLoading } = useQuery({ queryKey: ["posts"], queryFn: fetchPosts });
+  const queryClient = useQueryClient()
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ["posts"],
+    queryFn: fetchPosts,
+  })
   const addPost = useMutation({
     mutationFn: createPost,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
-  });
+  })
   const deletePost = useMutation({
     mutationFn: removePost,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["posts"] }),
-  });
-  const [title, setTitle] = useState("");
+  })
+  const [title, setTitle] = useState("")
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Posts &amp; tags</CardTitle>
         <CardDescription>
-          Adding a post invalidates the <code className="font-mono text-foreground">["posts"]</code>{" "}
-          query key. Watch it refetch automatically in the TanStack Query panel.
+          Adding a post invalidates the{" "}
+          <code className="font-mono text-foreground">["posts"]</code> query
+          key. Watch it refetch automatically in the TanStack Query panel.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form
           className="flex gap-2"
           onSubmit={(e) => {
-            e.preventDefault();
-            if (!title.trim()) return;
-            addPost.mutate({ title, body: "Added from the examples page." });
-            setTitle("");
+            e.preventDefault()
+            if (!title.trim()) return
+            addPost.mutate({ title, body: "Added from the examples page." })
+            setTitle("")
           }}
         >
           <Input
@@ -56,7 +70,9 @@ export function TqPostsExample() {
 
         <ul className="mt-4 flex max-h-56 flex-col gap-1.5 overflow-y-auto">
           {isLoading ? (
-            <li className="font-mono text-sm text-muted-foreground">Loading…</li>
+            <li className="font-mono text-sm text-muted-foreground">
+              Loading…
+            </li>
           ) : (
             posts?.map((post) => (
               <li
@@ -79,5 +95,5 @@ export function TqPostsExample() {
         </ul>
       </CardContent>
     </Card>
-  );
+  )
 }

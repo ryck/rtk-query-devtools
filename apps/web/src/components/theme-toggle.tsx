@@ -1,5 +1,5 @@
-import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Moon, Sun } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 /**
  * Applies the stored preference before first paint.
@@ -18,13 +18,13 @@ import { Button } from "@/components/ui/button";
  * `no-preference` was dropped from the spec, and current browsers report a
  * system with no opinion as `light`.
  */
-export const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d;if(t){d=t==="dark"}else if(matchMedia("(prefers-color-scheme: dark)").matches){d=true}else if(matchMedia("(prefers-color-scheme: light)").matches){d=false}else{d=true}document.documentElement.classList.toggle("dark",d)}catch(e){document.documentElement.classList.add("dark")}})()`;
+export const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d;if(t){d=t==="dark"}else if(matchMedia("(prefers-color-scheme: dark)").matches){d=true}else if(matchMedia("(prefers-color-scheme: light)").matches){d=false}else{d=true}document.documentElement.classList.toggle("dark",d)}catch(e){document.documentElement.classList.add("dark")}})()`
 
 function toggleTheme() {
-  const next = !document.documentElement.classList.contains("dark");
-  document.documentElement.classList.toggle("dark", next);
+  const next = !document.documentElement.classList.contains("dark")
+  document.documentElement.classList.toggle("dark", next)
   try {
-    localStorage.setItem("theme", next ? "dark" : "light");
+    localStorage.setItem("theme", next ? "dark" : "light")
   } catch {
     // Private browsing can throw on write. The toggle still works for this
     // session, it just will not be remembered.
@@ -39,9 +39,14 @@ function toggleTheme() {
  */
 export function ThemeToggle() {
   return (
-    <Button variant="ghost" size="icon-sm" onClick={toggleTheme} aria-label="Toggle theme">
+    <Button
+      variant="ghost"
+      size="icon-sm"
+      onClick={toggleTheme}
+      aria-label="Toggle theme"
+    >
       <Moon className="dark:hidden" />
       <Sun className="hidden dark:block" />
     </Button>
-  );
+  )
 }

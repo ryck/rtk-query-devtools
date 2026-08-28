@@ -1,12 +1,20 @@
-import { useGetPostSlowQuery } from "@rtk-query-devtools/demo-api";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetPostSlowQuery } from "@rtk-query-devtools/demo-api"
+import { Loader2 } from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export function SlowExample() {
-  const [id, setId] = useState<number | undefined>(undefined);
-  const { data, isFetching } = useGetPostSlowQuery(id ?? 1, { skip: id === undefined });
+  const [id, setId] = useState<number | undefined>(undefined)
+  const { data, isFetching } = useGetPostSlowQuery(id ?? 1, {
+    skip: id === undefined,
+  })
 
   return (
     <Card>
@@ -14,7 +22,8 @@ export function SlowExample() {
         <CardTitle>Slow query</CardTitle>
         <CardDescription>
           Takes 2.5s on purpose. Open the Queries tab below and watch the{" "}
-          <code className="font-mono text-foreground">fetching</code> badge linger.
+          <code className="font-mono text-foreground">fetching</code> badge
+          linger.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -28,9 +37,11 @@ export function SlowExample() {
           Fetch post {((id ?? 0) % 8) + 1}
         </Button>
         {data && (
-          <p className="mt-3 font-mono text-xs text-muted-foreground">Loaded: {data.title}</p>
+          <p className="mt-3 font-mono text-xs text-muted-foreground">
+            Loaded: {data.title}
+          </p>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import { resolve } from "node:path";
-import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
-import dts from "vite-plugin-dts";
+import { resolve } from "node:path"
+import tailwindcss from "@tailwindcss/vite"
+import { defineConfig } from "vite"
+import dts from "vite-plugin-dts"
 
 export default defineConfig({
   plugins: [
@@ -11,7 +11,10 @@ export default defineConfig({
       // Tests and their scaffolding are not part of the public surface. Without
       // this they ship as stray `.d.ts` files in the published tarball.
       exclude: ["src/**/*.test.*", "src/test-utils/**"],
-      bundleTypes: true,
+      // Not `bundleTypes: true`. That path runs API Extractor, which carries
+      // its own TypeScript and cannot follow the declarations TS 7 emits —
+      // it dies on `Record` with "Unable to follow symbol". Per-file `.d.ts`
+      // is what ships instead: more files in the tarball, identical types.
     }),
   ],
   build: {
@@ -27,4 +30,4 @@ export default defineConfig({
       external: ["react", "react-dom", "react/jsx-runtime", "@reduxjs/toolkit"],
     },
   },
-});
+})

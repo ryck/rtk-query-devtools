@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import type { HighlighterCore } from "shiki/core";
-import { Check, Copy, FileCode2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { brandCodeTheme, brandCodeThemeLight } from "@/lib/shiki-theme";
-import { Button } from "@/components/ui/button";
+import type { HighlighterCore } from "shiki/core"
+import { Check, Copy, FileCode2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { cn } from "@/lib/utils"
+import { brandCodeTheme, brandCodeThemeLight } from "@/lib/shiki-theme"
+import { Button } from "@/components/ui/button"
 
-import type { SVGProps } from "react";
+import type { SVGProps } from "react"
 
 // -- Package manager icons (inlined for registry self-containment) --
 
@@ -39,29 +39,47 @@ const PnpmIcon = (p: SVGProps<SVGSVGElement>) => (
     <use xlinkHref="#g" fill="#4e4e4e" />
     <use xlinkHref="#h" fill="#4e4e4e" />
   </svg>
-);
+)
 
 const NpmIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="1em" height="1em" {...p}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 128 128"
+    width="1em"
+    height="1em"
+    {...p}
+  >
     <path
       fill="#cb3837"
       d="M2 38.5h124v43.71H64v7.29H36.44v-7.29H2Zm6.89 36.43h13.78V53.07h6.89v21.86h6.89V45.79H8.89Zm34.44-29.14v36.42h13.78v-7.28h13.78V45.79Zm13.78 7.29H64v14.56h-6.89Zm20.67-7.29v29.14h13.78V53.07h6.89v21.86h6.89V53.07h6.89v21.86h6.89V45.79Z"
     />
   </svg>
-);
+)
 
 const YarnIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 518 518" width="1em" height="1em" {...p}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 518 518"
+    width="1em"
+    height="1em"
+    {...p}
+  >
     <circle cx="259" cy="259" r="259" fill="#2c8ebb" />
     <path
       fill="#fff"
       d="M435.2 337.5c-1.8-14.2-13.8-24-29.2-23.8-23 .3-42.3 12.2-55.1 20.1-5 3.1-9.3 5.4-13 7.1.8-11.6.1-26.8-5.9-43.5-7.3-20-17.1-32.3-24.1-39.4 8.1-11.8 19.2-29 24.4-55.6 4.5-22.7 3.1-58-7.2-77.8-2.1-4-5.6-6.9-10-8.1-1.8-.5-5.2-1.5-11.9.4C293.1 96 289.6 93.8 286.9 92c-5.6-3.6-12.2-4.4-18.4-2.1-8.3 3-15.4 11-22.1 25.2-1 2.1-1.9 4.1-2.7 6.1-12.7.9-32.7 5.5-49.6 23.8-2.1 2.3-6.2 4-10.5 5.6h.1c-8.8 3.1-12.8 10.3-17.7 23.3-6.8 18.2.2 36.1 7.1 47.7-9.4 8.4-21.9 21.8-28.5 37.5-8.2 19.4-9.1 38.4-8.8 48.7-7 7.4-17.8 21.3-19 36.9-1.6 21.8 6.3 36.6 9.8 42 1 1.6 2.1 2.9 3.3 4.2-.4 2.7-.5 5.6.1 8.6 1.3 7 5.7 12.7 12.4 16.3 13.2 7 31.6 10 45.8 2.9 5.1 5.4 14.4 10.6 31.3 10.6h1c4.3 0 58.9-2.9 74.8-6.8 7.1-1.7 12-4.7 15.2-7.4 10.2-3.2 38.4-12.8 65-30 18.8-12.2 25.3-14.8 39.3-18.2 13.6-3.3 22.1-15.7 20.4-29.4z"
     />
   </svg>
-);
+)
 
 const BunIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 70" width="1em" height="1em" {...p}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 80 70"
+    width="1em"
+    height="1em"
+    {...p}
+  >
     <path d="M71.09 20.74c-.16-.17-.33-.34-.5-.5s-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5A26.46 26.46 0 0 1 75.5 35.7c0 16.57-16.82 30.05-37.5 30.05-11.58 0-21.94-4.23-28.83-10.86l.5.5.5.5.5.5.5.5.5.5.5.5.5.5C19.55 65.3 30.14 69.75 42 69.75c20.68 0 37.5-13.48 37.5-30 0-7.06-3.04-13.75-8.41-19.01Z" />
     <path
       fill="#fbf0df"
@@ -91,7 +109,7 @@ const BunIcon = (p: SVGProps<SVGSVGElement>) => (
       d="M34 47.79a6.91 6.91 0 0 0 4.12 1.9 6.91 6.91 0 0 0 4.11-1.9 10.63 10.63 0 0 0 1-1.07 6.83 6.83 0 0 0-4.9-2.31 6.15 6.15 0 0 0-5 2.78c.23.21.43.41.67.6Z"
     />
   </svg>
-);
+)
 
 // -- Styles --
 // Injected once at runtime — ships as a single self-contained file with no
@@ -104,49 +122,49 @@ const CB_STYLES = `
 .cbhl .line{min-height:1lh}
 .dark .shiki,.dark .shiki span{color:var(--shiki-dark) !important}
 .cbhl .line-highlighted{background-color:color-mix(in srgb,var(--color-amber) 12%,transparent);border-left:2px solid var(--color-amber);margin:0 -1rem;padding:0 1rem}
-`;
+`
 
 function injectStyles() {
-  if (typeof document === "undefined") return;
-  if (document.getElementById("ss-code-block")) return;
-  const el = document.createElement("style");
-  el.id = "ss-code-block";
-  el.textContent = CB_STYLES;
-  document.head.appendChild(el);
+  if (typeof document === "undefined") return
+  if (document.getElementById("ss-code-block")) return
+  const el = document.createElement("style")
+  el.id = "ss-code-block"
+  el.textContent = CB_STYLES
+  document.head.appendChild(el)
 }
 
 // -- Types --
 
 interface CodeBlockProps {
-  code: string;
-  language?: string;
-  filename?: string;
-  showLineNumbers?: boolean;
-  scrollable?: boolean;
-  maxHeight?: number;
-  highlightLines?: number[];
+  code: string
+  language?: string
+  filename?: string
+  showLineNumbers?: boolean
+  scrollable?: boolean
+  maxHeight?: number
+  highlightLines?: number[]
   /** Tailwind class(es) applied to the code body — e.g. "bg-muted", "bg-slate-950" */
-  bodyClassName?: string;
-  className?: string;
+  bodyClassName?: string
+  className?: string
 }
 
 export interface FileEntry {
-  filename: string;
-  code: string;
-  language?: string;
+  filename: string
+  code: string
+  language?: string
   /**
    * 1-based line numbers to emphasise. Keep the array reference stable (a
    * module-level constant, say): `CodeRenderer` re-highlights whenever this
    * changes identity, so a fresh array on every render would loop.
    */
-  highlightLines?: number[];
+  highlightLines?: number[]
 }
 
 export interface LanguageTab {
-  label: string;
-  filename: string;
-  code: string;
-  language?: string;
+  label: string
+  filename: string
+  code: string
+  language?: string
 }
 
 // -- Shiki renderer --
@@ -162,7 +180,7 @@ export interface LanguageTab {
  * separate grammars. Anything unrecognised falls back to TypeScript instead of
  * throwing, which is what `codeToHtml` would do with an unregistered language.
  */
-type Language = "typescript" | "tsx";
+type Language = "typescript" | "tsx"
 
 const ALIASES: Record<string, Language> = {
   js: "typescript",
@@ -171,7 +189,7 @@ const ALIASES: Record<string, Language> = {
   typescript: "typescript",
   jsx: "tsx",
   tsx: "tsx",
-};
+}
 
 /**
  * One highlighter for the whole page, created on first use. An instance loads
@@ -181,10 +199,10 @@ const ALIASES: Record<string, Language> = {
 const LANG_LOADERS = {
   typescript: () => import("@shikijs/langs-precompiled/typescript"),
   tsx: () => import("@shikijs/langs-precompiled/tsx"),
-} satisfies Record<Language, () => Promise<unknown>>;
+} satisfies Record<Language, () => Promise<unknown>>
 
-let highlighter: Promise<HighlighterCore> | undefined;
-const loadedLangs = new Map<Language, Promise<void>>();
+let highlighter: Promise<HighlighterCore> | undefined
+const loadedLangs = new Map<Language, Promise<void>>()
 
 function getHighlighter() {
   // Imported dynamically so Shiki lands in its own chunk, fetched when a code
@@ -194,7 +212,7 @@ function getHighlighter() {
     const [core, engine] = await Promise.all([
       import("shiki/core"),
       import("shiki/engine/javascript"),
-    ]);
+    ])
     return core.createHighlighterCore({
       themes: [brandCodeTheme, brandCodeThemeLight],
       // Grammars are added by `loadLang` below instead of up front, so a page
@@ -205,33 +223,35 @@ function getHighlighter() {
       // JavaScript engine ships a regex transpiler to convert patterns at
       // runtime. Pre-compiling means neither is needed.
       engine: engine.createJavaScriptRawEngine(),
-    });
-  })();
-  return highlighter;
+    })
+  })()
+  return highlighter
 }
 
 /** Cached by promise, so two blocks rendering at once load a grammar once. */
 function loadLang(shiki: HighlighterCore, lang: Language) {
-  let pending = loadedLangs.get(lang);
+  let pending = loadedLangs.get(lang)
   if (!pending) {
     // `loadLanguage` is itself async: returning it is what makes callers wait
     // for the grammar to finish registering rather than racing it.
     pending = LANG_LOADERS[lang]().then((mod) =>
-      shiki.loadLanguage((mod as { default: Parameters<typeof shiki.loadLanguage>[0] }).default),
-    );
-    loadedLangs.set(lang, pending);
+      shiki.loadLanguage(
+        (mod as { default: Parameters<typeof shiki.loadLanguage>[0] }).default
+      )
+    )
+    loadedLangs.set(lang, pending)
   }
-  return pending;
+  return pending
 }
 
 async function renderCode(
   code: string,
   language: string,
-  highlightLines?: number[],
+  highlightLines?: number[]
 ): Promise<string> {
-  const shiki = await getHighlighter();
-  const lang = ALIASES[language.toLowerCase()] ?? "typescript";
-  await loadLang(shiki, lang);
+  const shiki = await getHighlighter()
+  const lang = ALIASES[language.toLowerCase()] ?? "typescript"
+  await loadLang(shiki, lang)
   return shiki.codeToHtml(code, {
     lang,
     // Swapped from the registry default of github-light/github-dark-default,
@@ -249,47 +269,56 @@ async function renderCode(
           if (node.properties?.style) {
             node.properties.style = (node.properties.style as string)
               .replace(/background-color:\s*[^;]+;?\s*/gi, "")
-              .replace(/--shiki-dark-bg:\s*[^;]+;?\s*/gi, "");
+              .replace(/--shiki-dark-bg:\s*[^;]+;?\s*/gi, "")
           }
         },
         line(node, line) {
           if (highlightLines?.includes(line)) {
-            this.addClassToHast(node, "line-highlighted");
+            this.addClassToHast(node, "line-highlighted")
           }
         },
       },
     ],
-  });
+  })
 }
 
 // -- Copy button --
 
 function CopyBtn({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false)
   const copy = () => {
-    if (typeof window === "undefined" || !navigator?.clipboard) return;
+    if (typeof window === "undefined" || !navigator?.clipboard) return
     navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
   return (
-    <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={copy}>
-      {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+    <Button
+      size="icon"
+      variant="ghost"
+      className="h-7 w-7 shrink-0"
+      onClick={copy}
+    >
+      {copied ? (
+        <Check className="h-3.5 w-3.5 text-success" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" />
+      )}
     </Button>
-  );
+  )
 }
 
 // -- Internal code renderer --
 
 interface RendererProps {
-  code: string;
-  language: string;
-  showLineNumbers: boolean;
-  scrollable: boolean;
-  maxHeight: number;
-  highlightLines?: number[];
-  bodyClassName?: string;
+  code: string
+  language: string
+  showLineNumbers: boolean
+  scrollable: boolean
+  maxHeight: number
+  highlightLines?: number[]
+  bodyClassName?: string
 }
 
 function CodeRenderer({
@@ -301,19 +330,19 @@ function CodeRenderer({
   highlightLines,
   bodyClassName,
 }: RendererProps) {
-  const [html, setHtml] = useState<string | null>(null);
+  const [html, setHtml] = useState<string | null>(null)
 
   useEffect(() => {
-    injectStyles();
-    renderCode(code, language, highlightLines).then(setHtml);
-  }, [code, language, highlightLines]);
+    injectStyles()
+    renderCode(code, language, highlightLines).then(setHtml)
+  }, [code, language, highlightLines])
 
   return (
     <div
       className={cn(
         "overflow-x-auto",
         scrollable && "overflow-y-auto",
-        bodyClassName ?? "bg-background",
+        bodyClassName ?? "bg-background"
       )}
       style={scrollable ? { maxHeight: `${maxHeight}px` } : undefined}
     >
@@ -321,9 +350,9 @@ function CodeRenderer({
         <div
           dangerouslySetInnerHTML={{ __html: html }}
           className={cn(
-            "text-sm [&>pre]:p-4 [&_.line]:leading-[1.7]",
+            "text-sm [&_.line]:leading-[1.7] [&>pre]:p-4",
             showLineNumbers && "cbln",
-            highlightLines?.length && "cbhl",
+            highlightLines?.length && "cbhl"
           )}
         />
       ) : (
@@ -332,7 +361,7 @@ function CodeRenderer({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 // -- CodeBlock --
@@ -349,11 +378,13 @@ export function CodeBlock({
   className,
 }: CodeBlockProps) {
   return (
-    <div className={cn("rounded-lg border overflow-hidden", className)}>
+    <div className={cn("overflow-hidden rounded-lg border", className)}>
       <div className="flex h-10 items-center justify-between gap-2 border-b bg-muted/50 px-4">
         <div className="flex items-center gap-2 text-muted-foreground">
           <FileCode2 className="h-4 w-4 shrink-0" />
-          <span className="truncate font-mono text-xs">{filename ?? language}</span>
+          <span className="truncate font-mono text-xs">
+            {filename ?? language}
+          </span>
         </div>
         <CopyBtn code={code} />
       </div>
@@ -367,18 +398,18 @@ export function CodeBlock({
         bodyClassName={bodyClassName}
       />
     </div>
-  );
+  )
 }
 
 // -- MultiFileCodeBlock --
 
 interface MultiFileCodeBlockProps {
-  files: FileEntry[];
-  showLineNumbers?: boolean;
-  scrollable?: boolean;
-  maxHeight?: number;
-  bodyClassName?: string;
-  className?: string;
+  files: FileEntry[]
+  showLineNumbers?: boolean
+  scrollable?: boolean
+  maxHeight?: number
+  bodyClassName?: string
+  className?: string
 }
 
 export function MultiFileCodeBlock({
@@ -389,22 +420,22 @@ export function MultiFileCodeBlock({
   bodyClassName,
   className,
 }: MultiFileCodeBlockProps) {
-  const [active, setActive] = useState(files[0]?.filename ?? "");
-  const file = files.find((f) => f.filename === active) ?? files[0];
+  const [active, setActive] = useState(files[0]?.filename ?? "")
+  const file = files.find((f) => f.filename === active) ?? files[0]
 
   return (
-    <div className={cn("rounded-lg border overflow-hidden", className)}>
+    <div className={cn("overflow-hidden rounded-lg border", className)}>
       <div className="flex items-center justify-between border-b bg-muted/50">
-        <div className="flex overflow-x-auto no-scrollbar pl-1">
+        <div className="no-scrollbar flex overflow-x-auto pl-1">
           {files.map((f) => (
             <button
               key={f.filename}
               onClick={() => setActive(f.filename)}
               className={cn(
-                "h-10 px-3 font-mono text-xs shrink-0 border-b-2 transition-colors",
+                "h-10 shrink-0 border-b-2 px-3 font-mono text-xs transition-colors",
                 active === f.filename
                   ? "border-foreground text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               )}
             >
               {f.filename}
@@ -412,7 +443,7 @@ export function MultiFileCodeBlock({
           ))}
         </div>
         {file && (
-          <div className="pr-3 shrink-0">
+          <div className="shrink-0 pr-3">
             <CopyBtn code={file.code} />
           </div>
         )}
@@ -429,18 +460,18 @@ export function MultiFileCodeBlock({
         />
       )}
     </div>
-  );
+  )
 }
 
 // -- LanguageTabsCodeBlock --
 
 interface LanguageTabsCodeBlockProps {
-  tabs: LanguageTab[];
-  showLineNumbers?: boolean;
-  scrollable?: boolean;
-  maxHeight?: number;
-  bodyClassName?: string;
-  className?: string;
+  tabs: LanguageTab[]
+  showLineNumbers?: boolean
+  scrollable?: boolean
+  maxHeight?: number
+  bodyClassName?: string
+  className?: string
 }
 
 export function LanguageTabsCodeBlock({
@@ -451,22 +482,22 @@ export function LanguageTabsCodeBlock({
   bodyClassName,
   className,
 }: LanguageTabsCodeBlockProps) {
-  const [active, setActive] = useState(tabs[0]?.label ?? "");
-  const tab = tabs.find((t) => t.label === active) ?? tabs[0];
+  const [active, setActive] = useState(tabs[0]?.label ?? "")
+  const tab = tabs.find((t) => t.label === active) ?? tabs[0]
 
   return (
-    <div className={cn("rounded-lg border overflow-hidden", className)}>
+    <div className={cn("overflow-hidden rounded-lg border", className)}>
       {/* Language selector */}
-      <div className="flex items-center border-b bg-muted/50 px-2 overflow-x-auto no-scrollbar">
+      <div className="no-scrollbar flex items-center overflow-x-auto border-b bg-muted/50 px-2">
         {tabs.map((t) => (
           <button
             key={t.label}
             onClick={() => setActive(t.label)}
             className={cn(
-              "h-10 px-3 text-sm font-medium shrink-0 border-b-2 transition-colors",
+              "h-10 shrink-0 border-b-2 px-3 text-sm font-medium transition-colors",
               active === t.label
                 ? "border-foreground text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
             {t.label}
@@ -494,7 +525,7 @@ export function LanguageTabsCodeBlock({
         </>
       )}
     </div>
-  );
+  )
 }
 
 // -- InstallCommand --
@@ -504,18 +535,18 @@ const PM_LIST = [
   { label: "npm", icon: NpmIcon },
   { label: "yarn", icon: YarnIcon },
   { label: "bun", icon: BunIcon },
-] as const;
+] as const
 
 function buildRegistryCommand(pm: string, url: string) {
   switch (pm) {
     case "npm":
-      return `npx shadcn@latest add ${url}`;
+      return `npx shadcn@latest add ${url}`
     case "yarn":
-      return `yarn dlx shadcn@latest add ${url}`;
+      return `yarn dlx shadcn@latest add ${url}`
     case "bun":
-      return `bunx --bun shadcn@latest add ${url}`;
+      return `bunx --bun shadcn@latest add ${url}`
     default:
-      return `pnpm dlx shadcn@latest add ${url}`;
+      return `pnpm dlx shadcn@latest add ${url}`
   }
 }
 
@@ -525,39 +556,43 @@ function buildRegistryCommand(pm: string, url: string) {
 function buildPackageCommand(pm: string, pkg: string) {
   switch (pm) {
     case "npm":
-      return `npm install ${pkg}`;
+      return `npm install ${pkg}`
     case "yarn":
-      return `yarn add ${pkg}`;
+      return `yarn add ${pkg}`
     case "bun":
-      return `bun add ${pkg}`;
+      return `bun add ${pkg}`
     default:
-      return `pnpm add ${pkg}`;
+      return `pnpm add ${pkg}`
   }
 }
 
 interface InstallCommandProps {
   /** A shadcn registry URL, rendered as `pnpm dlx shadcn@latest add <url>`. */
-  registryUrl?: string;
+  registryUrl?: string
   /** An npm package name, rendered as `pnpm add <name>`. */
-  packageName?: string;
-  className?: string;
+  packageName?: string
+  className?: string
 }
 
-export function InstallCommand({ registryUrl, packageName, className }: InstallCommandProps) {
-  const [pm, setPm] = useState<string>("pnpm");
-  const [copied, setCopied] = useState(false);
+export function InstallCommand({
+  registryUrl,
+  packageName,
+  className,
+}: InstallCommandProps) {
+  const [pm, setPm] = useState<string>("pnpm")
+  const [copied, setCopied] = useState(false)
 
   const command = packageName
     ? buildPackageCommand(pm, packageName)
-    : buildRegistryCommand(pm, registryUrl ?? "");
+    : buildRegistryCommand(pm, registryUrl ?? "")
 
   const copy = () => {
-    if (typeof window === "undefined" || !navigator?.clipboard) return;
+    if (typeof window === "undefined" || !navigator?.clipboard) return
     navigator.clipboard.writeText(command).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -571,7 +606,7 @@ export function InstallCommand({ registryUrl, packageName, className }: InstallC
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
               pm === label
                 ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             <Icon className="h-4 w-4 shrink-0" />
@@ -582,7 +617,12 @@ export function InstallCommand({ registryUrl, packageName, className }: InstallC
       {/* Command row */}
       <div className="flex h-10 items-center justify-between gap-2 rounded-lg border bg-background px-3">
         <code className="grow truncate text-sm">{command}</code>
-        <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={copy}>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-7 w-7 shrink-0"
+          onClick={copy}
+        >
           {copied ? (
             <Check className="h-3.5 w-3.5 text-success" />
           ) : (
@@ -591,5 +631,5 @@ export function InstallCommand({ registryUrl, packageName, className }: InstallC
         </Button>
       </div>
     </div>
-  );
+  )
 }

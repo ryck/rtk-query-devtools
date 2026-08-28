@@ -1,4 +1,4 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
 import {
   ApiError,
   createPost,
@@ -9,23 +9,27 @@ import {
   fetchPostsPage,
   type Post,
   removePost,
-} from "./fake-posts-backend";
+} from "./fake-posts-backend"
 
-export type { Post };
+export type { Post }
 
 interface PostsApiError {
-  status: number;
-  data: string;
+  status: number
+  data: string
 }
 
 async function toResult<T>(promise: Promise<T>) {
   try {
-    return { data: await promise };
+    return { data: await promise }
   } catch (error) {
-    if (error instanceof ApiError) return { error: { status: error.status, data: error.message } };
+    if (error instanceof ApiError)
+      return { error: { status: error.status, data: error.message } }
     return {
-      error: { status: 500, data: error instanceof Error ? error.message : "Unknown error" },
-    };
+      error: {
+        status: 500,
+        data: error instanceof Error ? error.message : "Unknown error",
+      },
+    }
   }
 }
 
@@ -82,7 +86,7 @@ export const postsApi = createApi({
       },
     }),
   }),
-});
+})
 
 export const {
   useListPostsQuery,
@@ -92,4 +96,4 @@ export const {
   useAddPostMutation,
   useDeletePostMutation,
   useListPostsInfiniteInfiniteQuery,
-} = postsApi;
+} = postsApi

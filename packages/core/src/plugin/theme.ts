@@ -1,38 +1,46 @@
-import type { DerivedQueryStatus } from "../types";
+import type { DerivedQueryStatus } from "../types"
 
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "dark"
 
-export function resolveThemeMode(theme: "light" | "dark" | undefined): ThemeMode {
-  return theme === "light" ? "light" : "dark";
+export function resolveThemeMode(
+  theme: "light" | "dark" | undefined
+): ThemeMode {
+  return theme === "light" ? "light" : "dark"
 }
 
 interface StatusClasses {
-  badge: string;
-  icon: string;
-  dot: string;
+  badge: string
+  icon: string
+  dot: string
 }
 
 export interface RtkQueryDevtoolsClasses {
-  root: string;
-  surface: string;
-  surfaceHover: string;
-  surfaceSelected: string;
-  border: string;
-  borderInput: string;
-  textPrimary: string;
-  textSecondary: string;
-  textMuted: string;
-  textDimmed: string;
-  accent: string;
-  accentBorder: string;
-  danger: string;
-  dangerBorder: string;
+  root: string
+  surface: string
+  surfaceHover: string
+  surfaceSelected: string
+  border: string
+  borderInput: string
+  textPrimary: string
+  textSecondary: string
+  textMuted: string
+  textDimmed: string
+  accent: string
+  accentBorder: string
+  danger: string
+  dangerBorder: string
   /** For controls that put the panel into a simulated, not-real state. */
-  warning: string;
-  warningBorder: string;
-  status: Record<DerivedQueryStatus, StatusClasses>;
-  polling: string;
-  json: { key: string; string: string; number: string; boolean: string; muted: string };
+  warning: string
+  warningBorder: string
+  status: Record<DerivedQueryStatus, StatusClasses>
+  polling: string
+  json: {
+    key: string
+    string: string
+    number: string
+    boolean: string
+    muted: string
+  }
 }
 
 const lightClasses: RtkQueryDevtoolsClasses = {
@@ -87,7 +95,7 @@ const lightClasses: RtkQueryDevtoolsClasses = {
     boolean: "rtkq:text-blue-700",
     muted: "rtkq:text-neutral-400",
   },
-};
+}
 
 const darkClasses: RtkQueryDevtoolsClasses = {
   root: "rtkq:bg-neutral-900 rtkq:text-neutral-100",
@@ -141,8 +149,8 @@ const darkClasses: RtkQueryDevtoolsClasses = {
     boolean: "rtkq:text-blue-400",
     muted: "rtkq:text-neutral-500",
   },
-};
+}
 
 export function getClasses(mode: ThemeMode): RtkQueryDevtoolsClasses {
-  return mode === "light" ? lightClasses : darkClasses;
+  return mode === "light" ? lightClasses : darkClasses
 }

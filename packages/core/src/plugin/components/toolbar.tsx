@@ -1,35 +1,35 @@
-import clsx from "clsx";
-import { ArrowDown, ArrowUp, Search } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
-import type { SearchMode } from "../search";
-import type { RtkQueryDevtoolsClasses } from "../theme";
+import { clsx } from "clsx"
+import { ArrowDown, ArrowUp, Search } from "lucide-react"
+import type { ComponentType, ReactNode } from "react"
+import type { SearchMode } from "../search"
+import type { RtkQueryDevtoolsClasses } from "../theme"
 
 export interface SelectOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 /** `1` ascending, `-1` descending. Multiplied into a tab's comparator. */
-export type SortOrder = 1 | -1;
+export type SortOrder = 1 | -1
 
 export interface ToolbarProps {
-  classes: RtkQueryDevtoolsClasses;
-  search: string;
-  onSearchChange: (value: string) => void;
-  searchPlaceholder?: string;
-  sortOptions?: SelectOption[];
-  sortValue?: string;
-  onSortChange?: (value: string) => void;
-  sortOrder?: SortOrder;
-  onSortOrderChange?: (order: SortOrder) => void;
-  searchMode?: SearchMode;
-  onSearchModeChange?: (mode: SearchMode) => void;
+  classes: RtkQueryDevtoolsClasses
+  search: string
+  onSearchChange: (value: string) => void
+  searchPlaceholder?: string
+  sortOptions?: SelectOption[]
+  sortValue?: string
+  onSortChange?: (value: string) => void
+  sortOrder?: SortOrder
+  onSortOrderChange?: (order: SortOrder) => void
+  searchMode?: SearchMode
+  onSearchModeChange?: (mode: SearchMode) => void
   /** Marks the regex toggle as errored when the pattern doesn't compile. */
-  searchInvalid?: boolean;
-  apiOptions?: SelectOption[];
-  activeApi?: string;
-  onApiChange?: (value: string) => void;
-  actions?: ReactNode;
+  searchInvalid?: boolean
+  apiOptions?: SelectOption[]
+  activeApi?: string
+  onApiChange?: (value: string) => void
+  actions?: ReactNode
 }
 
 export function Toolbar({
@@ -54,7 +54,7 @@ export function Toolbar({
     <div
       className={clsx(
         "rtkq:flex rtkq:flex-wrap rtkq:items-center rtkq:gap-2 rtkq:px-3 rtkq:py-2 rtkq:border-b",
-        classes.border,
+        classes.border
       )}
     >
       <div className="rtkq:relative rtkq:flex-1 rtkq:min-w-[120px]">
@@ -62,7 +62,7 @@ export function Toolbar({
           size={13}
           className={clsx(
             "rtkq:absolute rtkq:left-2 rtkq:top-1/2 rtkq:-translate-y-1/2 rtkq:pointer-events-none",
-            classes.textMuted,
+            classes.textMuted
           )}
         />
         <input
@@ -75,13 +75,15 @@ export function Toolbar({
             onSearchModeChange ? "rtkq:pr-8" : "rtkq:pr-2",
             classes.surface,
             searchInvalid ? classes.dangerBorder : classes.borderInput,
-            classes.textPrimary,
+            classes.textPrimary
           )}
         />
         {onSearchModeChange && (
           <button
             type="button"
-            onClick={() => onSearchModeChange(searchMode === "regex" ? "fuzzy" : "regex")}
+            onClick={() =>
+              onSearchModeChange(searchMode === "regex" ? "fuzzy" : "regex")
+            }
             aria-pressed={searchMode === "regex"}
             aria-label={
               searchInvalid
@@ -101,7 +103,7 @@ export function Toolbar({
                 ? classes.danger
                 : searchMode === "regex"
                   ? classes.accent
-                  : classes.textDimmed,
+                  : classes.textDimmed
             )}
           >
             .*
@@ -117,7 +119,7 @@ export function Toolbar({
             "rtkq:py-1 rtkq:px-2 rtkq:rounded-md rtkq:border rtkq:text-xs",
             classes.surface,
             classes.borderInput,
-            classes.textPrimary,
+            classes.textPrimary
           )}
         >
           {apiOptions.map((opt) => (
@@ -136,7 +138,7 @@ export function Toolbar({
             "rtkq:py-1 rtkq:px-2 rtkq:rounded-md rtkq:border rtkq:text-xs",
             classes.surface,
             classes.borderInput,
-            classes.textPrimary,
+            classes.textPrimary
           )}
         >
           {sortOptions.map((opt) => (
@@ -152,12 +154,14 @@ export function Toolbar({
           type="button"
           onClick={() => onSortOrderChange(sortOrder === 1 ? -1 : 1)}
           aria-pressed={sortOrder === -1}
-          aria-label={sortOrder === 1 ? "Sort order ascending" : "Sort order descending"}
+          aria-label={
+            sortOrder === 1 ? "Sort order ascending" : "Sort order descending"
+          }
           title={sortOrder === 1 ? "Sorting ascending" : "Sorting descending"}
           className={clsx(
             "rtkq:inline-flex rtkq:cursor-pointer rtkq:items-center rtkq:gap-1 rtkq:rounded-md rtkq:border rtkq:bg-transparent rtkq:px-2 rtkq:py-1 rtkq:text-xs",
             classes.borderInput,
-            classes.textPrimary,
+            classes.textPrimary
           )}
         >
           {sortOrder === 1 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
@@ -165,9 +169,11 @@ export function Toolbar({
         </button>
       )}
 
-      {actions && <div className="rtkq:ml-auto rtkq:flex rtkq:gap-1.5">{actions}</div>}
+      {actions && (
+        <div className="rtkq:ml-auto rtkq:flex rtkq:gap-1.5">{actions}</div>
+      )}
     </div>
-  );
+  )
 }
 
 export function ToolbarButton({
@@ -180,15 +186,15 @@ export function ToolbarButton({
   pressed,
   title,
 }: {
-  classes: RtkQueryDevtoolsClasses;
-  onClick: () => void;
-  children: ReactNode;
-  icon?: ComponentType<{ size?: number; className?: string }>;
-  variant?: "default" | "danger" | "warning" | "success";
-  disabled?: boolean;
+  classes: RtkQueryDevtoolsClasses
+  onClick: () => void
+  children: ReactNode
+  icon?: ComponentType<{ size?: number; className?: string }>
+  variant?: "default" | "danger" | "warning" | "success"
+  disabled?: boolean
   /** Renders the button as a toggle, exposing `aria-pressed`. */
-  pressed?: boolean;
-  title?: string;
+  pressed?: boolean
+  title?: string
 }) {
   // Only the icon carries the variant's colour (accent/danger/warning/success)
   // — the button's own border and label text always stay neutral, so a row
@@ -202,7 +208,7 @@ export function ToolbarButton({
         ? classes.warning
         : variant === "success"
           ? classes.status.fresh.icon
-          : classes.accent;
+          : classes.accent
   return (
     <button
       type="button"
@@ -215,11 +221,11 @@ export function ToolbarButton({
         classes.borderInput,
         disabled
           ? clsx(classes.textDimmed, "rtkq:cursor-not-allowed")
-          : clsx(classes.textPrimary, "rtkq:cursor-pointer"),
+          : clsx(classes.textPrimary, "rtkq:cursor-pointer")
       )}
     >
       {Icon && <Icon size={12} className={iconColorClasses} />}
       {children}
     </button>
-  );
+  )
 }

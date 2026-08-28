@@ -13,7 +13,7 @@
  * would flatten the distinction.
  */
 export const textLink =
-  "underline decoration-border underline-offset-2 transition-colors hover:text-foreground hover:decoration-muted-foreground";
+  "underline decoration-border underline-offset-2 transition-colors hover:text-foreground hover:decoration-muted-foreground"
 
 /** Applied alongside `textLink` for the current route in the header nav. */
-export const textLinkActive = "text-foreground decoration-muted-foreground";
+export const textLinkActive = "text-foreground decoration-muted-foreground"

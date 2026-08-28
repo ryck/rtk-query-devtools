@@ -1,12 +1,12 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools";
-import { FlakyQueryPanel } from "@/components/demo/flaky-query-panel";
-import { InfiniteQueryPanel } from "@/components/demo/infinite-query-panel";
-import { PollingPanel } from "@/components/demo/polling-panel";
-import { PostsPanel } from "@/components/demo/posts-panel";
-import { SlowQueryPanel } from "@/components/demo/slow-query-panel";
-import { UsersPanel } from "@/components/demo/users-panel";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools"
+import { FlakyQueryPanel } from "@/components/demo/flaky-query-panel"
+import { InfiniteQueryPanel } from "@/components/demo/infinite-query-panel"
+import { PollingPanel } from "@/components/demo/polling-panel"
+import { PostsPanel } from "@/components/demo/posts-panel"
+import { SlowQueryPanel } from "@/components/demo/slow-query-panel"
+import { UsersPanel } from "@/components/demo/users-panel"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export function App() {
   return (
@@ -14,7 +14,8 @@ export function App() {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold">rtk-query-devtools demo</h1>
         <p className="text-sm text-muted-foreground">
-          Open the devtools panel in the bottom-right corner and try each scenario below.
+          Open the devtools panel in the bottom-right corner and try each
+          scenario below.
         </p>
       </header>
 
@@ -48,7 +49,9 @@ export function App() {
         </TabsContent>
       </Tabs>
 
-      <TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin({ defaultOpen: true })]} />
+      <TanStackDevtools
+        plugins={[createRtkQueryDevtoolsPlugin({ defaultOpen: true })]}
+      />
     </div>
-  );
+  )
 }

@@ -29,11 +29,11 @@ Low-level interface (`docs/plugin-lifecycle.md`):
 
 ```ts
 interface TanStackDevtoolsPlugin {
-  id?: string;
-  name: string | ((el: HTMLHeadingElement, theme: "dark" | "light") => void);
-  render: (el: HTMLDivElement, theme: "dark" | "light") => void;
-  destroy?: (pluginId: string) => void;
-  defaultOpen?: boolean;
+  id?: string
+  name: string | ((el: HTMLHeadingElement, theme: "dark" | "light") => void)
+  render: (el: HTMLDivElement, theme: "dark" | "light") => void
+  destroy?: (pluginId: string) => void
+  defaultOpen?: boolean
 }
 ```
 
@@ -134,23 +134,23 @@ Three layers, strictly separated so a Vue/Solid adapter is a drop-in later.
 
 ```tsx
 // store.ts
-import { createRtkQueryDevtools } from "rtk-query-devtools";
+import { createRtkQueryDevtools } from "rtk-query-devtools"
 
 export const rtkqDevtools = createRtkQueryDevtools({
   apis: [api], // optional, unlocks per-entry Refetch
   maxTimelineEntries: 500, // optional, default 500
-});
+})
 
 export const store = configureStore({
   reducer: { [api.reducerPath]: api.reducer },
   middleware: (gdm) => gdm().concat(api.middleware, rtkqDevtools.middleware),
-});
+})
 
 // App.tsx
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools"
 
-<TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />;
+;<TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />
 ```
 
 Design notes:
@@ -206,7 +206,10 @@ Root `package.json` scripts: `build`, `dev`, `dev:demo`, `typecheck`, `test`, `t
     "@tanstack/react-devtools": ">=0.9.0",
   },
   "peerDependenciesMeta": { "@tanstack/react-devtools": { "optional": true } },
-  "dependencies": { "@tanstack/devtools-utils": "^0.6.0", "@tanstack/react-virtual": "^3.14.8" },
+  "dependencies": {
+    "@tanstack/devtools-utils": "^0.6.0",
+    "@tanstack/react-virtual": "^3.14.8",
+  },
 }
 ```
 
@@ -246,9 +249,11 @@ index.ts
 Auto-detect every RTK Query API in the store without configuration:
 
 ```ts
-export function findRtkQueryReducerPaths(state: Record<string, unknown>): string[] {
+export function findRtkQueryReducerPaths(
+  state: Record<string, unknown>
+): string[] {
   return Object.keys(state).filter((key) => {
-    const slice = state[key] as any;
+    const slice = state[key] as any
     return (
       slice &&
       typeof slice === "object" &&
@@ -257,8 +262,8 @@ export function findRtkQueryReducerPaths(state: Record<string, unknown>): string
       "mutations" in slice &&
       "provided" in slice &&
       "subscriptions" in slice
-    );
-  });
+    )
+  })
 }
 ```
 
@@ -270,20 +275,20 @@ A minimal observable, no external state library:
 
 ```ts
 class DevtoolsRegistry {
-  #storeApi: MiddlewareAPI | null = null;
-  #apis = new Map<string, RtkQueryApi>(); // reducerPath -> api
-  #timeline: TimelineEvent[] = []; // ring buffer
-  #endpointTypes = new Map<string, EndpointType>(); // `${reducerPath}:${endpointName}`
-  #listeners = new Set<() => void>();
-  #version = 0; // bumped on any change
+  #storeApi: MiddlewareAPI | null = null
+  #apis = new Map<string, RtkQueryApi>() // reducerPath -> api
+  #timeline: TimelineEvent[] = [] // ring buffer
+  #endpointTypes = new Map<string, EndpointType>() // `${reducerPath}:${endpointName}`
+  #listeners = new Set<() => void>()
+  #version = 0 // bumped on any change
 
-  subscribe(fn: () => void): () => void;
-  getSnapshotVersion(): number; // cheap identity for useSyncExternalStore
-  getState(): RootState | undefined;
-  dispatch(action: UnknownAction): void;
-  getTimeline(): readonly TimelineEvent[];
+  subscribe(fn: () => void): () => void
+  getSnapshotVersion(): number // cheap identity for useSyncExternalStore
+  getState(): RootState | undefined
+  dispatch(action: UnknownAction): void
+  getTimeline(): readonly TimelineEvent[]
 }
-export const defaultRegistry = new DevtoolsRegistry();
+export const defaultRegistry = new DevtoolsRegistry()
 ```
 
 **Notify listeners on a throttled schedule** (one `requestAnimationFrame` coalesce, or ~60ms). RTK Query dispatches many actions per request and the panel must not re-render per action. Use a monotonically-increasing `#version` integer as the `useSyncExternalStore` snapshot so React's `Object.is` check is trivially cheap. Never return a freshly-built object from `getSnapshot`; that causes an infinite render loop.
@@ -292,14 +297,14 @@ export const defaultRegistry = new DevtoolsRegistry();
 
 ```ts
 export const createDevtoolsMiddleware = (registry) => (storeApi) => {
-  registry.attachStore(storeApi);
+  registry.attachStore(storeApi)
   return (next) => (action) => {
-    const result = next(action); // let RTK reduce first
-    registry.recordAction(action); // timeline + endpoint-type cache
-    registry.scheduleNotify();
-    return result;
-  };
-};
+    const result = next(action) // let RTK reduce first
+    registry.recordAction(action) // timeline + endpoint-type cache
+    registry.scheduleNotify()
+    return result
+  }
+}
 ```
 
 - Call `next(action)` **first** so the timeline and any state read reflect the post-reduction state.
@@ -390,16 +395,18 @@ const [Plugin, NoOpPlugin] = createReactPlugin({
   name: "RTK Query",
   id: "rtk-query-devtools",
   Component: ({ theme }) => <RtkQueryDevtoolsPanel theme={theme} />,
-});
+})
 
-export const createRtkQueryDevtoolsPlugin = (options?: RtkQueryDevtoolsPluginOptions) => {
-  const factory = process.env.NODE_ENV === "development" ? Plugin : NoOpPlugin;
+export const createRtkQueryDevtoolsPlugin = (
+  options?: RtkQueryDevtoolsPluginOptions
+) => {
+  const factory = process.env.NODE_ENV === "development" ? Plugin : NoOpPlugin
   return {
     ...factory(),
     defaultOpen: options?.defaultOpen ?? false,
     name: options?.name ?? "RTK Query",
-  };
-};
+  }
+}
 ```
 
 Use a **stable `id`** so the user's open-tab preference survives reloads. Default `defaultOpen` to `false`, since RTK Query is rarely the only plugin, and the shell caps at 3 open panels.

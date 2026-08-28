@@ -1,26 +1,32 @@
-import clsx from "clsx";
-import { Check, ChevronDown, ChevronRight, RotateCw, Tag as TagIcon } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { invalidateTags } from "../../actions";
-import type { DevtoolsRegistry } from "../../registry";
-import { NO_TAG_ID, selectTagGroups } from "../../selectors";
-import { enumCodec, usePersistentState } from "../hooks/use-persistent-state";
-import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
-import type { RtkQueryDevtoolsClasses } from "../theme";
-import { EmptyState } from "./empty-state";
-import type { SelectOption } from "./toolbar";
-import { Toolbar, ToolbarButton } from "./toolbar";
+import { clsx } from "clsx"
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  RotateCw,
+  Tag as TagIcon,
+} from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { invalidateTags } from "../../actions"
+import type { DevtoolsRegistry } from "../../registry"
+import { NO_TAG_ID, selectTagGroups } from "../../selectors"
+import { enumCodec, usePersistentState } from "../hooks/use-persistent-state"
+import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search"
+import type { RtkQueryDevtoolsClasses } from "../theme"
+import { EmptyState } from "./empty-state"
+import type { SelectOption } from "./toolbar"
+import { Toolbar, ToolbarButton } from "./toolbar"
 
 export interface TagsTabProps {
-  classes: RtkQueryDevtoolsClasses;
-  registry: DevtoolsRegistry;
-  state: unknown;
-  reducerPaths: string[];
-  activeApi: string;
-  onApiChange: (reducerPath: string) => void;
-  onNavigateToQuery: (queryCacheKey: string) => void;
+  classes: RtkQueryDevtoolsClasses
+  registry: DevtoolsRegistry
+  state: unknown
+  reducerPaths: string[]
+  activeApi: string
+  onApiChange: (reducerPath: string) => void
+  onNavigateToQuery: (queryCacheKey: string) => void
   /** Seeds the search box. Pass the tag type when navigating here from a tag chip elsewhere. */
-  initialSearch?: string;
+  initialSearch?: string
 }
 
 export function TagsTab({
@@ -36,56 +42,64 @@ export function TagsTab({
   // Deliberately *not* persisted, unlike the other tabs: this box is seeded by
   // cross-tab navigation (a tag chip in the query detail remounts this tab with
   // `initialSearch`), and a restored value would silently override that.
-  const [search, setSearch] = useState(initialSearch ?? "");
+  const [search, setSearch] = useState(initialSearch ?? "")
   const [searchMode, setSearchMode] = usePersistentState<SearchMode>(
     "tags.searchMode",
     "fuzzy",
-    enumCodec(SEARCH_MODES),
-  );
+    enumCodec(SEARCH_MODES)
+  )
   const [expanded, setExpanded] = useState<Set<string>>(
-    initialSearch ? new Set([initialSearch]) : new Set(),
-  );
+    initialSearch ? new Set([initialSearch]) : new Set()
+  )
 
   // Invalidating tags only *marks* matching queries stale — RTK Query only
   // actually refetches ones with an active subscriber, so clicking these
   // buttons can otherwise look like nothing happened. This shows a brief
   // "Invalidated" confirmation so the click is never silent, regardless of
   // whether anything was actively subscribed to refetch.
-  const [feedbackKey, setFeedbackKey] = useState<string | null>(null);
-  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(feedbackTimeoutRef.current), []);
+  const [feedbackKey, setFeedbackKey] = useState<string | null>(null)
+  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(feedbackTimeoutRef.current), [])
   const flashFeedback = (key: string) => {
-    clearTimeout(feedbackTimeoutRef.current);
-    setFeedbackKey(key);
-    feedbackTimeoutRef.current = setTimeout(() => setFeedbackKey(null), 1200);
-  };
+    clearTimeout(feedbackTimeoutRef.current)
+    setFeedbackKey(key)
+    feedbackTimeoutRef.current = setTimeout(() => setFeedbackKey(null), 1200)
+  }
 
   const groups = useMemo(
     () => (activeApi ? selectTagGroups(state, activeApi) : []),
-    [state, activeApi],
-  );
+    [state, activeApi]
+  )
 
   // Memoized so a regex is compiled once per query change, not once per row.
-  const matcher = useMemo(() => createSearchMatcher(search, searchMode), [search, searchMode]);
+  const matcher = useMemo(
+    () => createSearchMatcher(search, searchMode),
+    [search, searchMode]
+  )
   const filtered = useMemo(() => {
-    if (!search.trim()) return groups;
+    if (!search.trim()) return groups
     return groups
       .map((g) => ({
         ...g,
-        entries: g.entries.filter((e) => matcher.matches(`${g.tagType}:${e.id}`)),
+        entries: g.entries.filter((e) =>
+          matcher.matches(`${g.tagType}:${e.id}`)
+        ),
       }))
-      .filter((g) => g.entries.length > 0 || matcher.matches(g.tagType));
-  }, [groups, search, matcher]);
+      .filter((g) => g.entries.length > 0 || matcher.matches(g.tagType))
+  }, [groups, search, matcher])
 
-  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({ value: p, label: p }));
+  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({
+    value: p,
+    label: p,
+  }))
 
   const toggle = (tagType: string) =>
     setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(tagType)) next.delete(tagType);
-      else next.add(tagType);
-      return next;
-    });
+      const next = new Set(prev)
+      if (next.has(tagType)) next.delete(tagType)
+      else next.add(tagType)
+      return next
+    })
 
   return (
     <div className="rtkq:flex rtkq:h-full rtkq:flex-col">
@@ -110,11 +124,14 @@ export function TagsTab({
           />
         ) : (
           filtered.map((group) => (
-            <div key={group.tagType} className={clsx("rtkq:border-b", classes.border)}>
+            <div
+              key={group.tagType}
+              className={clsx("rtkq:border-b", classes.border)}
+            >
               <div
                 className={clsx(
                   "rtkq:flex rtkq:items-center rtkq:gap-1.5 rtkq:px-3 rtkq:py-1.5",
-                  classes.surfaceHover,
+                  classes.surfaceHover
                 )}
               >
                 <div
@@ -122,7 +139,8 @@ export function TagsTab({
                   tabIndex={0}
                   onClick={() => toggle(group.tagType)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") toggle(group.tagType);
+                    if (e.key === "Enter" || e.key === " ")
+                      toggle(group.tagType)
                   }}
                   className="rtkq:flex rtkq:flex-1 rtkq:min-w-0 rtkq:items-center rtkq:gap-1.5 rtkq:cursor-pointer"
                 >
@@ -137,40 +155,59 @@ export function TagsTab({
                   <span
                     className={clsx(
                       "rtkq:text-xs rtkq:font-semibold rtkq:truncate",
-                      classes.textPrimary,
+                      classes.textPrimary
                     )}
                   >
                     {group.tagType}
                   </span>
-                  <span className={clsx("rtkq:text-[10px] rtkq:shrink-0", classes.textMuted)}>
-                    {group.entries.length} id{group.entries.length === 1 ? "" : "s"}
+                  <span
+                    className={clsx(
+                      "rtkq:text-[10px] rtkq:shrink-0",
+                      classes.textMuted
+                    )}
+                  >
+                    {group.entries.length} id
+                    {group.entries.length === 1 ? "" : "s"}
                   </span>
                 </div>
                 <ToolbarButton
                   classes={classes}
-                  icon={feedbackKey === `all:${group.tagType}` ? Check : RotateCw}
-                  variant={feedbackKey === `all:${group.tagType}` ? "success" : "default"}
+                  icon={
+                    feedbackKey === `all:${group.tagType}` ? Check : RotateCw
+                  }
+                  variant={
+                    feedbackKey === `all:${group.tagType}`
+                      ? "success"
+                      : "default"
+                  }
                   title="Marks every query providing this tag as stale; only queries with an active subscriber refetch immediately, others refetch next time they're subscribed."
                   onClick={() => {
-                    invalidateTags(registry, activeApi, [{ type: group.tagType }]);
-                    flashFeedback(`all:${group.tagType}`);
+                    invalidateTags(registry, activeApi, [
+                      { type: group.tagType },
+                    ])
+                    flashFeedback(`all:${group.tagType}`)
                   }}
                 >
-                  {feedbackKey === `all:${group.tagType}` ? "Invalidated" : "Invalidate all"}
+                  {feedbackKey === `all:${group.tagType}`
+                    ? "Invalidated"
+                    : "Invalidate all"}
                 </ToolbarButton>
               </div>
 
               {expanded.has(group.tagType) && (
                 <div className="rtkq:pb-1.5">
                   {group.entries.map((entry) => {
-                    const entryKey = `id:${group.tagType}:${entry.id}`;
+                    const entryKey = `id:${group.tagType}:${entry.id}`
                     return (
-                      <div key={entry.id} className="rtkq:pl-8 rtkq:pr-3 rtkq:py-1">
+                      <div
+                        key={entry.id}
+                        className="rtkq:pl-8 rtkq:pr-3 rtkq:py-1"
+                      >
                         <div className="rtkq:flex rtkq:items-center rtkq:gap-2">
                           <span
                             className={clsx(
                               "rtkq:flex-1 rtkq:min-w-0 rtkq:truncate rtkq:font-mono rtkq:text-[11px]",
-                              classes.textSecondary,
+                              classes.textSecondary
                             )}
                           >
                             id: {entry.id === NO_TAG_ID ? "none" : entry.id}
@@ -178,19 +215,26 @@ export function TagsTab({
                           <ToolbarButton
                             classes={classes}
                             icon={feedbackKey === entryKey ? Check : RotateCw}
-                            variant={feedbackKey === entryKey ? "success" : "default"}
+                            variant={
+                              feedbackKey === entryKey ? "success" : "default"
+                            }
                             title="Marks queries providing this tag as stale; only queries with an active subscriber refetch immediately, others refetch next time they're subscribed."
                             onClick={() => {
                               invalidateTags(registry, activeApi, [
                                 {
                                   type: group.tagType,
-                                  id: entry.id === NO_TAG_ID ? undefined : entry.id,
+                                  id:
+                                    entry.id === NO_TAG_ID
+                                      ? undefined
+                                      : entry.id,
                                 },
-                              ]);
-                              flashFeedback(entryKey);
+                              ])
+                              flashFeedback(entryKey)
                             }}
                           >
-                            {feedbackKey === entryKey ? "Invalidated" : "Invalidate"}
+                            {feedbackKey === entryKey
+                              ? "Invalidated"
+                              : "Invalidate"}
                           </ToolbarButton>
                         </div>
                         <div className="rtkq:flex rtkq:flex-wrap rtkq:gap-1 rtkq:mt-1">
@@ -203,7 +247,7 @@ export function TagsTab({
                               className={clsx(
                                 "rtkq:max-w-[220px] rtkq:truncate rtkq:rounded rtkq:border rtkq:bg-transparent rtkq:px-1.5 rtkq:py-0.5 rtkq:font-mono rtkq:text-[10px] rtkq:cursor-pointer",
                                 classes.border,
-                                classes.textMuted,
+                                classes.textMuted
                               )}
                             >
                               {key}
@@ -211,7 +255,7 @@ export function TagsTab({
                           ))}
                         </div>
                       </div>
-                    );
+                    )
                   })}
                 </div>
               )}
@@ -220,5 +264,5 @@ export function TagsTab({
         )}
       </div>
     </div>
-  );
+  )
 }

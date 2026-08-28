@@ -1,11 +1,16 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Gamepad2, ListTree, Radio, Tags } from "lucide-react";
-import { DormantBoard, FlipBoard } from "@/components/flip-board";
-import { StoreProvider } from "@/components/store-provider";
-import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { InstallCommand, MultiFileCodeBlock } from "@/components/ui/code-block";
-import { textLink } from "@/lib/link";
+import { Link, createFileRoute } from "@tanstack/react-router"
+import { Gamepad2, ListTree, Radio, Tags } from "lucide-react"
+import { DormantBoard, FlipBoard } from "@/components/flip-board"
+import { StoreProvider } from "@/components/store-provider"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { InstallCommand, MultiFileCodeBlock } from "@/components/ui/code-block"
+import { textLink } from "@/lib/link"
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -14,7 +19,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     links: [{ rel: "canonical", href: "https://rtk-query-devtools.ryck.dev/" }],
   }),
-});
+})
 
 const FEATURES = [
   {
@@ -32,7 +37,7 @@ const FEATURES = [
     title: "A real request timeline",
     body: "Every query and mutation, in order, with how long it took. Pause it, filter it, clear it, like a network tab for your cache.",
   },
-];
+]
 
 function Home() {
   return (
@@ -45,7 +50,8 @@ function Home() {
           RTK Query has a cache. Now you can actually see it.
         </h1>
         <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Live status badges, tag-based invalidation, and a request timeline, right inside{" "}
+          Live status badges, tag-based invalidation, and a request timeline,
+          right inside{" "}
           <a
             href="https://tanstack.com/devtools"
             target="_blank"
@@ -98,11 +104,21 @@ function Home() {
                   real headings in the document outline, which they were as
                   `h2` before.
                 */}
-                <CardTitle role="heading" aria-level={2} className="flex items-center gap-2">
-                  <feature.icon size={16} className="shrink-0 text-primary" aria-hidden="true" />
+                <CardTitle
+                  role="heading"
+                  aria-level={2}
+                  className="flex items-center gap-2"
+                >
+                  <feature.icon
+                    size={16}
+                    className="shrink-0 text-primary"
+                    aria-hidden="true"
+                  />
                   {feature.title}
                 </CardTitle>
-                <CardDescription className="leading-relaxed">{feature.body}</CardDescription>
+                <CardDescription className="leading-relaxed">
+                  {feature.body}
+                </CardDescription>
               </CardHeader>
             </Card>
           ))}
@@ -111,15 +127,22 @@ function Home() {
 
       <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-          <h2 className="text-sm font-semibold text-foreground">Wire it up in two lines</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            Wire it up in two lines
+          </h2>
           <p className="mt-2 max-w-lg text-sm text-muted-foreground">
-            Add the middleware to your store, then register the plugin. No provider, no config file.
+            Add the middleware to your store, then register the plugin. No
+            provider, no config file.
           </p>
-          <MultiFileCodeBlock className="mt-6" files={WIRE_UP_FILES} bodyClassName="bg-card" />
+          <MultiFileCodeBlock
+            className="mt-6"
+            files={WIRE_UP_FILES}
+            bodyClassName="bg-card"
+          />
         </div>
       </section>
     </main>
-  );
+  )
 }
 
 /**
@@ -166,4 +189,4 @@ export function App() {
   );
 }`,
   },
-];
+]

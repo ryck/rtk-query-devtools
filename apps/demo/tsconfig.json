@@ -2,6 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
+    // TS 7 checks side-effect imports of non-code assets, so `import
+    // "@/index.css"` needs the `*.css` module declaration vite/client
+    // provides. apps/web already lists it for the same reason.
+    "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"]
     }

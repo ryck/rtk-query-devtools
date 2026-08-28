@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router"
+import { Badge } from "@/components/ui/badge"
+import { buttonVariants } from "@/components/ui/button"
 
 export function NotFound() {
   return (
@@ -12,8 +12,8 @@ export function NotFound() {
         This route isn't in the cache.
       </h1>
       <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
-        Nothing fulfilled at this path. Head back to the homepage, or see the plugin running on the
-        examples page.
+        Nothing fulfilled at this path. Head back to the homepage, or see the
+        plugin running on the examples page.
       </p>
       <div className="mt-8 flex gap-3">
         {/*
@@ -27,10 +27,13 @@ export function NotFound() {
         <Link to="/" className={buttonVariants({ size: "sm" })}>
           Go home
         </Link>
-        <Link to="/playground" className={buttonVariants({ variant: "outline", size: "sm" })}>
+        <Link
+          to="/playground"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
           Open the playground
         </Link>
       </div>
     </main>
-  );
+  )
 }

@@ -1,11 +1,14 @@
-import { Heart } from "lucide-react";
-import { textLink } from "@/lib/link";
+import { Heart } from "lucide-react"
+import { textLink } from "@/lib/link"
 
 const LINKS = [
   { href: "https://www.npmjs.com/package/rtk-query-devtools", label: "npm" },
   { href: "https://tanstack.com/devtools", label: "DevTools" },
-  { href: "https://redux-toolkit.js.org/rtk-query/overview", label: "RTK Query" },
-];
+  {
+    href: "https://redux-toolkit.js.org/rtk-query/overview",
+    label: "RTK Query",
+  },
+]
 
 export function SiteFooter() {
   return (
@@ -31,10 +34,15 @@ export function SiteFooter() {
               size={12}
               role="img"
               aria-label="love"
-              className="inline-block align-[-0.1em] fill-primary text-primary group-hover:animate-heartbeat"
+              className="inline-block fill-primary align-[-0.1em] text-primary group-hover:animate-heartbeat"
             />{" "}
             by{" "}
-            <a href="https://ryck.dev" target="_blank" rel="noreferrer" className={textLink}>
+            <a
+              href="https://ryck.dev"
+              target="_blank"
+              rel="noreferrer"
+              className={textLink}
+            >
               ryck.dev
             </a>
           </span>
@@ -54,5 +62,5 @@ export function SiteFooter() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

@@ -1,12 +1,15 @@
-import { useCallback } from "react";
-import { usePersistentState } from "./use-persistent-state";
+import { useCallback } from "react"
+import { usePersistentState } from "./use-persistent-state"
 
-export const DETAIL_PANEL_MIN_WIDTH = 260;
-export const DETAIL_PANEL_MAX_WIDTH = 720;
-export const DETAIL_PANEL_DEFAULT_WIDTH = 380;
+export const DETAIL_PANEL_MIN_WIDTH = 260
+export const DETAIL_PANEL_MAX_WIDTH = 720
+export const DETAIL_PANEL_DEFAULT_WIDTH = 380
 
 function clamp(width: number): number {
-  return Math.min(DETAIL_PANEL_MAX_WIDTH, Math.max(DETAIL_PANEL_MIN_WIDTH, width));
+  return Math.min(
+    DETAIL_PANEL_MAX_WIDTH,
+    Math.max(DETAIL_PANEL_MIN_WIDTH, width)
+  )
 }
 
 /**
@@ -17,13 +20,19 @@ function clamp(width: number): number {
  * itself follows.
  */
 export function useDetailPanelWidth() {
-  const [width, setWidth] = usePersistentState("detailPanelWidth", DETAIL_PANEL_DEFAULT_WIDTH);
+  const [width, setWidth] = usePersistentState(
+    "detailPanelWidth",
+    DETAIL_PANEL_DEFAULT_WIDTH
+  )
 
   const resizeBy = useCallback(
     (deltaPx: number) => setWidth((prev) => clamp(prev + deltaPx)),
-    [setWidth],
-  );
-  const reset = useCallback(() => setWidth(DETAIL_PANEL_DEFAULT_WIDTH), [setWidth]);
+    [setWidth]
+  )
+  const reset = useCallback(
+    () => setWidth(DETAIL_PANEL_DEFAULT_WIDTH),
+    [setWidth]
+  )
 
-  return { width, resizeBy, reset };
+  return { width, resizeBy, reset }
 }

@@ -3,27 +3,27 @@ import {
   useListPostsFlakyQuery,
   useListPostsQuery,
   useListUsersQuery,
-} from "@rtk-query-devtools/demo-api";
-import { clsx } from "clsx";
+} from "@rtk-query-devtools/demo-api"
+import { clsx } from "clsx"
 
-type TileStatus = "fetching" | "fresh" | "error" | "inactive";
+type TileStatus = "fetching" | "fresh" | "error" | "inactive"
 
 interface BoardRow {
-  endpoint: string;
-  args: string;
-  status: TileStatus;
-  subs: number;
+  endpoint: string
+  args: string
+  status: TileStatus
+  subs: number
 }
 
 function deriveStatus(hook: {
-  isFetching: boolean;
-  isError: boolean;
-  isSuccess: boolean;
+  isFetching: boolean
+  isError: boolean
+  isSuccess: boolean
 }): TileStatus {
-  if (hook.isFetching) return "fetching";
-  if (hook.isError) return "error";
-  if (hook.isSuccess) return "fresh";
-  return "inactive";
+  if (hook.isFetching) return "fetching"
+  if (hook.isError) return "error"
+  if (hook.isSuccess) return "fresh"
+  return "inactive"
 }
 
 const STATUS_STYLES: Record<TileStatus, string> = {
@@ -31,7 +31,7 @@ const STATUS_STYLES: Record<TileStatus, string> = {
   fresh: "bg-success/15 text-success",
   error: "bg-destructive/15 text-destructive",
   inactive: "bg-secondary text-muted-foreground",
-};
+}
 
 /**
  * The board's rows are driven by real RTK Query hooks, polling on staggered
@@ -41,17 +41,22 @@ const STATUS_STYLES: Record<TileStatus, string> = {
  * which is what gives the board its ERROR row without any extra faking.
  */
 export function FlipBoard() {
-  const post = useGetPostQuery(1, { pollingInterval: 4500 });
-  const posts = useListPostsQuery(undefined, { pollingInterval: 6000 });
-  const flaky = useListPostsFlakyQuery(undefined, { pollingInterval: 5200 });
-  const users = useListUsersQuery(undefined, { pollingInterval: 7200 });
+  const post = useGetPostQuery(1, { pollingInterval: 4500 })
+  const posts = useListPostsQuery(undefined, { pollingInterval: 6000 })
+  const flaky = useListPostsFlakyQuery(undefined, { pollingInterval: 5200 })
+  const users = useListUsersQuery(undefined, { pollingInterval: 7200 })
 
   const rows: BoardRow[] = [
     { endpoint: "getPost", args: "(1)", status: deriveStatus(post), subs: 1 },
     { endpoint: "listPosts", args: "()", status: deriveStatus(posts), subs: 2 },
-    { endpoint: "listPostsFlaky", args: "()", status: deriveStatus(flaky), subs: 1 },
+    {
+      endpoint: "listPostsFlaky",
+      args: "()",
+      status: deriveStatus(flaky),
+      subs: 1,
+    },
     { endpoint: "listUsers", args: "()", status: deriveStatus(users), subs: 1 },
-  ];
+  ]
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[0_0_0_1px_rgba(0,0,0,0.2)]">
@@ -60,7 +65,10 @@ export function FlipBoard() {
           rtk-query-devtools live status
         </span>
         <span className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.2em] text-success uppercase">
-          <span className="animate-pulse-dot size-1.5 rounded-full bg-success" aria-hidden="true" />
+          <span
+            className="animate-pulse-dot size-1.5 rounded-full bg-success"
+            aria-hidden="true"
+          />
           live
         </span>
       </div>
@@ -78,7 +86,7 @@ export function FlipBoard() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 function BoardRowView({ row }: { row: BoardRow }) {
@@ -100,7 +108,7 @@ function BoardRowView({ row }: { row: BoardRow }) {
         {row.subs}
       </span>
     </div>
-  );
+  )
 }
 
 function FlipTile({ status }: { status: TileStatus }) {
@@ -109,12 +117,12 @@ function FlipTile({ status }: { status: TileStatus }) {
       key={status}
       className={clsx(
         "animate-flip-in inline-flex w-[84px] items-center justify-center rounded-md px-2 py-1 text-[10px] font-semibold tracking-[0.1em] uppercase",
-        STATUS_STYLES[status],
+        STATUS_STYLES[status]
       )}
     >
       {status}
     </span>
-  );
+  )
 }
 
 /** Static "powered off" board shown during SSR and before hydration. */
@@ -124,7 +132,7 @@ export function DormantBoard() {
     { endpoint: "listPosts", args: "()" },
     { endpoint: "listPostsFlaky", args: "()" },
     { endpoint: "listUsers", args: "()" },
-  ];
+  ]
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -148,7 +156,9 @@ export function DormantBoard() {
           className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-x-4 border-b border-border/60 px-4 py-3 font-mono text-sm text-foreground last:border-b-0 sm:px-6"
         >
           <span className="truncate">{row.endpoint}</span>
-          <span className="hidden text-muted-foreground sm:block">{row.args}</span>
+          <span className="hidden text-muted-foreground sm:block">
+            {row.args}
+          </span>
           <span className="inline-flex w-[84px] items-center justify-center rounded-md bg-secondary px-2 py-1 text-[10px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
             idle
           </span>
@@ -156,5 +166,5 @@ export function DormantBoard() {
         </div>
       ))}
     </div>
-  );
+  )
 }

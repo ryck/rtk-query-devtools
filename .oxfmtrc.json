@@ -1,8 +1,24 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "endOfLine": "lf",
+  "semi": false,
   "singleQuote": false,
-  "semi": true,
   "tabWidth": 2,
-  "printWidth": 100,
-  "trailingComma": "all"
+  "trailingComma": "es5",
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "sortTailwindcss": {
+    "stylesheet": "apps/web/src/styles.css",
+    "functions": ["cn", "cva"]
+  },
+  "ignorePatterns": [
+    "dist/",
+    "node_modules/",
+    "coverage/",
+    "playwright-report/",
+    "test-results/",
+    "pnpm-lock.yaml",
+    ".pnpm-store/",
+    "**/routeTree.gen.ts"
+  ]
 }

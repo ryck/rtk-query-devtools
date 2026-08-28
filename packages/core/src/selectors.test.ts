@@ -1,31 +1,38 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
   selectApiHealth,
   selectMutationEntries,
   selectQueryEntries,
   selectTagGroups,
-} from "./selectors";
-import { createTestApi, createTestStore, jsonResponse, type Post } from "./test-utils/test-api";
+} from "./selectors"
+import {
+  createTestApi,
+  createTestStore,
+  jsonResponse,
+  type Post,
+} from "./test-utils/test-api"
 
 beforeEach(() => {
-  vi.stubGlobal("fetch", vi.fn());
-});
+  vi.stubGlobal("fetch", vi.fn())
+})
 
 describe("selectQueryEntries", () => {
   it("derives 'fresh' for a fulfilled query with an active subscriber", async () => {
-    vi.useFakeTimers({ toFake: ["setTimeout"] });
+    vi.useFakeTimers({ toFake: ["setTimeout"] })
     try {
-      const api = createTestApi();
-      const store = createTestStore(api);
-      vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+      const api = createTestApi()
+      const store = createTestStore(api)
+      vi.mocked(fetch).mockResolvedValue(
+        jsonResponse({ id: 1, title: "Hello" } satisfies Post)
+      )
 
-      const result = store.dispatch(api.endpoints.getPost.initiate(1));
-      await result;
+      const result = store.dispatch(api.endpoints.getPost.initiate(1))
+      await result
       // Subscription state syncs into the store on a throttled 500ms timer.
-      await vi.advanceTimersByTimeAsync(600);
+      await vi.advanceTimersByTimeAsync(600)
 
-      const entries = selectQueryEntries(store.getState(), api.reducerPath);
-      expect(entries).toHaveLength(1);
+      const entries = selectQueryEntries(store.getState(), api.reducerPath)
+      expect(entries).toHaveLength(1)
       expect(entries[0]).toMatchObject({
         endpointName: "getPost",
         type: "query",
@@ -33,65 +40,78 @@ describe("selectQueryEntries", () => {
         derivedStatus: "fresh",
         data: { id: 1, title: "Hello" },
         subscriberCount: 1,
-      });
-      expect(entries[0]?.providedTags).toEqual([{ type: "Post", id: 1 }]);
+      })
+      expect(entries[0]?.providedTags).toEqual([{ type: "Post", id: 1 }])
 
-      result.unsubscribe();
+      result.unsubscribe()
     } finally {
-      vi.useRealTimers();
+      vi.useRealTimers()
     }
-  });
+  })
 
   it("derives 'inactive' once the last subscriber unsubscribes", async () => {
-    vi.useFakeTimers({ toFake: ["setTimeout"] });
+    vi.useFakeTimers({ toFake: ["setTimeout"] })
     try {
-      const api = createTestApi();
-      const store = createTestStore(api);
-      vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+      const api = createTestApi()
+      const store = createTestStore(api)
+      vi.mocked(fetch).mockResolvedValue(
+        jsonResponse({ id: 1, title: "Hello" } satisfies Post)
+      )
 
-      const result = store.dispatch(api.endpoints.getPost.initiate(1));
-      await result;
-      result.unsubscribe();
+      const result = store.dispatch(api.endpoints.getPost.initiate(1))
+      await result
+      result.unsubscribe()
 
       // Subscription state syncs into the store on a throttled 500ms timer.
-      await vi.advanceTimersByTimeAsync(600);
+      await vi.advanceTimersByTimeAsync(600)
 
-      const entries = selectQueryEntries(store.getState(), api.reducerPath);
-      expect(entries[0]).toMatchObject({ derivedStatus: "inactive", subscriberCount: 0 });
+      const entries = selectQueryEntries(store.getState(), api.reducerPath)
+      expect(entries[0]).toMatchObject({
+        derivedStatus: "inactive",
+        subscriberCount: 0,
+      })
     } finally {
-      vi.useRealTimers();
+      vi.useRealTimers()
     }
-  });
+  })
 
   it("derives 'error' for a rejected query", async () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    vi.mocked(fetch).mockResolvedValue(new Response("nope", { status: 500 }));
+    const api = createTestApi()
+    const store = createTestStore(api)
+    vi.mocked(fetch).mockResolvedValue(new Response("nope", { status: 500 }))
 
-    const result = store.dispatch(api.endpoints.getPost.initiate(1));
-    await result;
+    const result = store.dispatch(api.endpoints.getPost.initiate(1))
+    await result
 
-    const entries = selectQueryEntries(store.getState(), api.reducerPath);
-    expect(entries[0]).toMatchObject({ status: "rejected", derivedStatus: "error" });
-    expect(entries[0]?.error).toBeDefined();
+    const entries = selectQueryEntries(store.getState(), api.reducerPath)
+    expect(entries[0]).toMatchObject({
+      status: "rejected",
+      derivedStatus: "error",
+    })
+    expect(entries[0]?.error).toBeDefined()
 
-    result.unsubscribe();
-  });
+    result.unsubscribe()
+  })
 
   it("derives 'fetching' while a query is in flight", () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    let resolveFetch!: (r: Response) => void;
-    vi.mocked(fetch).mockReturnValue(new Promise((resolve) => (resolveFetch = resolve as never)));
+    const api = createTestApi()
+    const store = createTestStore(api)
+    let resolveFetch!: (r: Response) => void
+    vi.mocked(fetch).mockReturnValue(
+      new Promise((resolve) => (resolveFetch = resolve as never))
+    )
 
-    const result = store.dispatch(api.endpoints.getPost.initiate(1));
+    const result = store.dispatch(api.endpoints.getPost.initiate(1))
 
-    const entries = selectQueryEntries(store.getState(), api.reducerPath);
-    expect(entries[0]).toMatchObject({ status: "pending", derivedStatus: "fetching" });
+    const entries = selectQueryEntries(store.getState(), api.reducerPath)
+    expect(entries[0]).toMatchObject({
+      status: "pending",
+      derivedStatus: "fetching",
+    })
 
-    resolveFetch(jsonResponse({ id: 1, title: "Hello" }));
-    result.unsubscribe();
-  });
+    resolveFetch(jsonResponse({ id: 1, title: "Hello" }))
+    result.unsubscribe()
+  })
 
   // RTK Query's infinite-query thunk plumbing is out of scope here; these
   // exercise our own classification heuristic directly against the two
@@ -113,11 +133,11 @@ describe("selectQueryEntries", () => {
         provided: { tags: {}, keys: {} },
         subscriptions: {},
       },
-    };
+    }
 
-    const entries = selectQueryEntries(state, "api");
-    expect(entries[0]?.type).toBe("infinitequery");
-  });
+    const entries = selectQueryEntries(state, "api")
+    expect(entries[0]?.type).toBe("infinitequery")
+  })
 
   it("classifies an infinite query by its direction field when data is absent", () => {
     const state = {
@@ -135,97 +155,112 @@ describe("selectQueryEntries", () => {
         provided: { tags: {}, keys: {} },
         subscriptions: {},
       },
-    };
+    }
 
-    const entries = selectQueryEntries(state, "api");
-    expect(entries[0]?.type).toBe("infinitequery");
-  });
+    const entries = selectQueryEntries(state, "api")
+    expect(entries[0]?.type).toBe("infinitequery")
+  })
 
   it("prefers a registry-learned endpoint type when the data shape is ambiguous", async () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+    const api = createTestApi()
+    const store = createTestStore(api)
+    vi.mocked(fetch).mockResolvedValue(
+      jsonResponse({ id: 1, title: "Hello" } satisfies Post)
+    )
 
-    const result = store.dispatch(api.endpoints.getPost.initiate(1));
-    await result;
+    const result = store.dispatch(api.endpoints.getPost.initiate(1))
+    await result
 
-    const entries = selectQueryEntries(store.getState(), api.reducerPath, () => "infinitequery");
-    expect(entries[0]?.type).toBe("infinitequery");
+    const entries = selectQueryEntries(
+      store.getState(),
+      api.reducerPath,
+      () => "infinitequery"
+    )
+    expect(entries[0]?.type).toBe("infinitequery")
 
-    result.unsubscribe();
-  });
+    result.unsubscribe()
+  })
 
   it("returns a stable array reference when the underlying slice hasn't changed", () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    const state = store.getState();
+    const api = createTestApi()
+    const store = createTestStore(api)
+    const state = store.getState()
 
-    const first = selectQueryEntries(state, api.reducerPath);
-    const second = selectQueryEntries(state, api.reducerPath);
-    expect(first).toBe(second);
-  });
+    const first = selectQueryEntries(state, api.reducerPath)
+    const second = selectQueryEntries(state, api.reducerPath)
+    expect(first).toBe(second)
+  })
 
   it("returns an empty array for a reducer path that isn't RTK Query state", () => {
-    expect(selectQueryEntries({ notAnApi: { value: 1 } }, "notAnApi")).toEqual([]);
-  });
-});
+    expect(selectQueryEntries({ notAnApi: { value: 1 } }, "notAnApi")).toEqual(
+      []
+    )
+  })
+})
 
 describe("selectMutationEntries", () => {
   it("derives fulfilled mutation entries keyed by requestId", async () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 2, title: "New post" } satisfies Post));
+    const api = createTestApi()
+    const store = createTestStore(api)
+    vi.mocked(fetch).mockResolvedValue(
+      jsonResponse({ id: 2, title: "New post" } satisfies Post)
+    )
 
-    await store.dispatch(api.endpoints.addPost.initiate({ title: "New post" }));
+    await store.dispatch(api.endpoints.addPost.initiate({ title: "New post" }))
 
-    const entries = selectMutationEntries(store.getState(), api.reducerPath);
-    expect(entries).toHaveLength(1);
+    const entries = selectMutationEntries(store.getState(), api.reducerPath)
+    expect(entries).toHaveLength(1)
     expect(entries[0]).toMatchObject({
       endpointName: "addPost",
       status: "fulfilled",
       data: { id: 2, title: "New post" },
-    });
-    expect(entries[0]?.cacheKey).toBe(entries[0]?.requestId);
-  });
+    })
+    expect(entries[0]?.cacheKey).toBe(entries[0]?.requestId)
+  })
 
   it("uses the fixedCacheKey as the cache key when one is provided", async () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 2, title: "New post" } satisfies Post));
+    const api = createTestApi()
+    const store = createTestStore(api)
+    vi.mocked(fetch).mockResolvedValue(
+      jsonResponse({ id: 2, title: "New post" } satisfies Post)
+    )
 
     await store.dispatch(
-      api.endpoints.addPost.initiate({ title: "New post" }, { fixedCacheKey: "add-post" }),
-    );
+      api.endpoints.addPost.initiate(
+        { title: "New post" },
+        { fixedCacheKey: "add-post" }
+      )
+    )
 
-    const entries = selectMutationEntries(store.getState(), api.reducerPath);
-    expect(entries.some((e) => e.cacheKey === "add-post")).toBe(true);
-  });
-});
+    const entries = selectMutationEntries(store.getState(), api.reducerPath)
+    expect(entries.some((e) => e.cacheKey === "add-post")).toBe(true)
+  })
+})
 
 describe("selectTagGroups", () => {
   it("groups provided tags by type and id", async () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
+    const api = createTestApi()
+    const store = createTestStore(api)
     vi.mocked(fetch).mockResolvedValue(
       jsonResponse([
         { id: 1, title: "A" },
         { id: 2, title: "B" },
-      ] satisfies Post[]),
-    );
+      ] satisfies Post[])
+    )
 
-    const result = store.dispatch(api.endpoints.listPosts.initiate());
-    await result;
+    const result = store.dispatch(api.endpoints.listPosts.initiate())
+    await result
 
-    const groups = selectTagGroups(store.getState(), api.reducerPath);
-    const postGroup = groups.find((g) => g.tagType === "Post");
-    expect(postGroup).toBeDefined();
+    const groups = selectTagGroups(store.getState(), api.reducerPath)
+    const postGroup = groups.find((g) => g.tagType === "Post")
+    expect(postGroup).toBeDefined()
 
-    const ids = postGroup?.entries.map((e) => e.id).toSorted();
-    expect(ids).toEqual(["1", "2", "LIST"]);
+    const ids = postGroup?.entries.map((e) => e.id).toSorted()
+    expect(ids).toEqual(["1", "2", "LIST"])
 
-    result.unsubscribe();
-  });
-});
+    result.unsubscribe()
+  })
+})
 
 /**
  * RTK 2.6.2 split `provided` from a flat tag map into `{ tags, keys }`. Our
@@ -239,14 +274,16 @@ describe("selectTagGroups", () => {
  */
 describe("selectApiHealth", () => {
   it("surfaces the config RTK populates but never exposes", async () => {
-    const api = createTestApi();
-    const store = createTestStore(api);
-    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 1, title: "Hello" } satisfies Post));
+    const api = createTestApi()
+    const store = createTestStore(api)
+    vi.mocked(fetch).mockResolvedValue(
+      jsonResponse({ id: 1, title: "Hello" } satisfies Post)
+    )
 
-    const result = store.dispatch(api.endpoints.getPost.initiate(1));
-    await result;
+    const result = store.dispatch(api.endpoints.getPost.initiate(1))
+    await result
 
-    const health = selectApiHealth(store.getState(), api.reducerPath);
+    const health = selectApiHealth(store.getState(), api.reducerPath)
     expect(health).toMatchObject({
       reducerPath: api.reducerPath,
       middlewareRegistered: true,
@@ -257,30 +294,34 @@ describe("selectApiHealth", () => {
       refetchOnReconnect: false,
       cachedQueries: 1,
       cachedMutations: 0,
-    });
+    })
 
-    result.unsubscribe();
-  });
+    result.unsubscribe()
+  })
 
   it("reports a middleware conflict when two apis share a reducerPath", () => {
     // The classic misconfiguration this warning exists for: two `createApi`
     // calls landing on the same reducerPath (duplicated module, bad HMR).
     // Each middleware carries its own uid, so the second registration no
     // longer matches and RTK flags the clash.
-    const first = createTestApi("sharedPath");
-    const second = createTestApi("sharedPath");
-    const store = createTestStore(first, [second.middleware]);
+    const first = createTestApi("sharedPath")
+    const second = createTestApi("sharedPath")
+    const store = createTestStore(first, [second.middleware])
 
     // Registration is lazy: it happens on the first dispatched action.
-    store.dispatch({ type: "noop" });
+    store.dispatch({ type: "noop" })
 
-    expect(selectApiHealth(store.getState(), "sharedPath")?.middlewareRegistered).toBe("conflict");
-  });
+    expect(
+      selectApiHealth(store.getState(), "sharedPath")?.middlewareRegistered
+    ).toBe("conflict")
+  })
 
   it("returns undefined for a reducer path that isn't RTK Query state", () => {
-    expect(selectApiHealth({ notAnApi: { value: 1 } }, "notAnApi")).toBeUndefined();
-  });
-});
+    expect(
+      selectApiHealth({ notAnApi: { value: 1 } }, "notAnApi")
+    ).toBeUndefined()
+  })
+})
 
 /** The pre-2.6.2 layout: `provided` *is* the tag map, with no reverse index. */
 function legacyState(reducerPath: string) {
@@ -308,48 +349,61 @@ function legacyState(reducerPath: string) {
       },
       subscriptions: {},
     },
-  };
+  }
 }
 
 describe("provided shape compatibility (RTK < 2.6.2)", () => {
   it("resolves tag groups from the flat legacy shape instead of throwing", () => {
-    const groups = selectTagGroups(legacyState("legacyTags"), "legacyTags");
+    const groups = selectTagGroups(legacyState("legacyTags"), "legacyTags")
 
-    expect(groups).toHaveLength(1);
-    expect(groups[0]?.tagType).toBe("Post");
+    expect(groups).toHaveLength(1)
+    expect(groups[0]?.tagType).toBe("Post")
     expect(groups[0]?.entries.map((e) => e.id).toSorted()).toEqual([
       "1",
       "LIST",
       "__internal_without_id",
-    ]);
-  });
+    ])
+  })
 
   it("derives the missing cache-key reverse index for per-entry provided tags", () => {
-    const entries = selectQueryEntries(legacyState("legacyKeys"), "legacyKeys");
+    const entries = selectQueryEntries(legacyState("legacyKeys"), "legacyKeys")
 
-    const getPost = entries.find((e) => e.queryCacheKey === "getPost(1)");
-    expect(getPost?.providedTags).toEqual([{ type: "Post", id: "1" }]);
+    const getPost = entries.find((e) => e.queryCacheKey === "getPost(1)")
+    expect(getPost?.providedTags).toEqual([{ type: "Post", id: "1" }])
 
     // The sentinel id is dropped rather than surfaced, matching what >= 2.6.2
     // stores natively for a tag provided without an id.
-    const listPosts = entries.find((e) => e.queryCacheKey === "listPosts(undefined)");
-    expect(listPosts?.providedTags).toEqual([{ type: "Post", id: "LIST" }, { type: "Post" }]);
-  });
+    const listPosts = entries.find(
+      (e) => e.queryCacheKey === "listPosts(undefined)"
+    )
+    expect(listPosts?.providedTags).toEqual([
+      { type: "Post", id: "LIST" },
+      { type: "Post" },
+    ])
+  })
 
   it("keeps memoization working on the legacy shape", () => {
     // The normalized object is cached against RTK's own `provided` object, so
     // repeated calls must still hit the entry/tag caches rather than rebuild.
-    const state = legacyState("legacyMemo");
+    const state = legacyState("legacyMemo")
 
-    expect(selectQueryEntries(state, "legacyMemo")).toBe(selectQueryEntries(state, "legacyMemo"));
-    expect(selectTagGroups(state, "legacyMemo")).toBe(selectTagGroups(state, "legacyMemo"));
-  });
+    expect(selectQueryEntries(state, "legacyMemo")).toBe(
+      selectQueryEntries(state, "legacyMemo")
+    )
+    expect(selectTagGroups(state, "legacyMemo")).toBe(
+      selectTagGroups(state, "legacyMemo")
+    )
+  })
 
   it("leaves the modern shape untouched", () => {
     const state = {
       modern: {
         queries: {
-          "getPost(1)": { status: "fulfilled", endpointName: "getPost", data: { id: 1 } },
+          "getPost(1)": {
+            status: "fulfilled",
+            endpointName: "getPost",
+            data: { id: 1 },
+          },
         },
         mutations: {},
         provided: {
@@ -358,10 +412,14 @@ describe("provided shape compatibility (RTK < 2.6.2)", () => {
         },
         subscriptions: {},
       },
-    };
+    }
 
-    expect(selectQueryEntries(state, "modern")[0]?.providedTags).toEqual([{ type: "Post", id: 1 }]);
-    expect(selectTagGroups(state, "modern")[0]?.tagType).toBe("Post");
-    expect(selectQueryEntries(state, "modern")).toBe(selectQueryEntries(state, "modern"));
-  });
-});
+    expect(selectQueryEntries(state, "modern")[0]?.providedTags).toEqual([
+      { type: "Post", id: 1 },
+    ])
+    expect(selectTagGroups(state, "modern")[0]?.tagType).toBe("Post")
+    expect(selectQueryEntries(state, "modern")).toBe(
+      selectQueryEntries(state, "modern")
+    )
+  })
+})

@@ -5,22 +5,22 @@
  * that this is reliable across apps with any number of `createApi` instances.
  */
 export function findRtkQueryReducerPaths(state: unknown): string[] {
-  if (!state || typeof state !== "object") return [];
+  if (!state || typeof state !== "object") return []
 
-  const paths: string[] = [];
+  const paths: string[] = []
   for (const key of Object.keys(state as Record<string, unknown>)) {
-    const slice = (state as Record<string, unknown>)[key];
+    const slice = (state as Record<string, unknown>)[key]
     if (isRtkQuerySlice(slice, key)) {
-      paths.push(key);
+      paths.push(key)
     }
   }
-  return paths;
+  return paths
 }
 
 function isRtkQuerySlice(slice: unknown, key: string): boolean {
-  if (!slice || typeof slice !== "object") return false;
-  const s = slice as Record<string, unknown>;
-  const config = s.config as Record<string, unknown> | undefined;
+  if (!slice || typeof slice !== "object") return false
+  const s = slice as Record<string, unknown>
+  const config = s.config as Record<string, unknown> | undefined
   return (
     !!config &&
     config.reducerPath === key &&
@@ -28,5 +28,5 @@ function isRtkQuerySlice(slice: unknown, key: string): boolean {
     "mutations" in s &&
     "provided" in s &&
     "subscriptions" in s
-  );
+  )
 }

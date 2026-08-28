@@ -1,4 +1,4 @@
-export type { Post } from "./posts-api";
+export type { Post } from "./posts-api"
 export {
   postsApi,
   useAddPostMutation,
@@ -8,10 +8,10 @@ export {
   useListPostsFlakyQuery,
   useListPostsInfiniteInfiniteQuery,
   useListPostsQuery,
-} from "./posts-api";
+} from "./posts-api"
 
-export type { User } from "./users-api";
-export { useListUsersQuery, usersApi } from "./users-api";
+export type { User } from "./users-api"
+export { useListUsersQuery, usersApi } from "./users-api"
 
 // Raw async fetchers behind both `createApi` instances above, exported so
 // other data-fetching libraries (e.g. TanStack Query) can hit the exact
@@ -25,5 +25,5 @@ export {
   fetchPostsFlaky,
   fetchPostsPage,
   removePost,
-} from "./fake-posts-backend";
-export { fetchUsers } from "./fake-users-backend";
+} from "./fake-posts-backend"
+export { fetchUsers } from "./fake-users-backend"

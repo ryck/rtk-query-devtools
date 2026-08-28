@@ -1,7 +1,7 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { fetchUsers, type User } from "./fake-users-backend";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react"
+import { fetchUsers, type User } from "./fake-users-backend"
 
-export type { User };
+export type { User }
 
 /**
  * A second, independent `createApi` instance with its own reducerPath, which
@@ -28,6 +28,6 @@ export const usersApi = createApi({
           : [{ type: "User" as const, id: "LIST" }],
     }),
   }),
-});
+})
 
-export const { useListUsersQuery } = usersApi;
+export const { useListUsersQuery } = usersApi

@@ -1,4 +1,4 @@
-import type { DevtoolsRegistry, StoreLike } from "./registry";
+import type { DevtoolsRegistry, StoreLike } from "./registry"
 
 /**
  * Structurally compatible with Redux's `Middleware` type, without depending
@@ -7,8 +7,8 @@ import type { DevtoolsRegistry, StoreLike } from "./registry";
  * `action` levels are typed `unknown` too, so this matches exactly.
  */
 export type DevtoolsMiddleware = (
-  storeApi: StoreLike,
-) => (next: (action: unknown) => unknown) => (action: unknown) => unknown;
+  storeApi: StoreLike
+) => (next: (action: unknown) => unknown) => (action: unknown) => unknown
 
 /**
  * Registers the store with the registry, records every RTK Query lifecycle
@@ -31,17 +31,20 @@ export type DevtoolsMiddleware = (
  * live. `scheduleNotify()` is already internally throttled, so calling it
  * unconditionally is cheap.
  */
-export function createDevtoolsMiddleware(registry: DevtoolsRegistry): DevtoolsMiddleware {
+export function createDevtoolsMiddleware(
+  registry: DevtoolsRegistry
+): DevtoolsMiddleware {
   return (storeApi) => {
-    registry.attachStore(storeApi);
+    registry.attachStore(storeApi)
     return (next) => (action) => {
-      const result = next(action);
-      registry.recordAction(action);
-      registry.scheduleNotify();
-      return result;
-    };
-  };
+      const result = next(action)
+      registry.recordAction(action)
+      registry.scheduleNotify()
+      return result
+    }
+  }
 }
 
 /** A no-op passthrough, safe to leave wired into a production store config. */
-export const noopMiddleware: DevtoolsMiddleware = () => (next) => (action) => next(action);
+export const noopMiddleware: DevtoolsMiddleware = () => (next) => (action) =>
+  next(action)

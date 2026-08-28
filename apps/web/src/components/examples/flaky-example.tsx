@@ -1,23 +1,37 @@
-import { useListPostsFlakyQuery } from "@rtk-query-devtools/demo-api";
-import { AlertTriangle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useListPostsFlakyQuery } from "@rtk-query-devtools/demo-api"
+import { AlertTriangle, RefreshCw } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export function FlakyExample() {
-  const { data, error, isFetching, refetch } = useListPostsFlakyQuery();
+  const { data, error, isFetching, refetch } = useListPostsFlakyQuery()
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Flaky query</CardTitle>
         <CardDescription>
-          Fails two times out of three (503). Refetch a couple of times to see rejected requests
-          pile up in the Timeline.
+          Fails two times out of three (503). Refetch a couple of times to see
+          rejected requests pile up in the Timeline.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
-          <RefreshCw size={13} className={isFetching ? "animate-spin" : undefined} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCw
+            size={13}
+            className={isFetching ? "animate-spin" : undefined}
+          />
           Refetch
         </Button>
         {error && (
@@ -32,5 +46,5 @@ export function FlakyExample() {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

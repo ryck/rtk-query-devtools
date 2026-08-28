@@ -1,5 +1,5 @@
-import { useSyncExternalStore } from "react";
-import type { DevtoolsRegistry } from "../../registry";
+import { useSyncExternalStore } from "react"
+import type { DevtoolsRegistry } from "../../registry"
 
 /**
  * Bridges the framework-agnostic `DevtoolsRegistry` into React. The
@@ -8,21 +8,21 @@ import type { DevtoolsRegistry } from "../../registry";
  * cheap and RTK Query's high action volume never causes a render per action.
  */
 export function useRtkQueryDevtoolsState(registry: DevtoolsRegistry): {
-  version: number;
-  state: unknown;
-  reducerPaths: string[];
-  registry: DevtoolsRegistry;
+  version: number
+  state: unknown
+  reducerPaths: string[]
+  registry: DevtoolsRegistry
 } {
   const version = useSyncExternalStore(
     (onStoreChange) => registry.subscribe(onStoreChange),
     () => registry.getVersion(),
-    () => registry.getVersion(),
-  );
+    () => registry.getVersion()
+  )
 
   return {
     version,
     state: registry.getState(),
     reducerPaths: registry.getReducerPaths(),
     registry,
-  };
+  }
 }

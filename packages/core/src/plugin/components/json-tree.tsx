@@ -1,43 +1,46 @@
-import clsx from "clsx";
-import { Check, ChevronDown, ChevronRight, Copy, X } from "lucide-react";
-import { type ReactNode, useState } from "react";
-import { safeStringify } from "../format";
-import type { RtkQueryDevtoolsClasses } from "../theme";
+import { clsx } from "clsx"
+import { Check, ChevronDown, ChevronRight, Copy, X } from "lucide-react"
+import { type ReactNode, useState } from "react"
+import { safeStringify } from "../format"
+import type { RtkQueryDevtoolsClasses } from "../theme"
 
 interface JsonTreeProps {
-  data: unknown;
-  classes: RtkQueryDevtoolsClasses;
-  label?: string;
-  depth?: number;
-  ancestors?: unknown[];
+  data: unknown
+  classes: RtkQueryDevtoolsClasses
+  label?: string
+  depth?: number
+  ancestors?: unknown[]
 }
 
-const DEFAULT_EXPAND_DEPTH = 1;
-const AUTO_COLLAPSE_ENTRY_COUNT = 30;
+const DEFAULT_EXPAND_DEPTH = 1
+const AUTO_COLLAPSE_ENTRY_COUNT = 30
 /**
  * Collections longer than this are split into collapsible chunks. Auto-collapse
  * only governs a node's *initial* state, so without chunking, expanding a
  * 50k-element array would render 50k unvirtualized rows, the one remaining way
  * to hang the panel on a large cache entry.
  */
-const CHUNK_SIZE = 100;
-const NO_ANCESTORS: unknown[] = [];
+const CHUNK_SIZE = 100
+const NO_ANCESTORS: unknown[] = []
 
 interface Collection {
-  entries: Array<[string, unknown]>;
-  openBracket: string;
-  closeBracket: string;
-  typeLabel?: string;
+  entries: Array<[string, unknown]>
+  openBracket: string
+  closeBracket: string
+  typeLabel?: string
 }
 
 function describeCollection(data: object): Collection {
   if (data instanceof Map) {
     return {
-      entries: Array.from(data.entries()).map(([k, v], i) => [String(k ?? i), v]),
+      entries: Array.from(data.entries()).map(([k, v], i) => [
+        String(k ?? i),
+        v,
+      ]),
       openBracket: "{",
       closeBracket: "}",
       typeLabel: `Map(${data.size})`,
-    };
+    }
   }
   if (data instanceof Set) {
     return {
@@ -45,21 +48,21 @@ function describeCollection(data: object): Collection {
       openBracket: "{",
       closeBracket: "}",
       typeLabel: `Set(${data.size})`,
-    };
+    }
   }
   if (Array.isArray(data)) {
     return {
       entries: data.map((v, i) => [String(i), v]),
       openBracket: "[",
       closeBracket: "]",
-    };
+    }
   }
-  if (data instanceof Error) return describeError(data);
+  if (data instanceof Error) return describeError(data)
   return {
     entries: Object.entries(data as Record<string, unknown>),
     openBracket: "{",
     closeBracket: "}",
-  };
+  }
 }
 
 /**
@@ -72,14 +75,14 @@ function describeError(error: Error): Collection {
   const named: Array<[string, unknown]> = [
     ["name", error.name],
     ["message", error.message],
-  ];
-  if (error.stack) named.push(["stack", error.stack]);
+  ]
+  if (error.stack) named.push(["stack", error.stack])
   return {
     entries: [...named, ...Object.entries(error)],
     openBracket: "{",
     closeBracket: "}",
     typeLabel: error.name || "Error",
-  };
+  }
 }
 
 /**
@@ -89,7 +92,7 @@ function describeError(error: Error): Collection {
  * unreachable.
  */
 function isLeafObject(value: object): boolean {
-  return value instanceof Date || value instanceof RegExp;
+  return value instanceof Date || value instanceof RegExp
 }
 
 /**
@@ -117,11 +120,12 @@ export function JsonTree({
             </Token>
           }
         />
-      );
+      )
     }
 
-    const { entries, openBracket, closeBracket, typeLabel } = describeCollection(data);
-    const childAncestors = [...ancestors, data];
+    const { entries, openBracket, closeBracket, typeLabel } =
+      describeCollection(data)
+    const childAncestors = [...ancestors, data]
 
     return (
       <CollapsibleNode
@@ -134,10 +138,15 @@ export function JsonTree({
         depth={depth}
         copyValue={data}
         renderChildren={() => (
-          <EntryList entries={entries} classes={classes} depth={depth} ancestors={childAncestors} />
+          <EntryList
+            entries={entries}
+            classes={classes}
+            depth={depth}
+            ancestors={childAncestors}
+          />
         )}
       />
-    );
+    )
   }
 
   return (
@@ -146,7 +155,7 @@ export function JsonTree({
       label={label}
       valueNode={<PrimitiveToken classes={classes} value={data} />}
     />
-  );
+  )
 }
 
 /**
@@ -159,10 +168,10 @@ function EntryList({
   depth,
   ancestors,
 }: {
-  entries: Array<[string, unknown]>;
-  classes: RtkQueryDevtoolsClasses;
-  depth: number;
-  ancestors: unknown[];
+  entries: Array<[string, unknown]>
+  classes: RtkQueryDevtoolsClasses
+  depth: number
+  ancestors: unknown[]
 }) {
   if (entries.length <= CHUNK_SIZE) {
     return (
@@ -178,13 +187,13 @@ function EntryList({
           />
         ))}
       </>
-    );
+    )
   }
 
-  const chunks: ReactNode[] = [];
+  const chunks: ReactNode[] = []
   for (let start = 0; start < entries.length; start += CHUNK_SIZE) {
-    const end = Math.min(start + CHUNK_SIZE, entries.length);
-    const slice = entries.slice(start, end);
+    const end = Math.min(start + CHUNK_SIZE, entries.length)
+    const slice = entries.slice(start, end)
     chunks.push(
       <CollapsibleNode
         key={start}
@@ -201,12 +210,17 @@ function EntryList({
         // they never auto-expand regardless of depth.
         depth={DEFAULT_EXPAND_DEPTH}
         renderChildren={() => (
-          <EntryList entries={slice} classes={classes} depth={depth} ancestors={ancestors} />
+          <EntryList
+            entries={slice}
+            classes={classes}
+            depth={depth}
+            ancestors={ancestors}
+          />
         )}
-      />,
-    );
+      />
+    )
   }
-  return <>{chunks}</>;
+  return <>{chunks}</>
 }
 
 function CollapsibleNode({
@@ -220,19 +234,19 @@ function CollapsibleNode({
   copyValue,
   renderChildren,
 }: {
-  classes: RtkQueryDevtoolsClasses;
-  label: string | undefined;
-  typeLabel: string | undefined;
-  openBracket: string;
-  closeBracket: string;
-  count: number;
-  depth: number;
-  copyValue?: unknown;
-  renderChildren: () => ReactNode;
+  classes: RtkQueryDevtoolsClasses
+  label: string | undefined
+  typeLabel: string | undefined
+  openBracket: string
+  closeBracket: string
+  count: number
+  depth: number
+  copyValue?: unknown
+  renderChildren: () => ReactNode
 }) {
   const [expanded, setExpanded] = useState(
-    depth < DEFAULT_EXPAND_DEPTH && count <= AUTO_COLLAPSE_ENTRY_COUNT,
-  );
+    depth < DEFAULT_EXPAND_DEPTH && count <= AUTO_COLLAPSE_ENTRY_COUNT
+  )
 
   return (
     <div>
@@ -240,20 +254,27 @@ function CollapsibleNode({
         <div
           className={clsx(
             "rtkq:flex rtkq:min-w-0 rtkq:flex-1 rtkq:items-baseline rtkq:gap-1 rtkq:cursor-pointer rtkq:font-mono rtkq:text-xs rtkq:select-none",
-            classes.textPrimary,
+            classes.textPrimary
           )}
           onClick={() => setExpanded((e) => !e)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") setExpanded((v) => !v);
+            if (e.key === "Enter" || e.key === " ") setExpanded((v) => !v)
           }}
           role="button"
           tabIndex={0}
           aria-expanded={expanded}
         >
-          <span className={clsx("rtkq:inline-flex rtkq:w-3 rtkq:items-center", classes.textMuted)}>
+          <span
+            className={clsx(
+              "rtkq:inline-flex rtkq:w-3 rtkq:items-center",
+              classes.textMuted
+            )}
+          >
             {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
           </span>
-          {label !== undefined && <span className={classes.json.key}>{label}:</span>}
+          {label !== undefined && (
+            <span className={classes.json.key}>{label}:</span>
+          )}
           {typeLabel && <span className={classes.textMuted}>{typeLabel}</span>}
           <span className={classes.textDimmed}>
             {openBracket}
@@ -266,37 +287,52 @@ function CollapsibleNode({
             </span>
           )}
         </div>
-        {copyValue !== undefined && <CopyButton classes={classes} value={copyValue} />}
+        {copyValue !== undefined && (
+          <CopyButton classes={classes} value={copyValue} />
+        )}
       </div>
       {expanded && (
-        <div className={clsx("rtkq:pl-3 rtkq:ml-1 rtkq:border-l", classes.border)}>
+        <div
+          className={clsx("rtkq:pl-3 rtkq:ml-1 rtkq:border-l", classes.border)}
+        >
           {renderChildren()}
           {closeBracket && (
-            <div className={clsx("rtkq:font-mono rtkq:text-xs", classes.textDimmed)}>
+            <div
+              className={clsx(
+                "rtkq:font-mono rtkq:text-xs",
+                classes.textDimmed
+              )}
+            >
               {closeBracket}
             </div>
           )}
         </div>
       )}
     </div>
-  );
+  )
 }
 
-type CopyState = "idle" | "copied" | "error";
+type CopyState = "idle" | "copied" | "error"
 
 /**
  * The only place `safeStringify` is called, deliberately on demand, since it
  * walks the entire value (see its docstring in ../format).
  */
-function CopyButton({ classes, value }: { classes: RtkQueryDevtoolsClasses; value: unknown }) {
-  const [state, setState] = useState<CopyState>("idle");
+function CopyButton({
+  classes,
+  value,
+}: {
+  classes: RtkQueryDevtoolsClasses
+  value: unknown
+}) {
+  const [state, setState] = useState<CopyState>("idle")
 
   const label =
     state === "copied"
       ? "Copied to clipboard"
       : state === "error"
         ? "Failed to copy"
-        : "Copy to clipboard";
+        : "Copy to clipboard"
 
   return (
     <button
@@ -305,25 +341,25 @@ function CopyButton({ classes, value }: { classes: RtkQueryDevtoolsClasses; valu
       aria-label={label}
       className={clsx(
         "rtkq:inline-flex rtkq:shrink-0 rtkq:cursor-pointer rtkq:items-center rtkq:border-0 rtkq:bg-transparent rtkq:p-0.5 rtkq:opacity-40 rtkq:hover:opacity-100",
-        state === "copied" ? classes.status.fresh.icon : classes.textMuted,
+        state === "copied" ? classes.status.fresh.icon : classes.textMuted
       )}
       onClick={() => {
         // Settled state is transient; ignore repeat clicks until it resets.
-        if (state !== "idle") return;
+        if (state !== "idle") return
         const settle = (next: CopyState) => {
-          setState(next);
-          setTimeout(() => setState("idle"), 1500);
-        };
+          setState(next)
+          setTimeout(() => setState("idle"), 1500)
+        }
         // Absent outside secure contexts, so this is a real branch, not paranoia.
-        const clipboard = navigator.clipboard;
+        const clipboard = navigator.clipboard
         if (!clipboard) {
-          settle("error");
-          return;
+          settle("error")
+          return
         }
         clipboard.writeText(safeStringify(value)).then(
           () => settle("copied"),
-          () => settle("error"),
-        );
+          () => settle("error")
+        )
       }}
     >
       {state === "copied" ? (
@@ -334,7 +370,7 @@ function CopyButton({ classes, value }: { classes: RtkQueryDevtoolsClasses; valu
         <Copy size={11} />
       )}
     </button>
-  );
+  )
 }
 
 function TreeRow({
@@ -342,79 +378,87 @@ function TreeRow({
   label,
   valueNode,
 }: {
-  classes: RtkQueryDevtoolsClasses;
-  label: string | undefined;
-  valueNode: ReactNode;
+  classes: RtkQueryDevtoolsClasses
+  label: string | undefined
+  valueNode: ReactNode
 }) {
   return (
     <div className="rtkq:font-mono rtkq:text-xs rtkq:py-px rtkq:pl-3.5">
-      {label !== undefined && <span className={classes.json.key}>{label}: </span>}
+      {label !== undefined && (
+        <span className={classes.json.key}>{label}: </span>
+      )}
       {valueNode}
     </div>
-  );
+  )
 }
 
-function PrimitiveToken({ classes, value }: { classes: RtkQueryDevtoolsClasses; value: unknown }) {
+function PrimitiveToken({
+  classes,
+  value,
+}: {
+  classes: RtkQueryDevtoolsClasses
+  value: unknown
+}) {
   if (value === undefined)
     return (
       <Token classes={classes} kind="muted">
         undefined
       </Token>
-    );
+    )
   if (value === null)
     return (
       <Token classes={classes} kind="muted">
         null
       </Token>
-    );
+    )
   if (typeof value === "string")
     return (
       <Token classes={classes} kind="string">
         &quot;{value}&quot;
       </Token>
-    );
+    )
   if (typeof value === "number")
     return (
       <Token classes={classes} kind="number">
         {String(value)}
       </Token>
-    );
+    )
   if (typeof value === "boolean")
     return (
       <Token classes={classes} kind="boolean">
         {String(value)}
       </Token>
-    );
+    )
   if (typeof value === "bigint")
     return (
       <Token classes={classes} kind="number">
         {value.toString()}n
       </Token>
-    );
+    )
   if (typeof value === "function") {
     return (
       <Token classes={classes} kind="muted">
         [Function: {value.name || "anonymous"}]
       </Token>
-    );
+    )
   }
   if (typeof value === "symbol")
     return (
       <Token classes={classes} kind="muted">
         {value.toString()}
       </Token>
-    );
+    )
   if (value instanceof Date)
     return (
       <Token classes={classes} kind="string">
         {value.toISOString()}
       </Token>
-    );
+    )
   return (
     <Token classes={classes} kind="muted">
       {String(value)}
     </Token>
-  );
+  )
 }
 
 function Token({
@@ -422,9 +466,9 @@ function Token({
   kind,
   children,
 }: {
-  classes: RtkQueryDevtoolsClasses;
-  kind: "string" | "number" | "boolean" | "muted";
-  children: ReactNode;
+  classes: RtkQueryDevtoolsClasses
+  kind: "string" | "number" | "boolean" | "muted"
+  children: ReactNode
 }) {
-  return <span className={classes.json[kind]}>{children}</span>;
+  return <span className={classes.json[kind]}>{children}</span>
 }

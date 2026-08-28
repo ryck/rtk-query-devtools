@@ -1,17 +1,23 @@
-import { fetchPost } from "@rtk-query-devtools/demo-api";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchPost } from "@rtk-query-devtools/demo-api"
+import { useQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
-const IDS = [1, 2, 3, 4, 5];
+const IDS = [1, 2, 3, 4, 5]
 
 export function TqArgsExample() {
-  const [selectedId, setSelectedId] = useState(1);
+  const [selectedId, setSelectedId] = useState(1)
   const { data, isFetching } = useQuery({
     queryKey: ["post", selectedId],
     queryFn: () => fetchPost(selectedId),
-  });
+  })
 
   return (
     <Card>
@@ -20,8 +26,8 @@ export function TqArgsExample() {
         <CardDescription>
           Each ID is its own query key:{" "}
           <code className="font-mono text-foreground">["post", 1]</code>,{" "}
-          <code className="font-mono text-foreground">["post", 2]</code>… each cached independently
-          in the TanStack Query panel.
+          <code className="font-mono text-foreground">["post", 2]</code>… each
+          cached independently in the TanStack Query panel.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -47,5 +53,5 @@ export function TqArgsExample() {
         </p>
       </CardContent>
     </Card>
-  );
+  )
 }

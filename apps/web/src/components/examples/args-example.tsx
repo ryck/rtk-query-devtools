@@ -1,13 +1,19 @@
-import { useGetPostQuery } from "@rtk-query-devtools/demo-api";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetPostQuery } from "@rtk-query-devtools/demo-api"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
-const IDS = [1, 2, 3, 4, 5];
+const IDS = [1, 2, 3, 4, 5]
 
 export function ArgsExample() {
-  const [selectedId, setSelectedId] = useState(1);
-  const { data, isFetching } = useGetPostQuery(selectedId);
+  const [selectedId, setSelectedId] = useState(1)
+  const { data, isFetching } = useGetPostQuery(selectedId)
 
   return (
     <Card>
@@ -16,9 +22,10 @@ export function ArgsExample() {
         <CardDescription>
           Each ID is its own cache entry:{" "}
           <code className="font-mono text-foreground">getPost(1)</code>,{" "}
-          <code className="font-mono text-foreground">getPost(2)</code>… Switch between a few and
-          watch the ones you leave go <code className="font-mono text-foreground">inactive</code> in
-          the Queries tab instead of disappearing.
+          <code className="font-mono text-foreground">getPost(2)</code>… Switch
+          between a few and watch the ones you leave go{" "}
+          <code className="font-mono text-foreground">inactive</code> in the
+          Queries tab instead of disappearing.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -44,5 +51,5 @@ export function ArgsExample() {
         </p>
       </CardContent>
     </Card>
-  );
+  )
 }

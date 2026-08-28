@@ -1,18 +1,18 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
-import { Analytics } from "@vercel/analytics/react";
-import type { ReactNode } from "react";
-import { NotFound } from "@/components/not-found";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { themeScript } from "@/components/theme-toggle";
-import appCss from "../styles.css?url";
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
+import { Analytics } from "@vercel/analytics/react"
+import type { ReactNode } from "react"
+import { NotFound } from "@/components/not-found"
+import { SiteFooter } from "@/components/site-footer"
+import { SiteHeader } from "@/components/site-header"
+import { themeScript } from "@/components/theme-toggle"
+import appCss from "../styles.css?url"
 
-const SITE_URL = "https://rtk-query-devtools.ryck.dev/";
-const TITLE = "RTK Query Devtools";
+const SITE_URL = "https://rtk-query-devtools.ryck.dev/"
+const TITLE = "RTK Query Devtools"
 const DESCRIPTION =
-  "See what your RTK Query cache is actually doing: live query status, tags, and request timeline, right inside TanStack DevTools.";
+  "See what your RTK Query cache is actually doing: live query status, tags, and request timeline, right inside TanStack DevTools."
 const OG_IMAGE_ALT =
-  "rtk-query-devtools: a live status board listing cached RTK Query endpoints with fresh and error badges.";
+  "rtk-query-devtools: a live status board listing cached RTK Query endpoints with fresh and error badges."
 
 export const Route = createRootRoute({
   notFoundComponent: NotFound,
@@ -47,8 +47,17 @@ export const Route = createRootRoute({
       // SVG first for browsers that take it; the PNG is the fallback for the
       // ones that don't, and for contexts that only ever fetch a raster icon.
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "icon", href: "/favicon-32.png", type: "image/png", sizes: "32x32" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      {
+        rel: "icon",
+        href: "/favicon-32.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/apple-touch-icon.png",
+        sizes: "180x180",
+      },
       { rel: "manifest", href: "/site.webmanifest" },
       // No canonical here on purpose. Unlike `meta`, `links` are not deduped
       // by the head manager, so a root-level canonical would emit a second,
@@ -56,7 +65,7 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-});
+})
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
@@ -85,5 +94,5 @@ function RootDocument({ children }: { children: ReactNode }) {
         <Scripts />
       </body>
     </html>
-  );
+  )
 }

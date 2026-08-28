@@ -1,14 +1,18 @@
-import { createDevtoolsMiddleware, type DevtoolsMiddleware, noopMiddleware } from "./middleware";
-import { defaultRegistry, type DevtoolsRegistry } from "./registry";
-import type { RtkQueryDevtoolsOptions } from "./types";
+import {
+  createDevtoolsMiddleware,
+  type DevtoolsMiddleware,
+  noopMiddleware,
+} from "./middleware"
+import { defaultRegistry, type DevtoolsRegistry } from "./registry"
+import type { RtkQueryDevtoolsOptions } from "./types"
 
 export interface RtkQueryDevtoolsInstance {
   /** Add to your store's middleware chain. A no-op passthrough outside development. */
-  middleware: DevtoolsMiddleware;
-  registry: DevtoolsRegistry;
+  middleware: DevtoolsMiddleware
+  registry: DevtoolsRegistry
 }
 
-const isDevelopment = process.env.NODE_ENV !== "production";
+const isDevelopment = process.env.NODE_ENV !== "production"
 
 /**
  * Wires a Redux middleware into the module-level devtools registry. Call
@@ -17,15 +21,15 @@ const isDevelopment = process.env.NODE_ENV !== "production";
  * registry, so bundlers can dead-code-eliminate the rest of this module.
  */
 export function createRtkQueryDevtools(
-  options: RtkQueryDevtoolsOptions = {},
+  options: RtkQueryDevtoolsOptions = {}
 ): RtkQueryDevtoolsInstance {
   if (!isDevelopment) {
-    return { middleware: noopMiddleware, registry: defaultRegistry };
+    return { middleware: noopMiddleware, registry: defaultRegistry }
   }
 
-  defaultRegistry.configure(options);
+  defaultRegistry.configure(options)
   return {
     middleware: createDevtoolsMiddleware(defaultRegistry),
     registry: defaultRegistry,
-  };
+  }
 }

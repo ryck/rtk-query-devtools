@@ -1,7 +1,7 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button";
-import { cva, type VariantProps } from "class-variance-authority";
+import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 // `font-mono` is a local addition to the generated variants: every control on
 // this site is monospaced, and setting it here keeps it off ~20 call sites.
@@ -39,8 +39,8 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
-);
+  }
+)
 
 function Button({
   className,
@@ -54,7 +54,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  );
+  )
 }
 
-export { Button, buttonVariants };
+export { Button, buttonVariants }

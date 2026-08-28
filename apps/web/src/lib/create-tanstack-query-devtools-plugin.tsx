@@ -1,7 +1,7 @@
-import type { TanStackDevtoolsReactPlugin } from "@tanstack/react-devtools";
-import { createReactPlugin } from "@tanstack/devtools-utils/react";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-import { queryClient } from "@/lib/query-client";
+import type { TanStackDevtoolsReactPlugin } from "@tanstack/react-devtools"
+import { createReactPlugin } from "@tanstack/devtools-utils/react"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+import { queryClient } from "@/lib/query-client"
 
 /**
  * TanStack Query doesn't ship its own TanStack DevTools-shell plugin yet.
@@ -16,8 +16,11 @@ export function createTanStackQueryDevtoolsPlugin(): TanStackDevtoolsReactPlugin
     id: "tanstack-query-devtools",
     defaultOpen: false,
     Component: () => (
-      <ReactQueryDevtoolsPanel client={queryClient} style={{ height: "100%", width: "100%" }} />
+      <ReactQueryDevtoolsPanel
+        client={queryClient}
+        style={{ height: "100%", width: "100%" }}
+      />
     ),
-  });
-  return Plugin();
+  })
+  return Plugin()
 }

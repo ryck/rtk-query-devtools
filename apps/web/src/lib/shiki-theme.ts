@@ -1,4 +1,4 @@
-import type { ThemeRegistrationRaw } from "shiki";
+import type { ThemeRegistrationRaw } from "shiki"
 
 /**
  * Shiki ships no theme in the site's colours, and the stock dark ones all pull
@@ -11,11 +11,11 @@ import type { ThemeRegistrationRaw } from "shiki";
  * document would not help. Keep them in step with `@theme`.
  */
 interface Palette {
-  text: string;
-  muted: string;
-  keyword: string;
-  string: string;
-  literal: string;
+  text: string
+  muted: string
+  keyword: string
+  string: string
+  literal: string
 }
 
 /** The dark palette, straight from `@theme`. */
@@ -25,7 +25,7 @@ const DARK: Palette = {
   keyword: "#f2a93b",
   string: "#34d399",
   literal: "#fb7166",
-};
+}
 
 /**
  * The light twin, matching the `--color-quill` / `--color-bronze` /
@@ -38,9 +38,13 @@ const LIGHT: Palette = {
   keyword: "#b8761a",
   string: "#0f766e",
   literal: "#d0483c",
-};
+}
 
-function buildTheme(name: string, type: "dark" | "light", p: Palette): ThemeRegistrationRaw {
+function buildTheme(
+  name: string,
+  type: "dark" | "light",
+  p: Palette
+): ThemeRegistrationRaw {
   return {
     name,
     type,
@@ -49,9 +53,18 @@ function buildTheme(name: string, type: "dark" | "light", p: Palette): ThemeRegi
     // right even if that transformer is ever dropped.
     colors: { "editor.background": "#00000000", "editor.foreground": p.text },
     settings: [
-      { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: p.muted } },
       {
-        scope: ["keyword", "storage", "storage.type", "keyword.operator", "entity.name.tag"],
+        scope: ["comment", "punctuation.definition.comment"],
+        settings: { foreground: p.muted },
+      },
+      {
+        scope: [
+          "keyword",
+          "storage",
+          "storage.type",
+          "keyword.operator",
+          "entity.name.tag",
+        ],
         settings: { foreground: p.keyword },
       },
       {
@@ -59,21 +72,42 @@ function buildTheme(name: string, type: "dark" | "light", p: Palette): ThemeRegi
         settings: { foreground: p.string },
       },
       {
-        scope: ["constant.numeric", "constant.language", "constant.language.boolean"],
+        scope: [
+          "constant.numeric",
+          "constant.language",
+          "constant.language.boolean",
+        ],
         settings: { foreground: p.literal },
       },
-      { scope: ["entity.other.attribute-name"], settings: { foreground: p.string } },
       {
-        scope: ["punctuation", "meta.brace", "punctuation.separator", "punctuation.terminator"],
+        scope: ["entity.other.attribute-name"],
+        settings: { foreground: p.string },
+      },
+      {
+        scope: [
+          "punctuation",
+          "meta.brace",
+          "punctuation.separator",
+          "punctuation.terminator",
+        ],
         settings: { foreground: p.muted },
       },
       {
-        scope: ["variable", "entity.name.function", "support.function", "meta.object-literal.key"],
+        scope: [
+          "variable",
+          "entity.name.function",
+          "support.function",
+          "meta.object-literal.key",
+        ],
         settings: { foreground: p.text },
       },
     ],
-  };
+  }
 }
 
-export const brandCodeTheme = buildTheme("rtk-query-devtools", "dark", DARK);
-export const brandCodeThemeLight = buildTheme("rtk-query-devtools-light", "light", LIGHT);
+export const brandCodeTheme = buildTheme("rtk-query-devtools", "dark", DARK)
+export const brandCodeThemeLight = buildTheme(
+  "rtk-query-devtools-light",
+  "light",
+  LIGHT
+)

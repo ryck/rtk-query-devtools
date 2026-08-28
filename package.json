@@ -3,18 +3,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter ./packages/core run build",
+    "build": "turbo build",
     "dev": "pnpm --filter ./packages/core run dev",
     "dev:demo": "pnpm --filter demo run dev",
     "dev:web": "pnpm --filter web run dev",
-    "typecheck": "pnpm build && tsc -p packages/core --noEmit && tsc -p apps/demo --noEmit && pnpm --filter web run typecheck",
-    "clean": "pnpm -r run clean",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean",
     "test": "vitest --project=unit",
     "test:ci": "vitest run --project=unit",
     "test:e2e": "playwright test",
-    "lint": "oxlint . && oxfmt --check .",
+    "lint": "oxlint .",
     "lint:fix": "oxlint . --fix && oxfmt .",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
@@ -23,14 +25,15 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "jsdom": "^28.1.0",
-    "oxfmt": "^0.63.0",
-    "oxlint": "^1.78.0",
-    "typescript": "^5.7.0",
-    "vitest": "^4.0.18"
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
+    "typescript": "^7",
+    "vitest": "^4.0.18",
+    "turbo": "^2.9.18"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=10.0.0"
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
   },
-  "packageManager": "pnpm@11.21.0"
+  "packageManager": "pnpm@11.24.0"
 }

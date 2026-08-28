@@ -1,5 +1,5 @@
-import { clsx } from "clsx";
-import type { ReactNode } from "react";
+import { clsx } from "clsx"
+import type { ReactNode } from "react"
 
 export function FeatureGroup({
   id,
@@ -8,24 +8,28 @@ export function FeatureGroup({
   lead,
   children,
 }: {
-  id: string;
-  eyebrow: string;
-  title: string;
-  lead: ReactNode;
-  children: ReactNode;
+  id: string
+  eyebrow: string
+  title: string
+  lead: ReactNode
+  children: ReactNode
 }) {
   return (
     // `scroll-mt-24` clears the sticky header: without it an anchored section
     // lands underneath the bar and its eyebrow is hidden.
     <section id={id} className="scroll-mt-24 border-t border-border pt-12">
-      <span className="font-mono text-xs tracking-[0.2em] text-primary uppercase">{eyebrow}</span>
+      <span className="font-mono text-xs tracking-[0.2em] text-primary uppercase">
+        {eyebrow}
+      </span>
       <h2 className="mt-3 text-2xl font-semibold text-balance text-foreground sm:text-3xl">
         {title}
       </h2>
-      <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">{lead}</p>
+      <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        {lead}
+      </p>
       <div className="mt-8 flex flex-col gap-10">{children}</div>
     </section>
-  );
+  )
 }
 
 export function Feature({
@@ -34,11 +38,11 @@ export function Feature({
   shot,
   alt,
 }: {
-  title: string;
-  children: ReactNode;
+  title: string
+  children: ReactNode
   /** Filename in `/features/{dark,light}`, without the extension. */
-  shot?: string;
-  alt?: string;
+  shot?: string
+  alt?: string
 }) {
   return (
     <div>
@@ -56,7 +60,7 @@ export function Feature({
             // Width only. A `[&>img]:block` here would out-specify the
             // `hidden` on the inactive theme's image ((0,1,1) beats (0,1,0))
             // and render both, so each image sets its own display below.
-            "[&>img]:w-full",
+            "[&>img]:w-full"
           )}
         >
           {/*
@@ -84,10 +88,12 @@ export function Feature({
         </figure>
       )}
     </div>
-  );
+  )
 }
 
 /** Inline code, matching the density used across the site's prose. */
 export function C({ children }: { children: string }) {
-  return <code className="font-mono text-[0.92em] text-foreground">{children}</code>;
+  return (
+    <code className="font-mono text-[0.92em] text-foreground">{children}</code>
+  )
 }

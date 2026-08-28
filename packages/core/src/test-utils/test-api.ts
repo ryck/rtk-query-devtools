@@ -1,10 +1,10 @@
-import { configureStore } from "@reduxjs/toolkit";
-import type { Middleware } from "@reduxjs/toolkit";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { configureStore } from "@reduxjs/toolkit"
+import type { Middleware } from "@reduxjs/toolkit"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query"
 
 export interface Post {
-  id: number;
-  title: string;
+  id: number
+  title: string
 }
 
 /**
@@ -20,7 +20,7 @@ export function createTestApi(
    * Off by default so the shared api can't refetch out from under tests that
    * don't care; the environment-simulation tests opt in.
    */
-  options: { refetchOnFocus?: boolean; refetchOnReconnect?: boolean } = {},
+  options: { refetchOnFocus?: boolean; refetchOnReconnect?: boolean } = {}
 ) {
   return createApi({
     reducerPath,
@@ -48,17 +48,20 @@ export function createTestApi(
         invalidatesTags: [{ type: "Post", id: "LIST" }],
       }),
     }),
-  });
+  })
 }
 
-export type TestApi = ReturnType<typeof createTestApi>;
+export type TestApi = ReturnType<typeof createTestApi>
 
-export function createTestStore(api: TestApi, extraMiddleware: Middleware[] = []) {
+export function createTestStore(
+  api: TestApi,
+  extraMiddleware: Middleware[] = []
+) {
   return configureStore({
     reducer: { [api.reducerPath]: api.reducer },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(api.middleware, ...extraMiddleware),
-  });
+  })
 }
 
 export function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
@@ -66,5 +69,5 @@ export function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
     status: 200,
     headers: { "content-type": "application/json" },
     ...init,
-  });
+  })
 }

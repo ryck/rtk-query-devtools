@@ -1,18 +1,18 @@
-import type { TanStackDevtoolsReactPlugin } from "@tanstack/react-devtools";
-import { createReactPlugin } from "@tanstack/devtools-utils/react";
-import type { DevtoolsRegistry } from "../registry";
-import { RtkQueryDevtoolsPlugin } from "./rtk-query-devtools-plugin";
+import type { TanStackDevtoolsReactPlugin } from "@tanstack/react-devtools"
+import { createReactPlugin } from "@tanstack/devtools-utils/react"
+import type { DevtoolsRegistry } from "../registry"
+import { RtkQueryDevtoolsPlugin } from "./rtk-query-devtools-plugin"
 
 export interface RtkQueryDevtoolsPluginOptions {
   /** Open the panel automatically on first load. Default: false, since TanStack DevTools caps open panels at 3, and RTK Query is rarely the only plugin registered. */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean
   /** Tab title. Default: "RTK Query". */
-  name?: string;
+  name?: string
   /** Overrides the module-level registry, mainly for tests or multi-store apps. */
-  devtoolsRegistry?: DevtoolsRegistry;
+  devtoolsRegistry?: DevtoolsRegistry
 }
 
-const isDevelopment = process.env.NODE_ENV !== "production";
+const isDevelopment = process.env.NODE_ENV !== "production"
 
 /**
  * Creates a TanStack DevTools plugin config object for RTK Query.
@@ -37,7 +37,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
  * which is what `<TanStackDevtools plugins={[...]} />` actually expects.
  */
 export function createRtkQueryDevtoolsPlugin(
-  options: RtkQueryDevtoolsPluginOptions = {},
+  options: RtkQueryDevtoolsPluginOptions = {}
 ): TanStackDevtoolsReactPlugin {
   if (!isDevelopment) {
     return {
@@ -45,7 +45,7 @@ export function createRtkQueryDevtoolsPlugin(
       name: options.name ?? "RTK Query",
       defaultOpen: false,
       render: () => <></>,
-    };
+    }
   }
 
   const [Plugin] = createReactPlugin({
@@ -53,8 +53,11 @@ export function createRtkQueryDevtoolsPlugin(
     id: "rtk-query-devtools",
     defaultOpen: options.defaultOpen ?? false,
     Component: ({ theme }) => (
-      <RtkQueryDevtoolsPlugin theme={theme} devtoolsRegistry={options.devtoolsRegistry} />
+      <RtkQueryDevtoolsPlugin
+        theme={theme}
+        devtoolsRegistry={options.devtoolsRegistry}
+      />
     ),
-  });
-  return Plugin();
+  })
+  return Plugin()
 }

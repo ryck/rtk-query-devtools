@@ -1,24 +1,33 @@
-import { useListUsersQuery } from "@rtk-query-devtools/demo-api";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useListUsersQuery } from "@rtk-query-devtools/demo-api"
+import { Badge } from "@/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export function UsersExample() {
-  const { data: users, isLoading } = useListUsersQuery();
+  const { data: users, isLoading } = useListUsersQuery()
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Users (a second API)</CardTitle>
         <CardDescription>
-          A completely separate <code className="font-mono text-foreground">createApi</code>{" "}
-          instance. The devtools panel's toolbar shows an API selector once it detects more than
-          one.
+          A completely separate{" "}
+          <code className="font-mono text-foreground">createApi</code> instance.
+          The devtools panel's toolbar shows an API selector once it detects
+          more than one.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ul className="flex flex-col gap-1.5">
           {isLoading ? (
-            <li className="font-mono text-sm text-muted-foreground">Loading…</li>
+            <li className="font-mono text-sm text-muted-foreground">
+              Loading…
+            </li>
           ) : (
             users?.map((user) => (
               <li
@@ -42,5 +51,5 @@ export function UsersExample() {
         </ul>
       </CardContent>
     </Card>
-  );
+  )
 }

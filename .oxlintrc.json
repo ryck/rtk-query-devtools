@@ -1,18 +1,39 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "unicorn"],
+  "plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y"],
   "categories": {
     "correctness": "error",
-    "suspicious": "warn",
+    "suspicious": "error",
     "perf": "warn"
   },
-  "env": {
-    "browser": true,
-    "es2022": true,
-    "node": true
-  },
+  "env": { "browser": true, "es2024": true, "node": true },
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    // The automatic JSX runtime is in use (`"jsx": "react-jsx"`), so React does
+    // not need to be in scope.
+    "react/react-in-jsx-scope": "off",
+
+    // The panel is a dense, virtualised surface: rows, cells and disclosure
+    // controls are divs carrying an ARIA role because the native elements
+    // cannot take the grid and windowing the layout needs. The roles are the
+    // accessibility contract the e2e tests assert against, so they are
+    // deliberate rather than a shortcut.
+    "jsx-a11y/prefer-tag-over-role": "off",
+
+    // `import "./styles.css"` in the demo entry is the point — the side effect
+    // is the import.
+    "import/no-unassigned-import": "off",
+
+    // Fires on `@tanstack/react-virtual`, which returns fresh functions by
+    // design. It is a React Compiler advisory about what it will decline to
+    // memoise, not a defect in this code.
+    "react/incompatible-library": "off"
   },
-  "ignorePatterns": ["dist", "coverage", "node_modules", "playwright-report", "test-results"]
+  "ignorePatterns": [
+    "dist",
+    "coverage",
+    "node_modules",
+    "playwright-report",
+    "test-results",
+    "**/routeTree.gen.ts"
+  ]
 }

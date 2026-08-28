@@ -4,9 +4,9 @@
 // `dist/style.css` and drops it from the JS, which is why consumers used to
 // have to remember a second import or get an unstyled panel with no error
 // explaining why.
-import css from "./styles.css?inline";
+import css from "./styles.css?inline"
 
-const STYLE_ELEMENT_ID = "rtk-query-devtools-styles";
+const STYLE_ELEMENT_ID = "rtk-query-devtools-styles"
 
 /**
  * Injects the panel's stylesheet once per document.
@@ -21,10 +21,10 @@ const STYLE_ELEMENT_ID = "rtk-query-devtools-styles";
  * Idempotent by id, so two panels (or a remount) share one `<style>`.
  */
 export function ensurePanelStyles() {
-  if (typeof document === "undefined") return;
-  if (document.getElementById(STYLE_ELEMENT_ID)) return;
-  const style = document.createElement("style");
-  style.id = STYLE_ELEMENT_ID;
-  style.textContent = css;
-  document.head.appendChild(style);
+  if (typeof document === "undefined") return
+  if (document.getElementById(STYLE_ELEMENT_ID)) return
+  const style = document.createElement("style")
+  style.id = STYLE_ELEMENT_ID
+  style.textContent = css
+  document.head.appendChild(style)
 }

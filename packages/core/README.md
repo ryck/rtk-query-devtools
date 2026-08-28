@@ -25,26 +25,26 @@ pnpm add -D rtk-query-devtools @tanstack/react-devtools
 Two steps. Add the middleware to your store:
 
 ```ts
-import { configureStore } from "@reduxjs/toolkit";
-import { createRtkQueryDevtools } from "rtk-query-devtools";
-import { api } from "./api";
+import { configureStore } from "@reduxjs/toolkit"
+import { createRtkQueryDevtools } from "rtk-query-devtools"
+import { api } from "./api"
 
 // `apis` is optional. Without it everything still works except Refetch,
 // which needs the real api object to dispatch a thunk.
-export const rtkqDevtools = createRtkQueryDevtools({ apis: [api] });
+export const rtkqDevtools = createRtkQueryDevtools({ apis: [api] })
 
 export const store = configureStore({
   reducer: { [api.reducerPath]: api.reducer },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware, rtkqDevtools.middleware),
-});
+})
 ```
 
 Then register the plugin:
 
 ```tsx
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools"
 
 export function App() {
   return (
@@ -52,7 +52,7 @@ export function App() {
       <YourApp />
       <TanStackDevtools plugins={[createRtkQueryDevtoolsPlugin()]} />
     </>
-  );
+  )
 }
 ```
 

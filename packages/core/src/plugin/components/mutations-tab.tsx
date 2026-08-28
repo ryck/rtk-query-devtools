@@ -1,23 +1,33 @@
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { CheckCircle2, CircleSlash, Loader2, Trash2, XCircle } from "lucide-react";
-import type { ComponentType, CSSProperties } from "react";
-import { useMemo, useRef, useState } from "react";
-import { removeMutationEntry } from "../../actions";
-import type { DevtoolsRegistry } from "../../registry";
-import { selectMutationEntries } from "../../selectors";
-import type { DerivedQueryStatus, MutationEntry } from "../../types";
-import { formatDuration, formatRelativeTime, formatTimestamp } from "../format";
-import { useDetailPanelWidth } from "../hooks/use-detail-panel-width";
-import { enumCodec, sortOrderCodec, usePersistentState } from "../hooks/use-persistent-state";
-import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search";
-import type { RtkQueryDevtoolsClasses } from "../theme";
-import { EmptyState } from "./empty-state";
-import { EntryDetail } from "./entry-detail";
-import { EntryRow } from "./entry-row";
-import { ResizableDivider } from "./resizable-divider";
-import { IconBadge } from "./status-badge";
-import type { SelectOption, SortOrder } from "./toolbar";
-import { Toolbar, ToolbarButton } from "./toolbar";
+import { useVirtualizer } from "@tanstack/react-virtual"
+import {
+  CheckCircle2,
+  CircleSlash,
+  Loader2,
+  Trash2,
+  XCircle,
+} from "lucide-react"
+import type { ComponentType, CSSProperties } from "react"
+import { useMemo, useRef, useState } from "react"
+import { removeMutationEntry } from "../../actions"
+import type { DevtoolsRegistry } from "../../registry"
+import { selectMutationEntries } from "../../selectors"
+import type { DerivedQueryStatus, MutationEntry } from "../../types"
+import { formatDuration, formatRelativeTime, formatTimestamp } from "../format"
+import { useDetailPanelWidth } from "../hooks/use-detail-panel-width"
+import {
+  enumCodec,
+  sortOrderCodec,
+  usePersistentState,
+} from "../hooks/use-persistent-state"
+import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search"
+import type { RtkQueryDevtoolsClasses } from "../theme"
+import { EmptyState } from "./empty-state"
+import { EntryDetail } from "./entry-detail"
+import { EntryRow } from "./entry-row"
+import { ResizableDivider } from "./resizable-divider"
+import { IconBadge } from "./status-badge"
+import type { SelectOption, SortOrder } from "./toolbar"
+import { Toolbar, ToolbarButton } from "./toolbar"
 
 /**
  * Mutations don't have a meaningful "freshness", and reusing StatusBadge's
@@ -28,32 +38,43 @@ import { Toolbar, ToolbarButton } from "./toolbar";
 const MUTATION_STATUS_META: Record<
   MutationEntry["status"],
   {
-    label: string;
-    icon: ComponentType<{ size?: number; style?: CSSProperties }>;
-    spin?: boolean;
-    palette: DerivedQueryStatus;
+    label: string
+    icon: ComponentType<{ size?: number; style?: CSSProperties }>
+    spin?: boolean
+    palette: DerivedQueryStatus
   }
 > = {
   pending: { label: "Pending", icon: Loader2, spin: true, palette: "fetching" },
   fulfilled: { label: "Fulfilled", icon: CheckCircle2, palette: "fresh" },
   rejected: { label: "Error", icon: XCircle, palette: "error" },
-  uninitialized: { label: "Uninitialized", icon: CircleSlash, palette: "uninitialized" },
-};
+  uninitialized: {
+    label: "Uninitialized",
+    icon: CircleSlash,
+    palette: "uninitialized",
+  },
+}
 
 function MutationStatusBadge({
   status,
   classes,
 }: {
-  status: MutationEntry["status"];
-  classes: RtkQueryDevtoolsClasses;
+  status: MutationEntry["status"]
+  classes: RtkQueryDevtoolsClasses
 }) {
-  const meta = MUTATION_STATUS_META[status];
-  const palette = classes.status[meta.palette];
-  return <IconBadge icon={meta.icon} label={meta.label} palette={palette.badge} spin={meta.spin} />;
+  const meta = MUTATION_STATUS_META[status]
+  const palette = classes.status[meta.palette]
+  return (
+    <IconBadge
+      icon={meta.icon}
+      label={meta.label}
+      palette={palette.badge}
+      spin={meta.spin}
+    />
+  )
 }
 
-const SORT_KEYS = ["updated", "endpoint", "status"] as const;
-type SortKey = (typeof SORT_KEYS)[number];
+const SORT_KEYS = ["updated", "endpoint", "status"] as const
+type SortKey = (typeof SORT_KEYS)[number]
 
 /** Mirrors the query list's ordering: pending first, then error, then settled. */
 const MUTATION_STATUS_SEVERITY: Record<MutationEntry["status"], number> = {
@@ -61,24 +82,30 @@ const MUTATION_STATUS_SEVERITY: Record<MutationEntry["status"], number> = {
   rejected: 1,
   fulfilled: 2,
   uninitialized: 3,
-};
+}
 
 /** Ascending, like `compareQueries`. See the note there on Asc/Desc. */
-function compareMutations(a: MutationEntry, b: MutationEntry, sort: SortKey): number {
-  if (sort === "endpoint") return a.endpointName.localeCompare(b.endpointName);
+function compareMutations(
+  a: MutationEntry,
+  b: MutationEntry,
+  sort: SortKey
+): number {
+  if (sort === "endpoint") return a.endpointName.localeCompare(b.endpointName)
   if (sort === "status") {
-    return MUTATION_STATUS_SEVERITY[a.status] - MUTATION_STATUS_SEVERITY[b.status];
+    return (
+      MUTATION_STATUS_SEVERITY[a.status] - MUTATION_STATUS_SEVERITY[b.status]
+    )
   }
-  return (a.startedTimeStamp ?? 0) - (b.startedTimeStamp ?? 0);
+  return (a.startedTimeStamp ?? 0) - (b.startedTimeStamp ?? 0)
 }
 
 export interface MutationsTabProps {
-  classes: RtkQueryDevtoolsClasses;
-  registry: DevtoolsRegistry;
-  state: unknown;
-  reducerPaths: string[];
-  activeApi: string;
-  onApiChange: (reducerPath: string) => void;
+  classes: RtkQueryDevtoolsClasses
+  registry: DevtoolsRegistry
+  state: unknown
+  reducerPaths: string[]
+  activeApi: string
+  onApiChange: (reducerPath: string) => void
 }
 
 export function MutationsTab({
@@ -89,42 +116,46 @@ export function MutationsTab({
   activeApi,
   onApiChange,
 }: MutationsTabProps) {
-  const [search, setSearch] = usePersistentState("mutations.search", "");
+  const [search, setSearch] = usePersistentState("mutations.search", "")
   const [sort, setSort] = usePersistentState<SortKey>(
     "mutations.sort",
     "updated",
-    enumCodec(SORT_KEYS),
-  );
+    enumCodec(SORT_KEYS)
+  )
   const [sortOrder, setSortOrder] = usePersistentState<SortOrder>(
     "mutations.sortOrder",
     -1,
-    sortOrderCodec,
-  );
+    sortOrderCodec
+  )
   const [searchMode, setSearchMode] = usePersistentState<SearchMode>(
     "mutations.searchMode",
     "fuzzy",
-    enumCodec(SEARCH_MODES),
-  );
-  const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
+    enumCodec(SEARCH_MODES)
+  )
+  const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined)
 
   const allEntries = useMemo(
     () => (activeApi ? selectMutationEntries(state, activeApi) : []),
-    [state, activeApi],
-  );
+    [state, activeApi]
+  )
 
   // Memoized so a regex is compiled once per query change, not once per row.
-  const matcher = useMemo(() => createSearchMatcher(search, searchMode), [search, searchMode]);
+  const matcher = useMemo(
+    () => createSearchMatcher(search, searchMode),
+    [search, searchMode]
+  )
   const filtered = useMemo(
-    () => allEntries.filter((e) => matcher.matches(e.endpointName, e.requestId)),
-    [allEntries, matcher],
-  );
+    () =>
+      allEntries.filter((e) => matcher.matches(e.endpointName, e.requestId)),
+    [allEntries, matcher]
+  )
 
   const sorted = useMemo(
     () => filtered.toSorted((a, b) => compareMutations(a, b, sort) * sortOrder),
-    [filtered, sort, sortOrder],
-  );
+    [filtered, sort, sortOrder]
+  )
 
-  const selected = sorted.find((e) => e.cacheKey === selectedKey);
+  const selected = sorted.find((e) => e.cacheKey === selectedKey)
 
   // RTK's mutation substate doesn't retain the args, so they're recovered from
   // the timeline. Keyed on the *event's* existence rather than on its
@@ -138,19 +169,28 @@ export function MutationsTab({
   const mutationEvent = selected
     ? registry
         .getTimeline()
-        .find((e) => e.kind === "mutation" && e.requestId === selected.requestId)
-    : undefined;
+        .find(
+          (e) => e.kind === "mutation" && e.requestId === selected.requestId
+        )
+    : undefined
 
-  const parentRef = useRef<HTMLDivElement>(null);
-  const { width: detailPanelWidth, resizeBy, reset: resetWidth } = useDetailPanelWidth();
+  const parentRef = useRef<HTMLDivElement>(null)
+  const {
+    width: detailPanelWidth,
+    resizeBy,
+    reset: resetWidth,
+  } = useDetailPanelWidth()
   const virtualizer = useVirtualizer({
     count: sorted.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 40,
     overscan: 10,
-  });
+  })
 
-  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({ value: p, label: p }));
+  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({
+    value: p,
+    label: p,
+  }))
 
   return (
     <div className="rtkq:flex rtkq:h-full rtkq:flex-col">
@@ -179,7 +219,10 @@ export function MutationsTab({
       />
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">
-        <div ref={parentRef} className="rtkq:flex-1 rtkq:min-w-0 rtkq:overflow-y-auto">
+        <div
+          ref={parentRef}
+          className="rtkq:flex-1 rtkq:min-w-0 rtkq:overflow-y-auto"
+        >
           {sorted.length === 0 ? (
             <EmptyState
               classes={classes}
@@ -187,10 +230,15 @@ export function MutationsTab({
               subtitle="Triggered mutations will appear here."
             />
           ) : (
-            <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+            <div
+              style={{
+                height: virtualizer.getTotalSize(),
+                position: "relative",
+              }}
+            >
               {virtualizer.getVirtualItems().map((row) => {
-                const entry = sorted[row.index];
-                if (!entry) return null;
+                const entry = sorted[row.index]
+                if (!entry) return null
                 return (
                   <div
                     key={entry.cacheKey}
@@ -209,7 +257,7 @@ export function MutationsTab({
                       onSelect={() => setSelectedKey(entry.cacheKey)}
                     />
                   </div>
-                );
+                )
               })}
             </div>
           )}
@@ -217,12 +265,24 @@ export function MutationsTab({
 
         {selected && (
           <>
-            <ResizableDivider classes={classes} onResize={resizeBy} onReset={resetWidth} />
-            <div className="rtkq:shrink-0 rtkq:overflow-hidden" style={{ width: detailPanelWidth }}>
+            <ResizableDivider
+              classes={classes}
+              onResize={resizeBy}
+              onReset={resetWidth}
+            />
+            <div
+              className="rtkq:shrink-0 rtkq:overflow-hidden"
+              style={{ width: detailPanelWidth }}
+            >
               <EntryDetail
                 classes={classes}
                 heading={selected.endpointName}
-                statusNode={<MutationStatusBadge status={selected.status} classes={classes} />}
+                statusNode={
+                  <MutationStatusBadge
+                    status={selected.status}
+                    classes={classes}
+                  />
+                }
                 metaRows={[
                   { label: "Request ID", value: selected.requestId },
                   {
@@ -242,14 +302,22 @@ export function MutationsTab({
                     value:
                       selected.startedTimeStamp !== undefined &&
                       selected.fulfilledTimeStamp !== undefined
-                        ? formatDuration(selected.fulfilledTimeStamp - selected.startedTimeStamp)
+                        ? formatDuration(
+                            selected.fulfilledTimeStamp -
+                              selected.startedTimeStamp
+                          )
                         : "—",
                   },
                 ]}
                 onClose={() => setSelectedKey(undefined)}
                 jsonSections={[
                   ...(mutationEvent
-                    ? [{ label: "Arguments", value: mutationEvent.originalArgs }]
+                    ? [
+                        {
+                          label: "Arguments",
+                          value: mutationEvent.originalArgs,
+                        },
+                      ]
                     : []),
                   { label: "Data", value: selected.data },
                   ...(selected.error !== undefined
@@ -263,8 +331,8 @@ export function MutationsTab({
                     icon={Trash2}
                     variant="danger"
                     onClick={() => {
-                      removeMutationEntry(registry, activeApi, selected);
-                      setSelectedKey(undefined);
+                      removeMutationEntry(registry, activeApi, selected)
+                      setSelectedKey(undefined)
                     }}
                   >
                     Remove
@@ -276,7 +344,7 @@ export function MutationsTab({
         )}
       </div>
     </div>
-  );
+  )
 }
 
 function MutationRow({
@@ -285,25 +353,28 @@ function MutationRow({
   selected,
   onSelect,
 }: {
-  classes: RtkQueryDevtoolsClasses;
-  entry: MutationEntry;
-  selected: boolean;
-  onSelect: () => void;
+  classes: RtkQueryDevtoolsClasses
+  entry: MutationEntry
+  selected: boolean
+  onSelect: () => void
 }) {
   const durationMs =
-    entry.startedTimeStamp !== undefined && entry.fulfilledTimeStamp !== undefined
+    entry.startedTimeStamp !== undefined &&
+    entry.fulfilledTimeStamp !== undefined
       ? entry.fulfilledTimeStamp - entry.startedTimeStamp
-      : undefined;
+      : undefined
   return (
     <EntryRow
       classes={classes}
       selected={selected}
       onSelect={onSelect}
-      statusNode={<MutationStatusBadge status={entry.status} classes={classes} />}
+      statusNode={
+        <MutationStatusBadge status={entry.status} classes={classes} />
+      }
       title={entry.endpointName}
       subtitle={entry.requestId}
       timestamp={formatTimestamp(entry.fulfilledTimeStamp)}
       duration={formatDuration(durationMs)}
     />
-  );
+  )
 }

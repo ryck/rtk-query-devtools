@@ -2,37 +2,44 @@ import {
   useAddPostMutation,
   useDeletePostMutation,
   useListPostsQuery,
-} from "@rtk-query-devtools/demo-api";
-import { Loader2, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "@rtk-query-devtools/demo-api"
+import { Loader2, Plus, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 
 export function PostsExample() {
-  const { data: posts, isLoading } = useListPostsQuery();
-  const [addPost, { isLoading: isAdding }] = useAddPostMutation();
-  const [deletePost] = useDeletePostMutation();
-  const [title, setTitle] = useState("");
+  const { data: posts, isLoading } = useListPostsQuery()
+  const [addPost, { isLoading: isAdding }] = useAddPostMutation()
+  const [deletePost] = useDeletePostMutation()
+  const [title, setTitle] = useState("")
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Posts &amp; tags</CardTitle>
         <CardDescription>
-          Adding a post invalidates the <code className="font-mono text-foreground">Post:LIST</code>{" "}
-          tag. watch <code className="font-mono text-foreground">listPosts</code> refetch
-          automatically in the Timeline tab below.
+          Adding a post invalidates the{" "}
+          <code className="font-mono text-foreground">Post:LIST</code> tag.
+          watch <code className="font-mono text-foreground">listPosts</code>{" "}
+          refetch automatically in the Timeline tab below.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form
           className="flex gap-2"
           onSubmit={(e) => {
-            e.preventDefault();
-            if (!title.trim()) return;
-            addPost({ title, body: "Added from the examples page." });
-            setTitle("");
+            e.preventDefault()
+            if (!title.trim()) return
+            addPost({ title, body: "Added from the examples page." })
+            setTitle("")
           }}
         >
           <Input
@@ -42,14 +49,20 @@ export function PostsExample() {
             className="font-mono text-sm"
           />
           <Button type="submit" size="sm" disabled={isAdding}>
-            {isAdding ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+            {isAdding ? (
+              <Loader2 size={13} className="animate-spin" />
+            ) : (
+              <Plus size={13} />
+            )}
             Add
           </Button>
         </form>
 
         <ul className="mt-4 flex max-h-56 flex-col gap-1.5 overflow-y-auto">
           {isLoading ? (
-            <li className="font-mono text-sm text-muted-foreground">Loading…</li>
+            <li className="font-mono text-sm text-muted-foreground">
+              Loading…
+            </li>
           ) : (
             posts?.map((post) => (
               <li
@@ -72,5 +85,5 @@ export function PostsExample() {
         </ul>
       </CardContent>
     </Card>
-  );
+  )
 }

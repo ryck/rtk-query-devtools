@@ -1,78 +1,83 @@
-export type QueryStatus = "uninitialized" | "pending" | "fulfilled" | "rejected";
+export type QueryStatus = "uninitialized" | "pending" | "fulfilled" | "rejected"
 
-export type DerivedQueryStatus = "uninitialized" | "fetching" | "error" | "fresh" | "inactive";
+export type DerivedQueryStatus =
+  | "uninitialized"
+  | "fetching"
+  | "error"
+  | "fresh"
+  | "inactive"
 
-export type EndpointType = "query" | "mutation" | "infinitequery";
+export type EndpointType = "query" | "mutation" | "infinitequery"
 
 export interface TagDescription {
-  type: string;
-  id?: string | number;
+  type: string
+  id?: string | number
 }
 
 export interface QueryEntry {
-  reducerPath: string;
-  queryCacheKey: string;
-  endpointName: string;
-  type: "query" | "infinitequery";
-  status: QueryStatus;
-  derivedStatus: DerivedQueryStatus;
-  originalArgs: unknown;
-  data: unknown;
-  error: unknown;
-  requestId: string | undefined;
-  startedTimeStamp: number | undefined;
-  fulfilledTimeStamp: number | undefined;
-  subscriberCount: number;
-  isPolling: boolean;
-  providedTags: TagDescription[];
+  reducerPath: string
+  queryCacheKey: string
+  endpointName: string
+  type: "query" | "infinitequery"
+  status: QueryStatus
+  derivedStatus: DerivedQueryStatus
+  originalArgs: unknown
+  data: unknown
+  error: unknown
+  requestId: string | undefined
+  startedTimeStamp: number | undefined
+  fulfilledTimeStamp: number | undefined
+  subscriberCount: number
+  isPolling: boolean
+  providedTags: TagDescription[]
 }
 
 export interface MutationEntry {
-  reducerPath: string;
+  reducerPath: string
   /** The key this entry is stored under in `mutations`: either `requestId` or a user-supplied `fixedCacheKey`. */
-  cacheKey: string;
-  requestId: string;
-  endpointName: string;
-  status: QueryStatus;
-  data: unknown;
-  error: unknown;
-  startedTimeStamp: number | undefined;
-  fulfilledTimeStamp: number | undefined;
+  cacheKey: string
+  requestId: string
+  endpointName: string
+  status: QueryStatus
+  data: unknown
+  error: unknown
+  startedTimeStamp: number | undefined
+  fulfilledTimeStamp: number | undefined
 }
 
 export interface TagGroupEntry {
-  id: string;
-  queryCacheKeys: string[];
+  id: string
+  queryCacheKeys: string[]
 }
 
 export interface TagGroup {
-  tagType: string;
-  entries: TagGroupEntry[];
+  tagType: string
+  entries: TagGroupEntry[]
 }
 
-export type TimelineOutcome = "pending" | "fulfilled" | "rejected" | "skipped";
+export type TimelineOutcome = "pending" | "fulfilled" | "rejected" | "skipped"
 
 export interface TimelineEvent {
-  id: string;
-  reducerPath: string;
-  requestId: string;
+  id: string
+  reducerPath: string
+  requestId: string
   /**
    * The cache entry this request targeted. Always set for queries and infinite
    * queries; `undefined` for mutations, which RTK keys by `requestId` rather
    * than by a cache key. Lets an entry's full request history be recovered,
    * since each refetch of the same entry gets a fresh `requestId`.
    */
-  queryCacheKey: string | undefined;
-  kind: "query" | "mutation" | "infinitequery";
-  endpointName: string;
-  originalArgs: unknown;
-  outcome: TimelineOutcome;
-  startedTimeStamp: number;
-  settledTimeStamp: number | undefined;
-  durationMs: number | undefined;
-  forceRefetch: boolean | undefined;
-  subscribe: boolean | undefined;
-  error: unknown;
+  queryCacheKey: string | undefined
+  kind: "query" | "mutation" | "infinitequery"
+  endpointName: string
+  originalArgs: unknown
+  outcome: TimelineOutcome
+  startedTimeStamp: number
+  settledTimeStamp: number | undefined
+  durationMs: number | undefined
+  forceRefetch: boolean | undefined
+  subscribe: boolean | undefined
+  error: unknown
 }
 
 /**
@@ -85,7 +90,7 @@ export interface TimelineEvent {
  * real `Api<...>` instance (tag-type unions, readonly-vs-mutable arrays).
  */
 export interface RtkQueryApiLike {
-  reducerPath: string;
+  reducerPath: string
   endpoints: Record<
     string,
     {
@@ -94,16 +99,18 @@ export interface RtkQueryApiLike {
       // a real, narrower `initiate`, per function parameter contravariance.
       // `any` is the correct, deliberate escape valve for this kind of
       // structural "the exact generic instantiation doesn't matter" typing.
-      initiate?: (arg: any, options?: Record<string, unknown>) => unknown;
+      initiate?: (arg: any, options?: Record<string, unknown>) => unknown
     }
-  >;
+  >
 }
 
-export type RefetchResult = { ok: true } | { ok: false; reason: "api-not-registered" };
+export type RefetchResult =
+  | { ok: true }
+  | { ok: false; reason: "api-not-registered" }
 
 export interface RtkQueryDevtoolsOptions {
   /** RTK Query api instances to register for Refetch support. Optional. */
-  apis?: RtkQueryApiLike[];
+  apis?: RtkQueryApiLike[]
   /** Maximum number of timeline entries retained. Default: 500. */
-  maxTimelineEntries?: number;
+  maxTimelineEntries?: number
 }
