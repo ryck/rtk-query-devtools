@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "//": "Through Turbo, not `pnpm run build`. This app's own build is a bare `vite build`, so running it directly skips `packages/core` and the import of `rtk-query-devtools` fails to resolve: its `dist` is gitignored and only exists once built. Turbo's `dependsOn: [\"^build\"]` is what orders that.",
   "buildCommand": "pnpm turbo build --filter=web",
   "outputDirectory": "dist/client",
   "redirects": [
