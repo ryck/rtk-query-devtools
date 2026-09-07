@@ -42,7 +42,7 @@ import {
 import { useDetailPanelWidth } from "../hooks/use-detail-panel-width"
 import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search"
 import type { RtkQueryDevtoolsClasses } from "../theme"
-import { ApiHealthStrip } from "./api-health"
+import { ApiHealthPanel } from "./api-health"
 import { EmptyState } from "./empty-state"
 import { EntryDetail } from "./entry-detail"
 import { EntryEvents } from "./entry-events"
@@ -257,18 +257,7 @@ export function QueriesTab({
         }
       />
 
-      {apiHealth.map((health) => (
-        <ApiHealthStrip
-          key={health.reducerPath}
-          classes={classes}
-          health={health}
-          storageKey={
-            isAllApis
-              ? `queries.apiHealthOpen.${health.reducerPath}`
-              : "queries.apiHealthOpen"
-          }
-        />
-      ))}
+      <ApiHealthPanel classes={classes} healths={apiHealth} />
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">
         <div
