@@ -1,6 +1,6 @@
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { createFileRoute } from "@tanstack/react-router"
-import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools"
+import { createRtkQueryDevtoolsPlugin } from "rtk-query-devtools/production"
 import { AppProviders } from "@/components/app-providers"
 import { ArgsExample } from "@/components/examples/args-example"
 import { FlakyExample } from "@/components/examples/flaky-example"

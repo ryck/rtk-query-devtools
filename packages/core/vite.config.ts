@@ -19,9 +19,12 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(import.meta.dirname, "src/index.ts"),
+      entry: {
+        index: resolve(import.meta.dirname, "src/index.ts"),
+        production: resolve(import.meta.dirname, "src/production.ts"),
+      },
       formats: ["es"],
-      fileName: () => "index.mjs",
+      fileName: (_format, entryName) => `${entryName}.mjs`,
       cssFileName: "style",
     },
     outDir: "dist",

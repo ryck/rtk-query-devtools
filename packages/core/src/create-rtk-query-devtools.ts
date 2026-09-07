@@ -1,16 +1,12 @@
+import { noopMiddleware } from "./middleware"
 import {
-  createDevtoolsMiddleware,
-  type DevtoolsMiddleware,
-  noopMiddleware,
-} from "./middleware"
-import { defaultRegistry, type DevtoolsRegistry } from "./registry"
+  createRtkQueryDevtoolsImpl,
+  type RtkQueryDevtoolsInstance,
+} from "./create-rtk-query-devtools-impl"
+import { defaultRegistry } from "./registry"
 import type { RtkQueryDevtoolsOptions } from "./types"
 
-export interface RtkQueryDevtoolsInstance {
-  /** Add to your store's middleware chain. A no-op passthrough outside development. */
-  middleware: DevtoolsMiddleware
-  registry: DevtoolsRegistry
-}
+export type { RtkQueryDevtoolsInstance } from "./create-rtk-query-devtools-impl"
 
 const isDevelopment = process.env.NODE_ENV !== "production"
 
@@ -19,6 +15,9 @@ const isDevelopment = process.env.NODE_ENV !== "production"
  * once alongside `configureStore`. Safe to include unconditionally: outside
  * development this returns a passthrough middleware and never touches the
  * registry, so bundlers can dead-code-eliminate the rest of this module.
+ *
+ * Need it in a production build anyway (e.g. a hosted demo)? Import from
+ * `rtk-query-devtools/production` instead, which skips this gate.
  */
 export function createRtkQueryDevtools(
   options: RtkQueryDevtoolsOptions = {}
@@ -27,9 +26,5 @@ export function createRtkQueryDevtools(
     return { middleware: noopMiddleware, registry: defaultRegistry }
   }
 
-  defaultRegistry.configure(options)
-  return {
-    middleware: createDevtoolsMiddleware(defaultRegistry),
-    registry: defaultRegistry,
-  }
+  return createRtkQueryDevtoolsImpl(options)
 }

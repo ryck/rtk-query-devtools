@@ -91,7 +91,9 @@ which means the same api's middleware is registered twice and caching will misbe
 
 - **Production builds tree-shake it out.** Both the middleware and the plugin become no-ops
   when `process.env.NODE_ENV === "production"`, so leaving them in your store config and app
-  is safe.
+  is safe. Deliberately want the real thing in a production build anyway (a hosted demo,
+  say)? Import `createRtkQueryDevtools`/`createRtkQueryDevtoolsPlugin` from
+  `rtk-query-devtools/production` instead, which skips the gate.
 - **Subscriber counts lag by up to ~500ms.** RTK Query syncs subscription state into the
   store on a throttled timer, by design.
 - **RTK Query has no "stale" concept** the way TanStack Query does; it evicts via

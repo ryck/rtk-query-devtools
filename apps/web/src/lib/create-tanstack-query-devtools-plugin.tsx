@@ -1,6 +1,10 @@
 import type { TanStackDevtoolsReactPlugin } from "@tanstack/react-devtools"
 import { createReactPlugin } from "@tanstack/devtools-utils/react"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+// `@tanstack/react-query-devtools`'s default entry no-ops itself outside
+// `NODE_ENV === "development"`, same pattern as `rtk-query-devtools`. This
+// demo site wants the real panel live even in its production build, so it
+// imports from the `/production` subpath, which skips that gate.
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools/production"
 import { queryClient } from "@/lib/query-client"
 
 /**

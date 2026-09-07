@@ -1,5 +1,11 @@
 # rtk-query-devtools
 
+## 0.4.0
+
+### Minor Changes
+
+- Add a `rtk-query-devtools/production` entry point that exports `createRtkQueryDevtools` and `createRtkQueryDevtoolsPlugin` without the `process.env.NODE_ENV === "production"` no-op gate the default entry applies. Use it when you deliberately want the real middleware and panel in a production build, e.g. a hosted demo — mirrors the same escape hatch `@tanstack/react-query-devtools/production` already provides.
+
 ## 0.3.2
 
 ### Patch Changes

@@ -1,16 +1,10 @@
 import type { TanStackDevtoolsReactPlugin } from "@tanstack/react-devtools"
-import { createReactPlugin } from "@tanstack/devtools-utils/react"
-import type { DevtoolsRegistry } from "../registry"
-import { RtkQueryDevtoolsPlugin } from "./rtk-query-devtools-plugin"
+import {
+  createRtkQueryDevtoolsPluginImpl,
+  type RtkQueryDevtoolsPluginOptions,
+} from "./create-rtk-query-devtools-plugin-impl"
 
-export interface RtkQueryDevtoolsPluginOptions {
-  /** Open the panel automatically on first load. Default: false, since TanStack DevTools caps open panels at 3, and RTK Query is rarely the only plugin registered. */
-  defaultOpen?: boolean
-  /** Tab title. Default: "RTK Query". */
-  name?: string
-  /** Overrides the module-level registry, mainly for tests or multi-store apps. */
-  devtoolsRegistry?: DevtoolsRegistry
-}
+export type { RtkQueryDevtoolsPluginOptions } from "./create-rtk-query-devtools-plugin-impl"
 
 const isDevelopment = process.env.NODE_ENV !== "production"
 
@@ -31,6 +25,9 @@ const isDevelopment = process.env.NODE_ENV !== "production"
  * bundler that inlines `process.env.NODE_ENV` dead-code-eliminate the panel,
  * its embedded stylesheet, `createReactPlugin`, and everything they import.
  *
+ * Need the real panel in a production build anyway (e.g. a hosted demo)?
+ * Import from `rtk-query-devtools/production` instead, which skips this gate.
+ *
  * Typed against `@tanstack/react-devtools`'s own `TanStackDevtoolsReactPlugin`
  * (not the lower-level `TanStackDevtoolsPlugin` from `@tanstack/devtools`).
  * Its `render` returns a `JSX.Element` from `(el: HTMLElement, props) => ...`,
@@ -48,16 +45,5 @@ export function createRtkQueryDevtoolsPlugin(
     }
   }
 
-  const [Plugin] = createReactPlugin({
-    name: options.name ?? "RTK Query",
-    id: "rtk-query-devtools",
-    defaultOpen: options.defaultOpen ?? false,
-    Component: ({ theme }) => (
-      <RtkQueryDevtoolsPlugin
-        theme={theme}
-        devtoolsRegistry={options.devtoolsRegistry}
-      />
-    ),
-  })
-  return Plugin()
+  return createRtkQueryDevtoolsPluginImpl(options)
 }

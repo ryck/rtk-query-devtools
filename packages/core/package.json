@@ -1,6 +1,6 @@
 {
   "name": "rtk-query-devtools",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "A TanStack DevTools plugin for inspecting RTK Query cache entries, mutations, tags, and requests in real time",
   "keywords": [
     "caching",
@@ -34,6 +34,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
+    },
+    "./production": {
+      "types": "./dist/production.d.ts",
+      "import": "./dist/production.mjs"
     },
     "./package.json": "./package.json"
   },
