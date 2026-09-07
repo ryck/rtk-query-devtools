@@ -20,14 +20,14 @@ function formatFlag(value: boolean | number | undefined): string {
 export function ApiHealthStrip({
   classes,
   health,
+  storageKey = "queries.apiHealthOpen",
 }: {
   classes: RtkQueryDevtoolsClasses
   health: ApiHealth
+  /** Distinct per api when several strips render at once (All APIs mode), so expand/collapse doesn't apply to every strip at once. */
+  storageKey?: string
 }) {
-  const [expanded, setExpanded] = usePersistentState(
-    "queries.apiHealthOpen",
-    false
-  )
+  const [expanded, setExpanded] = usePersistentState(storageKey, false)
   const hasConflict = health.middlewareRegistered === "conflict"
 
   return (

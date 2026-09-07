@@ -5,6 +5,8 @@ import type { RtkQueryDevtoolsClasses } from "../theme"
 export interface EntryRowProps {
   classes: RtkQueryDevtoolsClasses
   statusNode: ReactNode
+  /** The api's `reducerPath`, shown as a small fixed-width column right after `statusNode`. Only passed in "All APIs" mode — with a single api it's redundant. */
+  apiLabel?: string
   title: string
   /**
    * Rendered inline right after `title` on the same line (e.g. a cache key,
@@ -30,6 +32,7 @@ export interface EntryRowProps {
 export function EntryRow({
   classes,
   statusNode,
+  apiLabel,
   title,
   subtitle,
   badges,
@@ -55,6 +58,18 @@ export function EntryRow({
       tabIndex={0}
     >
       {statusNode}
+      {apiLabel && (
+        <span
+          title={apiLabel}
+          className={clsx(
+            "rtkq:w-20 rtkq:shrink-0 rtkq:truncate rtkq:rounded rtkq:border rtkq:px-1 rtkq:py-0.5 rtkq:text-center rtkq:font-mono rtkq:text-[9px]",
+            classes.border,
+            classes.textMuted
+          )}
+        >
+          {apiLabel}
+        </span>
+      )}
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-w-0 rtkq:items-baseline rtkq:gap-1.5">
         <span
           className={clsx(

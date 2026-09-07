@@ -10,12 +10,24 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { invalidateTags } from "../../actions"
 import type { DevtoolsRegistry } from "../../registry"
 import { NO_TAG_ID, selectTagGroups } from "../../selectors"
+import type { TagGroup } from "../../types"
+import { ALL_APIS, buildApiOptions } from "../all-apis"
 import { enumCodec, usePersistentState } from "../hooks/use-persistent-state"
 import { createSearchMatcher, SEARCH_MODES, type SearchMode } from "../search"
 import type { RtkQueryDevtoolsClasses } from "../theme"
 import { EmptyState } from "./empty-state"
 import type { SelectOption } from "./toolbar"
 import { Toolbar, ToolbarButton } from "./toolbar"
+
+/** A `TagGroup` tagged with the api it came from, so All-APIs mode can merge groups from different apis without colliding same-named tag types. */
+interface ApiTagGroup extends TagGroup {
+  reducerPath: string
+}
+
+/** Groups from different apis can share a tag type name, so the render key (not the expand state, which stays keyed by type alone) disambiguates on api+type. */
+function groupKey(group: ApiTagGroup): string {
+  return `${group.reducerPath}:${group.tagType}`
+}
 
 export interface TagsTabProps {
   classes: RtkQueryDevtoolsClasses
@@ -66,10 +78,22 @@ export function TagsTab({
     feedbackTimeoutRef.current = setTimeout(() => setFeedbackKey(null), 1200)
   }
 
-  const groups = useMemo(
-    () => (activeApi ? selectTagGroups(state, activeApi) : []),
-    [state, activeApi]
-  )
+  const isAllApis = activeApi === ALL_APIS
+  const groups: ApiTagGroup[] = useMemo(() => {
+    const tagGroup = (g: TagGroup, reducerPath: string): ApiTagGroup => ({
+      tagType: g.tagType,
+      entries: g.entries,
+      reducerPath,
+    })
+    if (isAllApis) {
+      return reducerPaths.flatMap((path) =>
+        selectTagGroups(state, path).map((g) => tagGroup(g, path))
+      )
+    }
+    return activeApi
+      ? selectTagGroups(state, activeApi).map((g) => tagGroup(g, activeApi))
+      : []
+  }, [state, activeApi, isAllApis, reducerPaths])
 
   // Memoized so a regex is compiled once per query change, not once per row.
   const matcher = useMemo(
@@ -88,10 +112,7 @@ export function TagsTab({
       .filter((g) => g.entries.length > 0 || matcher.matches(g.tagType))
   }, [groups, search, matcher])
 
-  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({
-    value: p,
-    label: p,
-  }))
+  const apiOptions: SelectOption[] = buildApiOptions(reducerPaths)
 
   const toggle = (tagType: string) =>
     setExpanded((prev) => {
@@ -125,7 +146,7 @@ export function TagsTab({
         ) : (
           filtered.map((group) => (
             <div
-              key={group.tagType}
+              key={groupKey(group)}
               className={clsx("rtkq:border-b", classes.border)}
             >
               <div
@@ -152,6 +173,18 @@ export function TagsTab({
                     )}
                   </span>
                   <TagIcon size={12} className={classes.accent} />
+                  {isAllApis && (
+                    <span
+                      title={group.reducerPath}
+                      className={clsx(
+                        "rtkq:w-20 rtkq:shrink-0 rtkq:truncate rtkq:rounded rtkq:border rtkq:px-1 rtkq:py-0.5 rtkq:text-center rtkq:font-mono rtkq:text-[9px]",
+                        classes.border,
+                        classes.textMuted
+                      )}
+                    >
+                      {group.reducerPath}
+                    </span>
+                  )}
                   <span
                     className={clsx(
                       "rtkq:text-xs rtkq:font-semibold rtkq:truncate",
@@ -173,22 +206,22 @@ export function TagsTab({
                 <ToolbarButton
                   classes={classes}
                   icon={
-                    feedbackKey === `all:${group.tagType}` ? Check : RotateCw
+                    feedbackKey === `all:${groupKey(group)}` ? Check : RotateCw
                   }
                   variant={
-                    feedbackKey === `all:${group.tagType}`
+                    feedbackKey === `all:${groupKey(group)}`
                       ? "success"
                       : "default"
                   }
                   title="Marks every query providing this tag as stale; only queries with an active subscriber refetch immediately, others refetch next time they're subscribed."
                   onClick={() => {
-                    invalidateTags(registry, activeApi, [
+                    invalidateTags(registry, group.reducerPath, [
                       { type: group.tagType },
                     ])
-                    flashFeedback(`all:${group.tagType}`)
+                    flashFeedback(`all:${groupKey(group)}`)
                   }}
                 >
-                  {feedbackKey === `all:${group.tagType}`
+                  {feedbackKey === `all:${groupKey(group)}`
                     ? "Invalidated"
                     : "Invalidate all"}
                 </ToolbarButton>
@@ -197,7 +230,7 @@ export function TagsTab({
               {expanded.has(group.tagType) && (
                 <div className="rtkq:pb-1.5">
                   {group.entries.map((entry) => {
-                    const entryKey = `id:${group.tagType}:${entry.id}`
+                    const entryKey = `id:${groupKey(group)}:${entry.id}`
                     return (
                       <div
                         key={entry.id}
@@ -220,7 +253,7 @@ export function TagsTab({
                             }
                             title="Marks queries providing this tag as stale; only queries with an active subscriber refetch immediately, others refetch next time they're subscribed."
                             onClick={() => {
-                              invalidateTags(registry, activeApi, [
+                              invalidateTags(registry, group.reducerPath, [
                                 {
                                   type: group.tagType,
                                   id:

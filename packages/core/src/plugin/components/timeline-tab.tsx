@@ -3,6 +3,7 @@ import { Pause, Play, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
 import type { DevtoolsRegistry } from "../../registry"
 import type { EndpointType, TimelineEvent } from "../../types"
+import { ALL_APIS, buildApiOptions } from "../all-apis"
 import { formatDuration, formatTimestamp } from "../format"
 import { useDetailPanelWidth } from "../hooks/use-detail-panel-width"
 import {
@@ -62,9 +63,10 @@ export function TimelineTab({
   // panel root's useSyncExternalStore). `getTimeline()` always returns a
   // fresh copy, so there's nothing worth memoizing here; every render already
   // means the timeline may have changed.
-  const allEvents = registry
-    .getTimeline()
-    .filter((e) => e.reducerPath === activeApi)
+  const isAllApis = activeApi === ALL_APIS
+  const allEvents = isAllApis
+    ? registry.getTimeline()
+    : registry.getTimeline().filter((e) => e.reducerPath === activeApi)
   // Deliberately computed over *all* events for the api rather than the
   // filtered list: the summary describes the api, and would otherwise shift
   // under you as you type in the search box.
@@ -88,10 +90,7 @@ export function TimelineTab({
     overscan: 10,
   })
 
-  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({
-    value: p,
-    label: p,
-  }))
+  const apiOptions: SelectOption[] = buildApiOptions(reducerPaths)
 
   return (
     <div className="rtkq:flex rtkq:h-full rtkq:flex-col">
@@ -170,6 +169,7 @@ export function TimelineTab({
                     <TimelineRow
                       classes={classes}
                       event={event}
+                      showApi={isAllApis}
                       selected={event.id === selectedId}
                       onSelect={() => setSelectedId(event.id)}
                     />
@@ -240,11 +240,13 @@ export function TimelineTab({
 function TimelineRow({
   classes,
   event,
+  showApi,
   selected,
   onSelect,
 }: {
   classes: RtkQueryDevtoolsClasses
   event: TimelineEvent
+  showApi: boolean
   selected: boolean
   onSelect: () => void
 }) {
@@ -254,6 +256,7 @@ function TimelineRow({
       selected={selected}
       onSelect={onSelect}
       statusNode={<OutcomeBadge outcome={event.outcome} classes={classes} />}
+      apiLabel={showApi ? event.reducerPath : undefined}
       title={event.endpointName}
       subtitle={KIND_LABEL[event.kind]}
       timestamp={formatTimestamp(event.startedTimeStamp)}

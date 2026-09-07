@@ -1,6 +1,7 @@
 import { clsx } from "clsx"
 import { useEffect, useId, useMemo, useState } from "react"
 import { defaultRegistry, type DevtoolsRegistry } from "../registry"
+import type { ApiHealth } from "../selectors"
 import {
   selectApiHealth,
   selectEnvironment,
@@ -9,6 +10,7 @@ import {
   selectTagGroups,
 } from "../selectors"
 import type { DerivedQueryStatus, TagDescription } from "../types"
+import { ALL_APIS } from "./all-apis"
 import { EmptyState } from "./components/empty-state"
 import { MutationsTab } from "./components/mutations-tab"
 import { QueriesTab } from "./components/queries-tab"
@@ -89,49 +91,77 @@ export function RtkQueryDevtoolsPlugin({
   >("queries.statusFilter", new Set(), setCodec(STATUS_FILTER_VALUES))
 
   useEffect(() => {
-    const first = reducerPaths[0]
-    if (first && (!activeApi || !reducerPaths.includes(activeApi))) {
-      setActiveApi(first)
-    }
+    if (reducerPaths.length === 0) return
+    const isValid =
+      activeApi === ALL_APIS
+        ? reducerPaths.length > 1
+        : reducerPaths.includes(activeApi)
+    if (isValid) return
+    // More than one api: default to the merged view. Exactly one: there's
+    // nothing to merge, so go straight to it.
+    setActiveApi(reducerPaths.length > 1 ? ALL_APIS : (reducerPaths[0] ?? ""))
     // `setActiveApi` is React's own `useState` setter and so is stable, but
     // that's invisible to the lint rule through a custom hook, so listing it is
     // free and keeps the rule honest.
   }, [reducerPaths, activeApi, setActiveApi])
 
+  const isAllApis = activeApi === ALL_APIS
+
   // Lifted out of QueriesTab so the status counts can be rendered in the
   // shared tab row above it, right next to Queries/Mutations/Tags/Timeline.
-  const queryEntries = useMemo(
-    () =>
-      activeApi
-        ? selectQueryEntries(state, activeApi, (name) =>
-            registry.getEndpointType(activeApi, name)
-          )
-        : [],
-    [state, activeApi, registry]
-  )
-  // Global RTK Query state, but read through the active api's config slice;
-  // every api mirrors the same value.
-  const environment = useMemo(
-    () =>
-      activeApi
-        ? selectEnvironment(state, activeApi)
-        : { online: true, focused: true },
-    [state, activeApi]
-  )
-  const apiHealth = useMemo(
-    () => (activeApi ? selectApiHealth(state, activeApi) : undefined),
-    [state, activeApi]
-  )
+  const queryEntries = useMemo(() => {
+    if (isAllApis) {
+      return reducerPaths.flatMap((path) =>
+        selectQueryEntries(state, path, (name) =>
+          registry.getEndpointType(path, name)
+        )
+      )
+    }
+    return activeApi
+      ? selectQueryEntries(state, activeApi, (name) =>
+          registry.getEndpointType(activeApi, name)
+        )
+      : []
+  }, [state, activeApi, isAllApis, reducerPaths, registry])
+  // Global RTK Query state, but read through any one api's config slice;
+  // every api mirrors the same value, `online`/`focused` aren't per-api.
+  const environment = useMemo(() => {
+    const path = isAllApis ? reducerPaths[0] : activeApi
+    return path ? selectEnvironment(state, path) : { online: true, focused: true }
+  }, [state, activeApi, isAllApis, reducerPaths])
+  // One health entry per api. Single-api mode is just the one-element case.
+  const apiHealth = useMemo(() => {
+    const paths = isAllApis ? reducerPaths : activeApi ? [activeApi] : []
+    return paths
+      .map((path) => selectApiHealth(state, path))
+      .filter((h): h is ApiHealth => h !== undefined)
+  }, [state, activeApi, isAllApis, reducerPaths])
 
   // Live counts beside each tab label. The timeline is read unmemoized on
   // purpose. See the note in timeline-tab; every render already implies it
   // may have changed.
   const tabCounts: Record<TabId, number> = {
     queries: queryEntries.length,
-    mutations: activeApi ? selectMutationEntries(state, activeApi).length : 0,
-    tags: activeApi ? selectTagGroups(state, activeApi).length : 0,
-    timeline: registry.getTimeline().filter((e) => e.reducerPath === activeApi)
-      .length,
+    mutations: isAllApis
+      ? reducerPaths.reduce(
+          (sum, path) => sum + selectMutationEntries(state, path).length,
+          0
+        )
+      : activeApi
+        ? selectMutationEntries(state, activeApi).length
+        : 0,
+    tags: isAllApis
+      ? reducerPaths.reduce(
+          (sum, path) => sum + selectTagGroups(state, path).length,
+          0
+        )
+      : activeApi
+        ? selectTagGroups(state, activeApi).length
+        : 0,
+    timeline: isAllApis
+      ? registry.getTimeline().length
+      : registry.getTimeline().filter((e) => e.reducerPath === activeApi)
+          .length,
   }
   const statusCounts = useMemo(() => {
     const counts: Record<DerivedQueryStatus, number> = {

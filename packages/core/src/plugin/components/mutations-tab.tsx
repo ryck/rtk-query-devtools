@@ -12,6 +12,7 @@ import { removeMutationEntry } from "../../actions"
 import type { DevtoolsRegistry } from "../../registry"
 import { selectMutationEntries } from "../../selectors"
 import type { DerivedQueryStatus, MutationEntry } from "../../types"
+import { ALL_APIS, buildApiOptions } from "../all-apis"
 import { formatDuration, formatRelativeTime, formatTimestamp } from "../format"
 import { useDetailPanelWidth } from "../hooks/use-detail-panel-width"
 import {
@@ -134,10 +135,13 @@ export function MutationsTab({
   )
   const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined)
 
-  const allEntries = useMemo(
-    () => (activeApi ? selectMutationEntries(state, activeApi) : []),
-    [state, activeApi]
-  )
+  const isAllApis = activeApi === ALL_APIS
+  const allEntries = useMemo(() => {
+    if (isAllApis) {
+      return reducerPaths.flatMap((path) => selectMutationEntries(state, path))
+    }
+    return activeApi ? selectMutationEntries(state, activeApi) : []
+  }, [state, activeApi, isAllApis, reducerPaths])
 
   // Memoized so a regex is compiled once per query change, not once per row.
   const matcher = useMemo(
@@ -187,10 +191,7 @@ export function MutationsTab({
     overscan: 10,
   })
 
-  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({
-    value: p,
-    label: p,
-  }))
+  const apiOptions: SelectOption[] = buildApiOptions(reducerPaths)
 
   return (
     <div className="rtkq:flex rtkq:h-full rtkq:flex-col">
@@ -253,6 +254,7 @@ export function MutationsTab({
                     <MutationRow
                       classes={classes}
                       entry={entry}
+                      showApi={isAllApis}
                       selected={entry.cacheKey === selectedKey}
                       onSelect={() => setSelectedKey(entry.cacheKey)}
                     />
@@ -331,7 +333,7 @@ export function MutationsTab({
                     icon={Trash2}
                     variant="danger"
                     onClick={() => {
-                      removeMutationEntry(registry, activeApi, selected)
+                      removeMutationEntry(registry, selected.reducerPath, selected)
                       setSelectedKey(undefined)
                     }}
                   >
@@ -350,11 +352,13 @@ export function MutationsTab({
 function MutationRow({
   classes,
   entry,
+  showApi,
   selected,
   onSelect,
 }: {
   classes: RtkQueryDevtoolsClasses
   entry: MutationEntry
+  showApi: boolean
   selected: boolean
   onSelect: () => void
 }) {
@@ -371,6 +375,7 @@ function MutationRow({
       statusNode={
         <MutationStatusBadge status={entry.status} classes={classes} />
       }
+      apiLabel={showApi ? entry.reducerPath : undefined}
       title={entry.endpointName}
       subtitle={entry.requestId}
       timestamp={formatTimestamp(entry.fulfilledTimeStamp)}

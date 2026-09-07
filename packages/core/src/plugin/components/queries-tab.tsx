@@ -27,6 +27,7 @@ import type {
   TagDescription,
   TimelineEvent,
 } from "../../types"
+import { ALL_APIS, buildApiOptions } from "../all-apis"
 import {
   formatDuration,
   formatQueryCacheKey,
@@ -89,7 +90,8 @@ export interface QueriesTabProps {
   activeStatuses: Set<DerivedQueryStatus>
   /** Global RTK Query online/focus state, read from the active api's config. */
   environment: { online: boolean; focused: boolean }
-  apiHealth: ApiHealth | undefined
+  /** One entry per api: one in single-api mode, one per registered api in All APIs mode. */
+  apiHealth: ApiHealth[]
 }
 
 export function QueriesTab({
@@ -170,10 +172,8 @@ export function QueriesTab({
     overscan: 10,
   })
 
-  const apiOptions: SelectOption[] = reducerPaths.map((p) => ({
-    value: p,
-    label: p,
-  }))
+  const apiOptions: SelectOption[] = buildApiOptions(reducerPaths)
+  const isAllApis = activeApi === ALL_APIS
 
   return (
     <div className="rtkq:flex rtkq:h-full rtkq:flex-col">
@@ -233,24 +233,42 @@ export function QueriesTab({
               classes={classes}
               icon={RotateCcw}
               variant="danger"
-              title="Dispatches resetApiState: clears every cached query/mutation result, error, and subscriber for this api slice, and cancels in-flight requests. Equivalent to calling api.util.resetApiState()."
+              title={
+                isAllApis
+                  ? "Dispatches resetApiState for every registered api: clears every cached query/mutation result, error, and subscriber, and cancels in-flight requests."
+                  : "Dispatches resetApiState: clears every cached query/mutation result, error, and subscriber for this api slice, and cancels in-flight requests. Equivalent to calling api.util.resetApiState()."
+              }
               onClick={() => {
-                if (
-                  window.confirm(
-                    "Reset API state? This clears every cached query and mutation."
-                  )
-                ) {
-                  resetApiState(registry, activeApi)
+                const confirmMessage = isAllApis
+                  ? "Reset all APIs? This clears every cached query and mutation across every registered api."
+                  : "Reset API state? This clears every cached query and mutation."
+                if (window.confirm(confirmMessage)) {
+                  if (isAllApis) {
+                    for (const path of reducerPaths) resetApiState(registry, path)
+                  } else {
+                    resetApiState(registry, activeApi)
+                  }
                 }
               }}
             >
-              Reset API
+              {isAllApis ? "Reset All APIs" : "Reset API"}
             </ToolbarButton>
           </>
         }
       />
 
-      {apiHealth && <ApiHealthStrip classes={classes} health={apiHealth} />}
+      {apiHealth.map((health) => (
+        <ApiHealthStrip
+          key={health.reducerPath}
+          classes={classes}
+          health={health}
+          storageKey={
+            isAllApis
+              ? `queries.apiHealthOpen.${health.reducerPath}`
+              : "queries.apiHealthOpen"
+          }
+        />
+      ))}
 
       <div className="rtkq:flex rtkq:flex-1 rtkq:min-h-0">
         <div
@@ -287,6 +305,7 @@ export function QueriesTab({
                     <QueryRow
                       classes={classes}
                       entry={entry}
+                      showApi={isAllApis}
                       selected={entry.queryCacheKey === selectedKey}
                       onSelect={() => onSelectKey(entry.queryCacheKey)}
                     />
@@ -327,11 +346,13 @@ export function QueriesTab({
 function QueryRow({
   classes,
   entry,
+  showApi,
   selected,
   onSelect,
 }: {
   classes: RtkQueryDevtoolsClasses
   entry: QueryEntry
+  showApi: boolean
   selected: boolean
   onSelect: () => void
 }) {
@@ -348,6 +369,7 @@ function QueryRow({
       statusNode={
         <StatusBadge status={entry.derivedStatus} classes={classes} />
       }
+      apiLabel={showApi ? entry.reducerPath : undefined}
       title={entry.endpointName}
       subtitle={formatQueryCacheKey(entry.queryCacheKey, entry.originalArgs)}
       badges={
