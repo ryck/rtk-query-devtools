@@ -1,49 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { clsx } from "clsx"
+import { LogoMark } from "@/components/logo-mark"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { textLink, textLinkActive } from "@/lib/link"
-
-function LogoMark() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 64 64"
-      fill="none"
-      aria-hidden="true"
-    >
-      {/* Same mark as public/logo.svg, on semantic tokens so it follows the
-          page's theme rather than the OS one. */}
-      <rect
-        x="6"
-        y="6"
-        width="22"
-        height="22"
-        rx="4"
-        fill="var(--foreground)"
-      />
-      <rect
-        x="36"
-        y="6"
-        width="22"
-        height="22"
-        rx="4"
-        fill="var(--foreground)"
-        opacity="0.25"
-      />
-      <rect
-        x="6"
-        y="36"
-        width="22"
-        height="22"
-        rx="4"
-        fill="var(--foreground)"
-        opacity="0.25"
-      />
-      <rect x="36" y="36" width="22" height="22" rx="4" fill="var(--primary)" />
-    </svg>
-  )
-}
 
 // lucide-react dropped brand/logo icons, so a hand-drawn mark is the standard workaround.
 function GithubMark({ size = 15 }: { size?: number }) {
@@ -72,7 +31,7 @@ export function SiteHeader() {
           to="/"
           className="flex items-center gap-2.5 font-mono text-sm text-foreground"
         >
-          <LogoMark />
+          <LogoMark width="18" height="18" />
           {/* Same split as the logo lockup and the og:image. The amber picks
               up the mark's accent tile. */}
           <span>

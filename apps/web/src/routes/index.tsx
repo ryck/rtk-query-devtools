@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { Gamepad2, ListTree, Radio, Tags } from "lucide-react"
 import { DormantBoard, FlipBoard } from "@/components/flip-board"
+import { LogoMark } from "@/components/logo-mark"
 import { StoreProvider } from "@/components/store-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -46,9 +47,13 @@ function Home() {
         <span className="font-mono text-xs tracking-[0.2em] text-primary uppercase">
           TanStack DevTools plugin
         </span>
-        <h1 className="mt-4 max-w-2xl text-4xl leading-[1.1] font-semibold text-balance text-foreground sm:text-5xl">
-          RTK Query has a cache. Now you can actually see it.
-        </h1>
+        <div className="mt-4 flex items-center justify-between gap-6">
+          <h1 className="max-w-2xl text-4xl leading-[1.1] font-semibold text-balance text-foreground sm:text-5xl">
+            RTK Query has a cache. Now you can actually see it.
+          </h1>
+          {/* Decorative: the wordmark in the header already names the site */}
+          <LogoMark className="size-16 shrink-0 sm:size-28" />
+        </div>
         <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           Live status badges, tag-based invalidation, and a request timeline,
           right inside{" "}
