@@ -28,7 +28,8 @@ function deriveStatus(hook: {
 
 const STATUS_STYLES: Record<TileStatus, string> = {
   fetching: "bg-primary/15 text-primary",
-  fresh: "bg-success/15 text-success",
+  // /10, not /15: the light theme's teal on a /15 tint was 4.41:1, under AA
+  fresh: "bg-success/10 text-success",
   error: "bg-destructive/15 text-destructive",
   inactive: "bg-secondary text-muted-foreground",
 }

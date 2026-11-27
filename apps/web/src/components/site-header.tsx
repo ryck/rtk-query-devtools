@@ -98,6 +98,9 @@ export function SiteHeader() {
             href="https://github.com/ryck/rtk-query-devtools"
             target="_blank"
             rel="noreferrer"
+            // Named for phones, where the visible label is hidden and the mark
+            // alone gave an unnamed link (axe: link-name).
+            aria-label="GitHub"
             // The icon sits outside the underline, so the decoration tracks the
             // label rather than striking through the mark.
             className="flex items-center gap-1.5 transition-colors hover:text-foreground"
