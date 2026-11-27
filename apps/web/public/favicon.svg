@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="rtk-query-devtools">
   <style>
-    .fg { fill: #1f2430; }
+    .fg { fill: #0a0a0a; }
     .accent { fill: #a65f00; }
-    @media (prefers-color-scheme: dark) { .fg { fill: #e6e1cf; } .accent { fill: #d08700; } }
+    @media (prefers-color-scheme: dark) { .fg { fill: #fafafa; } .accent { fill: #d08700; } }
   </style>
   <rect class="fg" x="6" y="6" width="22" height="22" rx="4"/>
   <rect class="fg" x="36" y="6" width="22" height="22" rx="4" opacity="0.25"/>
