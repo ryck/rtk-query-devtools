@@ -157,7 +157,7 @@
 
   --primary: var(--color-amber);
   /* Amber is a light surface, so its text goes dark rather than paper. */
-  --primary-foreground: var(--color-amber-foreground);
+  --primary-foreground: var(--color-ink);
 
   --secondary: var(--color-panel-line);
   --secondary-foreground: var(--color-paper);
