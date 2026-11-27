@@ -334,6 +334,11 @@ function CopyButton({
         ? "Failed to copy"
         : "Copy to clipboard"
 
+  const settle = (next: CopyState) => {
+    setState(next)
+    setTimeout(() => setState("idle"), 1500)
+  }
+
   return (
     <button
       type="button"
@@ -346,10 +351,6 @@ function CopyButton({
       onClick={() => {
         // Settled state is transient; ignore repeat clicks until it resets.
         if (state !== "idle") return
-        const settle = (next: CopyState) => {
-          setState(next)
-          setTimeout(() => setState("idle"), 1500)
-        }
         // Absent outside secure contexts, so this is a real branch, not paranoia.
         const clipboard = navigator.clipboard
         if (!clipboard) {
