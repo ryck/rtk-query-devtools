@@ -299,6 +299,7 @@ function CopyBtn({ code }: { code: string }) {
       variant="ghost"
       className="h-7 w-7 shrink-0"
       onClick={copy}
+      aria-label={copied ? "Copied" : "Copy code"}
     >
       {copied ? (
         <Check className="h-3.5 w-3.5 text-success" />
@@ -339,8 +340,14 @@ function CodeRenderer({
 
   return (
     <div
+      // A labelled, focusable region, so keyboard users can scroll code that
+      // overflows (axe: scrollable-region-focusable)
+      role="region"
+      aria-label={`${language} code`}
+      // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region is the WAI-ARIA case for this
+      tabIndex={0}
       className={cn(
-        "overflow-x-auto",
+        "overflow-x-auto focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none focus-visible:ring-inset",
         scrollable && "overflow-y-auto",
         bodyClassName ?? "bg-background"
       )}
@@ -601,12 +608,17 @@ export function InstallCommand({
         {PM_LIST.map(({ label, icon: Icon }) => (
           <button
             key={label}
+            type="button"
             onClick={() => setPm(label)}
+            // Announces which package manager is selected, not just its label
+            aria-pressed={pm === label}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
               pm === label
                 ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                : // foreground/70, not muted-foreground: that was 4.34:1 on
+                  // the light theme's bg-muted, under AA's 4.5:1 (axe)
+                  "text-foreground/70 hover:text-foreground"
             )}
           >
             <Icon className="h-4 w-4 shrink-0" />
@@ -622,6 +634,7 @@ export function InstallCommand({
           variant="ghost"
           className="h-7 w-7 shrink-0"
           onClick={copy}
+          aria-label={copied ? "Copied" : "Copy install command"}
         >
           {copied ? (
             <Check className="h-3.5 w-3.5 text-success" />

@@ -34,10 +34,13 @@ const DARK: Palette = {
  */
 const LIGHT: Palette = {
   text: "#0c0f16",
-  muted: "#6b7385",
-  keyword: "#b8761a",
+  // muted, keyword and literal darkened for WCAG AA (axe): each was under
+  // 4.5:1 on white, bg-muted or the highlighted-line tint (#f9f1e0); these are
+  // the lightest that clear 4.6:1 on all three.
+  muted: "#666d7e",
+  keyword: "#976115",
   string: "#0f766e",
-  literal: "#d0483c",
+  literal: "#bd4237",
 }
 
 function buildTheme(
