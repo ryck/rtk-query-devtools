@@ -333,7 +333,11 @@ export function MutationsTab({
                     icon={Trash2}
                     variant="danger"
                     onClick={() => {
-                      removeMutationEntry(registry, selected.reducerPath, selected)
+                      removeMutationEntry(
+                        registry,
+                        selected.reducerPath,
+                        selected
+                      )
                       setSelectedKey(undefined)
                     }}
                   >

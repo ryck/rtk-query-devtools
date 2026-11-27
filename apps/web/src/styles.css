@@ -45,7 +45,8 @@
   --color-coral-deep: oklch(0.577 0.245 27.325);
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+  --font-mono:
+    "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
 
   /*
    * A theme token rather than a hand-written `.animate-heartbeat` class,

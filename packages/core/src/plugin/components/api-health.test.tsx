@@ -84,7 +84,10 @@ describe("ApiHealthPanel: single api", () => {
 })
 
 describe("ApiHealthPanel: multiple apis (All APIs mode)", () => {
-  const healths = [health(), health({ reducerPath: "usersApi", cachedQueries: 5 })]
+  const healths = [
+    health(),
+    health({ reducerPath: "usersApi", cachedQueries: 5 }),
+  ]
 
   it("collapses every api under a single top-level disclosure", () => {
     render(<ApiHealthPanel classes={classes} healths={healths} />)
@@ -129,9 +132,9 @@ describe("ApiHealthPanel: multiple apis (All APIs mode)", () => {
     expect(screen.getAllByRole("alert")).toHaveLength(1)
     // The top-level disclosure is still collapsed.
     expect(
-      screen.getByRole("button", { name: /API config/i }).getAttribute(
-        "aria-expanded"
-      )
+      screen
+        .getByRole("button", { name: /API config/i })
+        .getAttribute("aria-expanded")
     ).toBe("false")
   })
 })
