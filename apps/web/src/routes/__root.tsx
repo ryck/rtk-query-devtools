@@ -40,7 +40,7 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: `${SITE_URL}og-image.png` },
       { name: "twitter:image:alt", content: OG_IMAGE_ALT },
       // Tints browser chrome on mobile to match the page background.
-      { name: "theme-color", content: "#0c0f16" },
+      { name: "theme-color", content: "#0a0a0a" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
