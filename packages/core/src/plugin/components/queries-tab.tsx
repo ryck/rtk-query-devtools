@@ -244,7 +244,8 @@ export function QueriesTab({
                   : "Reset API state? This clears every cached query and mutation."
                 if (window.confirm(confirmMessage)) {
                   if (isAllApis) {
-                    for (const path of reducerPaths) resetApiState(registry, path)
+                    for (const path of reducerPaths)
+                      resetApiState(registry, path)
                   } else {
                     resetApiState(registry, activeApi)
                   }

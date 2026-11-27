@@ -51,7 +51,7 @@ writeFileSync(
   RESOLVED,
   readFileSync(TEMPLATE, "utf8").replace(
     "FONT_MONO",
-    findFont("geist-mono-latin-wght-normal")
+    findFont("jetbrains-mono-latin-wght-normal")
   )
 )
 

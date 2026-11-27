@@ -27,11 +27,11 @@ function ConflictAlert({
     >
       <AlertTriangle size={13} className="rtkq:mt-px rtkq:shrink-0" />
       <span>
-        <strong>Middleware registered more than once.</strong> RTK Query
-        flagged a conflict for{" "}
+        <strong>Middleware registered more than once.</strong> RTK Query flagged
+        a conflict for{" "}
         <code className="rtkq:font-mono">{health.reducerPath}</code>. Caching
-        and invalidation will misbehave until it's added to exactly one
-        store, once.
+        and invalidation will misbehave until it's added to exactly one store,
+        once.
       </span>
     </div>
   )
@@ -46,7 +46,11 @@ function HealthDetails({
 }) {
   return (
     <dl className="rtkq:m-0 rtkq:grid rtkq:grid-cols-[max-content_1fr] rtkq:gap-x-3 rtkq:gap-y-1 rtkq:px-3 rtkq:pb-2 rtkq:text-[11px]">
-      <HealthRow classes={classes} label="reducerPath" value={health.reducerPath} />
+      <HealthRow
+        classes={classes}
+        label="reducerPath"
+        value={health.reducerPath}
+      />
       <HealthRow
         classes={classes}
         label="keepUnusedDataFor"
@@ -112,10 +116,7 @@ function ApiHealthItem({
         {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         <span className="rtkq:font-mono">{health.reducerPath}</span>
         <span
-          className={clsx(
-            "rtkq:ml-1 rtkq:font-normal",
-            classes.textDimmed
-          )}
+          className={clsx("rtkq:ml-1 rtkq:font-normal", classes.textDimmed)}
         >
           {health.cachedQueries} queries · {health.cachedMutations} mutations ·{" "}
           {health.subscriberCount} subs
@@ -174,9 +175,11 @@ export function ApiHealthPanel({
         >
           {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
           <span className="rtkq:font-mono">{health.reducerPath}</span>
-          <span className={clsx("rtkq:ml-1 rtkq:font-normal", classes.textDimmed)}>
-            {health.cachedQueries} queries · {health.cachedMutations} mutations ·{" "}
-            {health.subscriberCount} subs
+          <span
+            className={clsx("rtkq:ml-1 rtkq:font-normal", classes.textDimmed)}
+          >
+            {health.cachedQueries} queries · {health.cachedMutations} mutations
+            · {health.subscriberCount} subs
           </span>
         </button>
         {expanded && <HealthDetails classes={classes} health={health} />}

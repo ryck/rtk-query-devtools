@@ -129,6 +129,9 @@ test("the API config strip summarises the api and expands on demand", async ({
   await toggle.click()
   await expect(toggle).toHaveAttribute("aria-expanded", "true")
 
+  // The demo has two apis, so each one's config sits behind its own row.
+  await page.getByRole("button", { name: /^postsApi/ }).click()
+
   // Config RTK populates but never surfaces.
   await expect(
     page.getByText("keepUnusedDataFor", { exact: true })

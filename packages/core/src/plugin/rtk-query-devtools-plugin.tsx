@@ -127,7 +127,9 @@ export function RtkQueryDevtoolsPlugin({
   // every api mirrors the same value, `online`/`focused` aren't per-api.
   const environment = useMemo(() => {
     const path = isAllApis ? reducerPaths[0] : activeApi
-    return path ? selectEnvironment(state, path) : { online: true, focused: true }
+    return path
+      ? selectEnvironment(state, path)
+      : { online: true, focused: true }
   }, [state, activeApi, isAllApis, reducerPaths])
   // One health entry per api. Single-api mode is just the one-element case.
   const apiHealth = useMemo(() => {

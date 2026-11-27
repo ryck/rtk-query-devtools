@@ -46,7 +46,7 @@ function findFont(prefix) {
 
 const html = readFileSync(TEMPLATE, "utf8")
   .replace("FONT_INTER", findFont("inter-latin-wght-normal"))
-  .replace("FONT_MONO", findFont("geist-mono-latin-wght-normal"))
+  .replace("FONT_MONO", findFont("jetbrains-mono-latin-wght-normal"))
 writeFileSync(RESOLVED, html)
 
 const browser = await chromium.launch()

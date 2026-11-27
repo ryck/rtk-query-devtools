@@ -1,25 +1,27 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/jetbrains-mono";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /*
- * The brand palette, and the only place a literal colour is written. Everything
+ * The brand palette, and the only place a literal colour is written. The values
+ * follow ryck.dev's theme so the projects read as part of the same site. Everything
  * else in this file, including every shadcn semantic token below, resolves back
  * to one of these.
  */
 @theme {
-  --color-ink: #0c0f16;
-  --color-panel: #171b24;
-  --color-panel-line: #2a303c;
-  --color-paper: #f3efe4;
-  --color-mist: #8a93a6;
-  --color-amber: #f2a93b;
+  --color-ink: oklch(0.145 0 0);
+  --color-panel: oklch(0.205 0 0);
+  --color-panel-line: oklch(0.269 0 0);
+  --color-paper: oklch(0.985 0 0);
+  --color-mist: oklch(0.708 0 0);
+  --color-amber: oklch(0.681 0.162 75.834);
+  --color-amber-foreground: oklch(0.286 0.066 53.813);
   --color-teal: #34d399;
-  --color-coral: #fb7166;
+  --color-coral: oklch(0.704 0.191 22.216);
 
   /*
    * Light-mode counterparts, matching shadcn-familytree so the two projects
@@ -30,20 +32,21 @@
    * them around 2:1 on a light page, well under the 4.5:1 body text needs. The
    * `-deep` values are the same hues taken darker.
    */
-  --color-parchment: #fbfaf7;
-  --color-parchment-raised: #ffffff;
-  --color-parchment-line: #e3ded2;
-  --color-parchment-sunken: #f0ede5;
-  --color-quill: #0c0f16;
-  --color-quill-soft: #1b212c;
-  --color-shadow: #6b7385;
-  --color-bronze: #b8761a;
-  --color-bronze-foreground: #fffdf8;
+  --color-parchment: oklch(1 0 0);
+  --color-parchment-raised: oklch(1 0 0);
+  --color-parchment-line: oklch(0.922 0 0);
+  --color-parchment-sunken: oklch(0.97 0 0);
+  --color-quill: oklch(0.145 0 0);
+  --color-quill-soft: oklch(0.205 0 0);
+  --color-shadow: oklch(0.556 0 0);
+  --color-bronze: oklch(0.554 0.135 66.442);
+  --color-bronze-foreground: oklch(0.987 0.026 102.212);
   --color-teal-deep: #0f766e;
-  --color-coral-deep: #d0483c;
+  --color-coral-deep: oklch(0.577 0.245 27.325);
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+  --font-mono:
+    "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
 
   /*
    * A theme token rather than a hand-written `.animate-heartbeat` class,
@@ -140,8 +143,8 @@
   /* Amber both ways: the focus ring sits on top of a surface, not in it. */
   --ring: var(--color-amber);
 
-  /* The preset's "small" radius. */
-  --radius: 0.45rem;
+  /* Matches ryck.dev. */
+  --radius: 0.625rem;
 }
 
 .dark {

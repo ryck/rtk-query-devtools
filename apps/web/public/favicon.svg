@@ -1,7 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="7" fill="#0C0F16"/>
-  <rect x="5" y="5" width="9" height="9" rx="1.5" fill="#F3EFE4"/>
-  <rect x="18" y="5" width="9" height="9" rx="1.5" fill="#2A303C"/>
-  <rect x="5" y="18" width="9" height="9" rx="1.5" fill="#2A303C"/>
-  <rect x="18" y="18" width="9" height="9" rx="1.5" fill="#F2A93B"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="rtk-query-devtools">
+  <style>
+    .fg { fill: #1f2430; }
+    @media (prefers-color-scheme: dark) { .fg { fill: #e6e1cf; } }
+  </style>
+  <rect class="fg" x="6" y="6" width="22" height="22" rx="4"/>
+  <rect class="fg" x="36" y="6" width="22" height="22" rx="4" opacity="0.25"/>
+  <rect class="fg" x="6" y="36" width="22" height="22" rx="4" opacity="0.25"/>
+  <rect x="36" y="36" width="22" height="22" rx="4" fill="#e6b450"/>
 </svg>
