@@ -8,24 +8,39 @@ function LogoMark() {
     <svg
       width="18"
       height="18"
-      viewBox="0 0 32 32"
+      viewBox="0 0 64 64"
       fill="none"
       aria-hidden="true"
     >
-      {/* Semantic tokens, not the raw palette, so the mark inverts with the
-          page instead of staying a dark tile on a cream header. */}
-      <rect width="32" height="32" rx="7" fill="var(--background)" />
+      {/* Same mark as public/logo.svg, on semantic tokens so it follows the
+          page's theme rather than the OS one. */}
       <rect
-        x="5"
-        y="5"
-        width="9"
-        height="9"
-        rx="1.5"
+        x="6"
+        y="6"
+        width="22"
+        height="22"
+        rx="4"
         fill="var(--foreground)"
       />
-      <rect x="18" y="5" width="9" height="9" rx="1.5" fill="var(--border)" />
-      <rect x="5" y="18" width="9" height="9" rx="1.5" fill="var(--border)" />
-      <rect x="18" y="18" width="9" height="9" rx="1.5" fill="var(--primary)" />
+      <rect
+        x="36"
+        y="6"
+        width="22"
+        height="22"
+        rx="4"
+        fill="var(--foreground)"
+        opacity="0.25"
+      />
+      <rect
+        x="6"
+        y="36"
+        width="22"
+        height="22"
+        rx="4"
+        fill="var(--foreground)"
+        opacity="0.25"
+      />
+      <rect x="36" y="36" width="22" height="22" rx="4" fill="var(--primary)" />
     </svg>
   )
 }
